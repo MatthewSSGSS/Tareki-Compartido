@@ -1,0 +1,2 @@
+Sube aquí tus archivos (Add file -> Upload files en GitHub).
+Puedes borrar este archivo cuando ya haya otros.
