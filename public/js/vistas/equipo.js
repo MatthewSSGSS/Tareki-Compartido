@@ -241,7 +241,7 @@ async function codigos(root, ctx) {
     <div class="titulo-seccion"><h2>Sin usar</h2><span class="suave">${pend.length}</span></div>
     <div class="tabla">${pend.length ? pend.map((i) => fila(i, `<span class="chip sol">vence ${fechaBonita(i.expira)}</span><button class="btn btn-peq btn-blanco" data-compartir="${esc(i.codigo)}">Compartir</button><button class="btn-redondo" data-anular="${esc(i.codigo)}" aria-label="Anular código" title="Anular">✕</button>`)).join('') : '<p class="suave">No hay códigos pendientes.</p>'}</div>
     <div class="titulo-seccion"><h2>Usados</h2><span class="suave">${usadas.length}</span></div>
-    <div class="tabla">${usadas.length ? usadas.map((i) => fila(i, `<span class="chip verde">${i.familia ? `✓ ${esc(i.familia.nombre)}` : 'cuenta borrada'} · ${fechaBonita(i.usada)}</span>`)).join('') : '<p class="suave">Ninguno todavía.</p>'}</div>
+    <div class="tabla">${usadas.length ? usadas.map((i) => fila(i, `<span class="chip verde">${i.familia ? `✓ ${esc(i.familia.nombre)}` : 'cuenta borrada'} · ${fechaBonita(i.usada)}</span>${!i.familia || ctx.usuario.dueno ? `<button class="btn-redondo" data-quitar="${esc(i.codigo)}" data-viva="${i.familia ? 1 : ''}" aria-label="Quitar de la lista" title="Quitar de la lista">✕</button>` : ''}`)).join('') : '<p class="suave">Ninguno todavía.</p>'}</div>
     ${vencidas.length ? `<div class="titulo-seccion"><h2>Vencidos</h2><span class="suave">${vencidas.length}</span></div><div class="tabla">${vencidas.map((i) => fila(i, '<span class="chip">vencido</span>')).join('')}</div>` : ''}`;
 
   root.querySelector('[data-crear]').addEventListener('click', () => {
@@ -275,6 +275,17 @@ async function codigos(root, ctx) {
   root.querySelectorAll('[data-anular]').forEach((b) => b.addEventListener('click', async () => {
     if (!(await confirmar({ titulo: `¿Anular ${b.dataset.anular}?`, texto: 'Ya nadie podrá usarlo para crear una cuenta.', si: 'Anular', peligro: true }))) return;
     await datos.anularInvitacion(b.dataset.anular);
+    ctx.refrescar();
+  }));
+  root.querySelectorAll('[data-quitar]').forEach((b) => b.addEventListener('click', async () => {
+    const viva = !!b.dataset.viva;
+    if (!(await confirmar({
+      titulo: `¿Quitar ${b.dataset.quitar} de la lista?`,
+      texto: viva ? 'La cuenta que se creó con este código <b>sigue funcionando igual</b>. Solo se borra el registro del código.' : 'La cuenta ya no existe; solo se borra el registro del código.',
+      si: 'Quitar',
+    }))) return;
+    try { await datos.anularInvitacion(b.dataset.quitar); aviso('Código quitado de la lista.', { emoji: '🧹' }); }
+    catch (x) { aviso(x.message, { emoji: '⚠️', ms: 6000 }); }
     ctx.refrescar();
   }));
 }

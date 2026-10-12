@@ -103,9 +103,13 @@ export async function invitaciones() {
   return db.invitaciones.map((i) => ({ ...i, familia: i.usadaPor ? sinClave(db.usuarios.find((u) => u.id === i.usadaPor)) : null }));
 }
 
+/** Quita un código: sin usar o de una cuenta borrada (equipo), o cualquiera (dueño). */
 export async function anularInvitacion(codigo) {
   soloEquipo();
-  db.invitaciones = db.invitaciones.filter((i) => i.codigo !== codigo || i.usadaPor);
+  const inv = db.invitaciones.find((i) => i.codigo === codigo);
+  const cuentaViva = inv?.usadaPor && db.usuarios.some((u) => u.id === inv.usadaPor);
+  if (cuentaViva && !yo().dueno) falla('Solo el dueño puede quitar códigos de cuentas activas.');
+  db.invitaciones = db.invitaciones.filter((i) => i.codigo !== codigo);
   guardar();
 }
 

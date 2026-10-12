@@ -105,8 +105,10 @@ export async function invitaciones() {
   return filas.map((i) => ({ codigo: i.codigo, rol: i.rol, nota: i.nota, creada: i.creada, expira: i.expira, usadaPor: i.usada_por, usada: i.usada, familia: i.familia }));
 }
 
+/** Quita un código: sin usar o de una cuenta borrada (equipo), o cualquiera (dueño). La regla la pone la base. */
 export async function anularInvitacion(codigo) {
-  ok(await cliente().from('invitaciones').delete().eq('codigo', codigo).is('usada_por', null));
+  const borrados = ok(await cliente().from('invitaciones').delete().eq('codigo', codigo).select('codigo'));
+  if (!borrados?.length) throw new Error('No se pudo quitar ese código. Si es de una cuenta activa, solo el dueño puede quitarlo.');
 }
 
 // --- Niños ------------------------------------------------------------------------------------

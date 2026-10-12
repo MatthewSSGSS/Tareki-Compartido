@@ -157,7 +157,7 @@ create policy "invitaciones: equipo crea" on public.invitaciones for insert to a
   with check ((select public.es_equipo()) and creada_por = (select auth.uid()) and usada_por is null
               and (rol = 'familia' or (rol = 'equipo' and (select public.es_dueno()))));
 create policy "invitaciones: equipo anula" on public.invitaciones for delete to authenticated
-  using ((select public.es_equipo()) and usada_por is null);
+  using ((select public.es_equipo()) and (usada_por is null or (select public.es_dueno())));
 
 -- Qué columnas puede tocar cada quien (nadie cambia su propio rol)
 revoke all on public.perfiles, public.ninos, public.lecciones, public.estados, public.actividad, public.invitaciones from anon, authenticated;
