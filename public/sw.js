@@ -10,7 +10,7 @@
 // Si cambias este archivo, sube VERSION.
 // =============================================================================
 
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = `tareki-${VERSION}`;
 
 self.addEventListener('install', (e) => {
@@ -46,7 +46,7 @@ self.addEventListener('push', (e) => {
       await self.registration.showNotification(titulo, {
         body: a.cuerpo || '¡Lulo te espera para aprender jugando!',
         icon: './icons/icon-192.png',
-        badge: './icons/icon-192.png',
+        badge: './icons/badge-96.png', // silueta blanca para la barra de Android
         tag: a.tag || 'tareki',
         renotify: true,
         data: { url: a.url || '#/' },
