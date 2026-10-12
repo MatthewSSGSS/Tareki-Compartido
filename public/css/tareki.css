@@ -378,6 +378,9 @@ ul.limpia { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 .mini-juegos .estrellas { flex: none; font-size: .82em; letter-spacing: 0; }
 
 /* Tarjeta de avisos */
+.ayuda-avisos { margin-top: 6px; font-size: .9em; }
+.ayuda-avisos summary { cursor: pointer; font-weight: 800; text-decoration: underline; }
+.ayuda-avisos ul { margin-top: 8px; }
 .tarjeta-avisos .em { font-size: 34px; line-height: 1; flex: none; }
 .tarjeta-avisos b { font-family: var(--f-head); font-size: 1.15em; }
 .tarjeta-avisos.apagados, .tarjeta-avisos.instalar-ios { background: var(--sun-s); color: #1f2544; }

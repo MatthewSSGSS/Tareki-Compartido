@@ -73,7 +73,8 @@ export async function activarAvisos() {
   const permiso = await Notification.requestPermission();
   if (permiso !== 'granted') throw new Error(permiso === 'denied' ? 'Los avisos quedaron bloqueados. Actívalos en la configuración del navegador.' : 'No se activaron los avisos.');
   const reg = await navigator.serviceWorker.register('sw.js');
-  await navigator.serviceWorker.ready;
+  // Si el service worker no queda listo en 15 s, mejor avisar que quedarse esperando
+  await Promise.race([navigator.serviceWorker.ready, new Promise((_, no) => setTimeout(() => no(new Error('La app no terminó de prepararse. Recarga la página e intenta de nuevo.')), 15000))]);
   let sub = await reg.pushManager.getSubscription();
   if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64aBytes(VAPID_PUBLICA) });
   const j = sub.toJSON();
@@ -102,6 +103,20 @@ export async function revisarAvisos() {
     await datos.registrarPush({ endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, dispositivo: nombreDispositivo() });
   } catch { /* se intenta la próxima vez */ }
 }
+
+// Si el aviso salió pero el dispositivo no lo muestra, casi siempre es una configuración del teléfono
+const AYUDA = esIOS
+  ? `<ul class="limpia"><li>Ve a <b>Configuración → Notificaciones → Tareki</b> y activa <b>Permitir notificaciones</b> (y «Pantalla bloqueada» y «Banners»).</li>
+     <li>Revisa que no esté activo <b>No molestar</b> o un <b>Modo de concentración</b> (luna 🌙 en el Centro de control).</li>
+     <li>Si sigue sin llegar: toca <b>Apagar en este dispositivo</b>, cierra Tareki por completo y vuelve a abrirla desde el ícono para activarlos otra vez.</li></ul>`
+  : esAndroid
+    ? `<ul class="limpia"><li>Abre <b>Ajustes → Aplicaciones → Chrome</b> (o el navegador que uses, o «Tareki» si la instalaste) <b>→ Notificaciones</b> y actívalas.</li>
+       <li>En Chrome: toca el candado 🔒 junto a la dirección <b>→ Permisos → Notificaciones → Permitir</b>.</li>
+       <li>Revisa que no esté activo <b>No molestar</b> ni el <b>ahorro de batería</b> extremo.</li>
+       <li>Si sigue sin llegar: toca <b>Apagar en este dispositivo</b> y vuelve a activarlos.</li></ul>`
+    : `<ul class="limpia"><li>En Windows: <b>Configuración → Sistema → Notificaciones</b> y activa las del navegador (Edge o Chrome). Revisa que el «Asistente de concentración» / «No molestar» esté apagado.</li>
+       <li>En Mac: <b>Configuración del Sistema → Notificaciones →</b> tu navegador <b>→ Permitir</b>.</li>
+       <li>El navegador debe estar abierto (aunque sea minimizado) para recibir avisos en el computador.</li></ul>`;
 
 // --- Tarjeta para activar (papás y equipo) ---------------------------------------------------
 const PASOS_IOS = `<ol class="limpia pasos-ios">
@@ -134,19 +149,28 @@ export async function tarjetaAvisos(el) {
         ${estado === 'apagados' ? '<button class="btn btn-verde btn-peq" data-activar>🔔 Activar avisos</button>' : ''}
         ${estado === 'activos' ? '<button class="btn btn-blanco btn-peq" data-probar>Enviar aviso de prueba</button><button class="link peq" data-apagar>Apagar en este dispositivo</button>' : ''}
         ${puedeInstalar() && !esInstalada() ? '<button class="btn btn-sol btn-peq" data-instalar>📲 Instalar Tareki</button>' : ''}
-      </div></div></div></div>`;
+      </div>
+      ${estado === 'activos' ? `<details class="ayuda-avisos"><summary>¿No te llegó el aviso de prueba?</summary>${AYUDA}</details>` : ''}
+      </div></div></div>`;
   const repintar = () => tarjetaAvisos(el);
   el.querySelector('[data-activar]')?.addEventListener('click', async (e) => {
     e.target.disabled = true; e.target.textContent = 'Activando…';
-    try { await activarAvisos(); aviso('¡Avisos activados!', { emoji: '🔔' }); }
+    // Algunos navegadores (Edge, Chrome) esconden la pregunta en una campanita junto a la dirección
+    const pista = setTimeout(() => {
+      e.target.textContent = '☝️ Toca «Permitir» arriba';
+      aviso('Si no ves la pregunta, busca la campanita 🔔 o el candado 🔒 junto a la dirección y elige «Permitir».', { emoji: '👆', ms: 10000 });
+    }, 3000);
+    try { await activarAvisos(); aviso('¡Avisos activados! Toca «Enviar aviso de prueba» para revisar.', { emoji: '🔔', ms: 5000 }); }
     catch (x) { aviso(x.message, { emoji: '⚠️', ms: 6000 }); }
+    clearTimeout(pista);
     repintar();
   });
   el.querySelector('[data-probar]')?.addEventListener('click', async (e) => {
     e.target.disabled = true;
     try {
       const r = await datos.probarAvisos();
-      aviso(r.enviados ? 'Aviso enviado. Debe llegar en unos segundos.' : 'No se pudo enviar. Apaga y vuelve a activar los avisos.', { emoji: r.enviados ? '📨' : '⚠️', ms: 5000 });
+      aviso(r.enviados ? `Aviso enviado a ${r.enviados === 1 ? 'tu dispositivo' : `${r.enviados} dispositivos`}. Debe llegar en unos segundos.` : 'No se pudo enviar. Apaga y vuelve a activar los avisos.', { emoji: r.enviados ? '📨' : '⚠️', ms: 5000 });
+      if (r.enviados) el.querySelector('.ayuda-avisos')?.removeAttribute('hidden');
     } catch (x) { aviso(x.message, { emoji: '⚠️' }); }
     e.target.disabled = false;
   });
