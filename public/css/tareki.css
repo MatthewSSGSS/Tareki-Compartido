@@ -378,6 +378,7 @@ ul.limpia { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 .mini-juegos .estrellas { flex: none; font-size: .82em; letter-spacing: 0; }
 
 /* Tarjeta de avisos */
+.diag-avisos { display: grid; gap: 4px; background: var(--card); color: var(--ink); border: 2px dashed var(--line); border-radius: 14px; padding: 8px 12px; font-size: .88em; }
 .ayuda-avisos { margin-top: 6px; font-size: .9em; }
 .ayuda-avisos summary { cursor: pointer; font-weight: 800; text-decoration: underline; }
 .ayuda-avisos ul { margin-top: 8px; }

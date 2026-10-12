@@ -62,7 +62,7 @@ async function jwtVapid(audiencia: string): Promise<string> {
     );
   }
   const cab = aB64u(texto(JSON.stringify({ typ: "JWT", alg: "ES256" })));
-  const dat = aB64u(texto(JSON.stringify({ aud: audiencia, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: VAPID_SUJETO })));
+  const dat = aB64u(texto(JSON.stringify({ aud: audiencia, exp: Math.floor(Date.now() / 1000) + 3600, sub: VAPID_SUJETO })));
   const firma = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, claveFirma, texto(`${cab}.${dat}`));
   return `${cab}.${dat}.${aB64u(new Uint8Array(firma))}`;
 }
@@ -113,11 +113,11 @@ async function enviarPush(s: Sub, aviso: Aviso): Promise<{ status: number; razon
 
 // deno-lint-ignore no-explicit-any
 async function enviarAUsuario(admin: any, userId: string, aviso: Aviso) {
-  const { data: subs } = await admin.from("suscripciones").select("endpoint, p256dh, auth").eq("user_id", userId);
+  const { data: subs } = await admin.from("suscripciones").select("endpoint, p256dh, auth, dispositivo").eq("user_id", userId);
   let enviados = 0;
   const errores: { servicio: string; status: number; razon: string }[] = [];
   for (const s of subs ?? []) {
-    const servicio = new URL(s.endpoint).host;
+    const servicio = `${s.dispositivo || "dispositivo"} (${new URL(s.endpoint).host})`;
     try {
       const { status, razon } = await enviarPush(s, aviso);
       if (status === 404 || status === 410) await admin.from("suscripciones").delete().eq("endpoint", s.endpoint); // dispositivo dado de baja

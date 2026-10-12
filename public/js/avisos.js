@@ -154,6 +154,14 @@ const TEXTOS = {
   'no-soporta': { emoji: '😕', titulo: 'Este navegador no recibe avisos', texto: 'Prueba con Chrome, Edge, Firefox o Safari actualizados.' },
 };
 
+/** Lo que anotó el service worker del último aviso que llegó a este dispositivo. */
+async function ultimoAviso() {
+  try {
+    const r = await (await caches.open('diagnostico-tareki')).match('./__ultimo-aviso');
+    return r ? await r.json() : null;
+  } catch { return null; }
+}
+
 /** Pinta la tarjeta de avisos dentro de `el` y conecta sus botones. */
 export async function tarjetaAvisos(el) {
   const estado = MODO_DEMO ? 'demo' : await estadoAvisos();
@@ -168,6 +176,7 @@ export async function tarjetaAvisos(el) {
         ${estado === 'activos' ? '<button class="btn btn-blanco btn-peq" data-probar>Enviar aviso de prueba</button><button class="link peq" data-apagar>Apagar en este dispositivo</button>' : ''}
         ${puedeInstalar() && !esInstalada() ? '<button class="btn btn-sol btn-peq" data-instalar>📲 Instalar Tareki</button>' : ''}
       </div>
+      <div class="diag-avisos" hidden></div>
       ${estado === 'activos' ? `<details class="ayuda-avisos"><summary>¿No te llegó el aviso de prueba?</summary>${AYUDA}</details>` : ''}
       </div></div></div>`;
   const repintar = () => tarjetaAvisos(el);
@@ -185,12 +194,27 @@ export async function tarjetaAvisos(el) {
   });
   el.querySelector('[data-probar]')?.addEventListener('click', async (e) => {
     e.target.disabled = true;
+    const diag = el.querySelector('.diag-avisos');
+    const linea = (txt) => { diag.hidden = false; diag.insertAdjacentHTML('beforeend', `<div>${txt}</div>`); };
+    diag.innerHTML = '';
     try {
+      const antes = (await ultimoAviso())?.t || 0;
       const r = await datos.probarAvisos();
-      aviso(r.enviados ? `Aviso enviado a ${r.enviados === 1 ? 'tu dispositivo' : `${r.enviados} dispositivos`}. Debe llegar en unos segundos.` : 'No se pudo enviar. Apaga y vuelve a activar los avisos.', { emoji: r.enviados ? '📨' : '⚠️', ms: 5000 });
-      if (r.enviados) el.querySelector('.ayuda-avisos')?.removeAttribute('hidden');
-    } catch (x) { aviso(x.message, { emoji: '⚠️' }); }
-    e.target.disabled = false;
+      linea(`📤 Servidor: entregado a <b>${r.enviados} de ${r.total}</b> ${r.total === 1 ? 'dispositivo' : 'dispositivos'} de tu cuenta.`);
+      (r.errores || []).forEach((x) => linea(`⚠️ ${esc(x.servicio)} respondió ${x.status}${x.razon ? `: ${esc(x.razon)}` : ''}`));
+      if (!r.enviados) { linea('❌ No se entregó a ningún dispositivo. Apaga y vuelve a activar los avisos.'); return; }
+      linea('⏳ Esperando que llegue a este dispositivo…');
+      for (let i = 0; i < 20; i++) {
+        await new Promise((ok) => setTimeout(ok, 1000));
+        const u = await ultimoAviso();
+        if (u && u.t > antes) {
+          linea(u.mostrado ? '✅ <b>Llegó a este dispositivo</b> y se mostró. Si no lo viste, revisa «No molestar» y los permisos del teléfono (abajo).' : `⚠️ Llegó, pero el teléfono no dejó mostrarlo: ${esc(u.error || '')}`);
+          return;
+        }
+      }
+      linea('❌ <b>No llegó a este dispositivo</b> en 20 segundos. Toca «Apagar en este dispositivo», recarga y actívalos otra vez.');
+    } catch (x) { linea(`❌ ${esc(x.message)}`); }
+    finally { e.target.disabled = false; }
   });
   el.querySelector('[data-apagar]')?.addEventListener('click', async () => { await desactivarAvisos(); aviso('Avisos apagados en este dispositivo.', { emoji: '🔕' }); repintar(); });
   el.querySelector('[data-instalar]')?.addEventListener('click', async () => { await instalar(); repintar(); });

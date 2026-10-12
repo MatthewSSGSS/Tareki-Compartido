@@ -10,7 +10,7 @@
 // Si cambias este archivo, sube VERSION.
 // =============================================================================
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `tareki-${VERSION}`;
 
 self.addEventListener('install', (e) => {
@@ -26,18 +26,37 @@ self.addEventListener('activate', (e) => {
 });
 
 // --- Notificaciones ---------------------------------------------------------------
+// Cada aviso que llega se anota (hora y si se pudo mostrar). La tarjeta de avisos lo
+// lee para decir si el aviso de prueba llegó a ESTE dispositivo. No empieza por
+// "tareki-" para que no se borre al cambiar de versión.
+const CACHE_DIAG = 'diagnostico-tareki';
+async function anotar(dato) {
+  try {
+    const c = await caches.open(CACHE_DIAG);
+    await c.put('./__ultimo-aviso', new Response(JSON.stringify({ t: Date.now(), ...dato }), { headers: { 'Content-Type': 'application/json' } }));
+  } catch { /* nada */ }
+}
+
 self.addEventListener('push', (e) => {
   let a = {};
   try { a = e.data ? e.data.json() : {}; } catch { a = { cuerpo: e.data?.text() || '' }; }
   const titulo = a.titulo || 'Tareki 🦉';
-  e.waitUntil(self.registration.showNotification(titulo, {
-    body: a.cuerpo || '¡Lulo te espera para aprender jugando!',
-    icon: './icons/icon-192.png',
-    badge: './icons/icon-192.png',
-    tag: a.tag || 'tareki',
-    renotify: true,
-    data: { url: a.url || '#/' },
-  }));
+  e.waitUntil((async () => {
+    try {
+      await self.registration.showNotification(titulo, {
+        body: a.cuerpo || '¡Lulo te espera para aprender jugando!',
+        icon: './icons/icon-192.png',
+        badge: './icons/icon-192.png',
+        tag: a.tag || 'tareki',
+        renotify: true,
+        data: { url: a.url || '#/' },
+      });
+      await anotar({ titulo, mostrado: true });
+    } catch (err) {
+      await anotar({ titulo, mostrado: false, error: String(err) });
+      await self.registration.showNotification(titulo, { body: a.cuerpo || '', data: { url: a.url || '#/' } }); // intento sencillo
+    }
+  })());
 });
 
 self.addEventListener('notificationclick', (e) => {
