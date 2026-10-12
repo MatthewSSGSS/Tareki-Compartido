@@ -1,0 +1,15 @@
+{
+  "name": "Tareki",
+  "short_name": "Tareki",
+  "description": "Lecciones divertidas para aprender jugando.",
+  "lang": "es-CO",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eaf6ff",
+  "theme_color": "#eaf6ff",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

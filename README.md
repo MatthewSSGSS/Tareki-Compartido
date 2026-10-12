@@ -1,21 +1,18 @@
-# Archivos compartidos
+# Tareki 🦉
 
-Repositorio donde varias personas suben archivos que se publican automáticamente en Cloudflare Pages.
+App de Lección Divertida: cada niño entra con la cuenta de su familia, ve **solo sus lecciones**, guarda su progreso, mantiene su racha 🔥 y gana medallas. Los papás ven el rendimiento con consejos, y el equipo sube lecciones y crea códigos de invitación.
 
-## Cómo subir archivos (sin instalar nada)
+## ⚠️ Importante para el equipo
 
-1. Entra al repositorio en GitHub.
-2. Abre la carpeta `public/archivos/`.
-3. Pulsa **Add file → Upload files**, arrastra tus archivos y pulsa **Commit changes**.
-4. En 1–2 minutos aparecen en el sitio de Cloudflare.
+**Ya no se suben lecciones a este repositorio.** El repo es público: cualquier HTML que se suba aquí lo puede ver cualquiera, con el nombre del niño adentro.
 
-Puedes crear subcarpetas dentro de `public/archivos/` para ordenar las cosas.
+Las lecciones se suben **desde la app**: entra con tu cuenta de equipo → **Subir** → arrastra el HTML → elige al niño. La app revisa que el archivo mencione al niño correcto y que no traiga nombres de otros niños.
 
-## Límites
+## Cómo funciona
 
-- Máximo **25 MB por archivo** (límite de Cloudflare Pages). Si alguien sube uno más grande, la publicación falla y el error dice cuál es.
-- GitHub no acepta archivos de más de 100 MB.
-- Para archivos grandes o muchos gigas, conviene un bucket de Cloudflare R2 en lugar de este repositorio.
+- **Familias:** solo pueden crear cuenta con un **código de invitación** que genera el equipo (sirve una vez y vence en 7 días).
+- **Lecciones:** se guardan en un almacén privado y se abren dentro de la app, aisladas. Las lecciones no hay que cambiarlas: la app guarda solo lo que la lección ya guardaba (estrellas, fichas, simulacro, jefe final).
+- **Racha:** un día cuenta si el niño termina algo o estudia 5 minutos.
 
 ## Configuración en Cloudflare Pages
 
@@ -25,13 +22,10 @@ Puedes crear subcarpetas dentro de `public/archivos/` para ordenar las cosas.
 | Build command | `node build.js` |
 | Build output directory | `dist` |
 
-## Dar acceso a más personas
-
-En GitHub: **Settings → Collaborators → Add people** y escribe su usuario de GitHub. Cada persona recibe una invitación por correo y, al aceptarla, ya puede subir archivos.
-
 ## Probar en local
 
 ```bash
-node build.js
-npx serve dist
+python -m http.server 8800 --directory public
 ```
+
+Abre http://localhost:8800. Mientras no esté conectado Supabase, la app está en **modo demostración** (datos de prueba en el navegador): entra como "Una familia" o "El equipo", o regístrate con el código `TAREKI-DEMO`.

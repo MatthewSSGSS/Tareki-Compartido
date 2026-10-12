@@ -1,0 +1,88 @@
+// =============================================================================
+// demo.js — Datos de prueba para ver la app sin Supabase.
+// Las fechas se arman a partir de hoy para que la racha y las gráficas se vean vivas.
+// La lección de muestra está en demo/fracciones.html (no tiene datos de niños reales).
+// =============================================================================
+
+import { hoy, sumarDias } from './util.js';
+
+const ARCHIVO_MUESTRA = 'demo/fracciones.html';
+
+// Lo mismo que la lección de muestra le cuenta a la app al abrirse (FTOP, GAMES y TIPS).
+const META_MUESTRA = {
+  titulo: 'Las fracciones',
+  clave: 'fracciones-muestra',
+  temas: {
+    con: { n: '¿Qué es una fracción?', e: '🍕', game: 'pizza', q: 'Si parto una pizza en 8 pedazos y me como 3, ¿qué fracción me comí?' },
+    equ: { n: 'Fracciones equivalentes', e: '⚖️', game: 'pizza', q: '¿Por qué 1/2 y 2/4 son la misma cantidad?' },
+    com: { n: 'Comparar fracciones', e: '🔍', game: 'mayor', q: '¿Qué es más: 1/3 o 1/4 de un chocolate? ¿Por qué?' },
+  },
+  juegos: [
+    { id: 'pizza', nombre: 'Pizza veloz', emoji: '🍕', f: 'pizzaS' },
+    { id: 'mayor', nombre: '¿Cuál es mayor?', emoji: '🔍', f: 'mayorS' },
+  ],
+  tips: {
+    consejos: [
+      'Usen comida de verdad: una arepa o una pizza partida en pedazos iguales explica más que cualquier dibujo.',
+      'Repitan la frase: «el de abajo dice en cuántas partes partí; el de arriba, cuántas tomé».',
+      'Para comparar, dibujen las dos fracciones del mismo tamaño, una al lado de la otra.',
+    ],
+    errores: [
+      'Creer que 1/4 es más que 1/3 porque 4 es mayor que 3. Entre más partes, más pequeño cada pedazo.',
+      'Partir en pedazos de distinto tamaño: en una fracción todos los pedazos son iguales.',
+    ],
+    preguntas: [
+      '¿Qué significa el número de abajo de una fracción?',
+      'Dibuja 2/4 y 1/2. ¿Qué notas?',
+    ],
+    casa: 'A la hora del postre, que {nombre} reparta en partes iguales y diga qué fracción le tocó a cada uno.',
+  },
+};
+
+export function semilla() {
+  const h = hoy();
+  const d = (n) => sumarDias(h, -n);
+  const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
+
+  return {
+    version: 2,
+    usuarios: [
+      { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
+      { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20) },
+    ],
+    ninos: [
+      { id: 'n-sofia', familiaId: 'u-familia', nombre: 'Sofía', avatar: '🦊', color: '#ff9a4d', grado: '4', creado: ts(20) },
+      { id: 'n-tomas', familiaId: 'u-familia', nombre: 'Tomás', avatar: '🐯', color: '#59c3ff', grado: '4', creado: ts(20) },
+    ],
+    lecciones: [
+      { id: 'l-sofia-1', ninoId: 'n-sofia', titulo: 'Las fracciones', materia: 'mate', archivo: ARCHIVO_MUESTRA, subidaPor: 'u-equipo', creada: ts(9, 9) },
+      { id: 'l-sofia-2', ninoId: 'n-sofia', titulo: 'Repaso de fracciones', materia: 'mate', archivo: ARCHIVO_MUESTRA, subidaPor: 'u-equipo', creada: ts(0, 8) },
+      { id: 'l-tomas-1', ninoId: 'n-tomas', titulo: 'Las fracciones', materia: 'mate', archivo: ARCHIVO_MUESTRA, subidaPor: 'u-equipo', creada: ts(1, 9) },
+    ],
+    estados: {
+      'l-sofia-1': {
+        abierta: ts(8),
+        actualizado: ts(1),
+        meta: META_MUESTRA,
+        datos: {
+          'ld-progress': JSON.stringify({ 'fracciones-muestra': { pizzaS: 3, ficha100: 83 } }),
+          'ld-ficha-hist': JSON.stringify([
+            { d: d(8), n: 50, s: 420, t: { con: [2, 2], equ: [0, 2], com: [1, 2] }, h: 0 },
+            { d: d(5), n: 67, s: 360, t: { con: [2, 2], equ: [1, 2], com: [1, 2] }, h: 0 },
+            { d: d(1), n: 83, s: 300, t: { con: [2, 2], equ: [2, 2], com: [1, 2] }, h: 0 },
+          ]),
+        },
+      },
+    },
+    actividad: [
+      ...[[9, 22, 2], [8, 31, 3], [5, 18, 2], [4, 12, 1], [3, 20, 2], [2, 9, 1], [1, 26, 3]]
+        .map(([n, minutos, logros]) => ({ ninoId: 'n-sofia', dia: d(n), minutos, logros })),
+      { ninoId: 'n-tomas', dia: d(6), minutos: 3, logros: 0 },
+    ],
+    invitaciones: [
+      { codigo: 'TAREKI-P3RZQ7', rol: 'familia', nota: 'Familia Pérez', creadaPor: 'u-equipo', creada: ts(21), expira: d(-14), usadaPor: 'u-familia', usada: ts(20) },
+      { codigo: 'TAREKI-DEMO', rol: 'familia', nota: 'Familia de prueba', creadaPor: 'u-equipo', creada: ts(0), expira: sumarDias(h, 7), usadaPor: null, usada: null },
+    ],
+    sesion: null,
+  };
+}
