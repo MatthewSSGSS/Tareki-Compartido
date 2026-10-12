@@ -13,6 +13,7 @@ import { tituloDeHtml } from '../puente.js';
 import { coincidencias } from '../revision.js';
 import { esc, plano, primerNombre, fechaBonita, diasEntre, hoy, plural } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
+import { tarjetaAvisos } from '../avisos.js';
 
 export function render(root, ctx) {
   const sec = ctx.params[0] || 'resumen';
@@ -71,8 +72,11 @@ async function resumen(root, ctx) {
       <section class="card"><h2>📅 Actividad reciente</h2>
         ${recientes.length ? `<div class="tabla">${recientes.map((n) => filaNino(n, `<span class="chip ${n.d.racha.actual ? 'sol' : ''}">🔥 ${n.d.racha.actual}</span><span class="chip">${n.ultimoDia ? fechaBonita(n.ultimoDia) : 'nunca'}</span>`)).join('')}</div>` : '<p class="suave">Aún no hay niños registrados.</p>'}
       </section>
-    </div>`;
+    </div>
+    <div id="avisos" style="margin-top:18px"></div>`;
 
+  // Para probar los avisos en el celular del equipo
+  tarjetaAvisos(root.querySelector('#avisos'));
   root.querySelector('[data-reiniciar]')?.addEventListener('click', async () => {
     if (!(await confirmar({ titulo: '¿Reiniciar los datos de prueba?', texto: 'Se borra todo lo que hayas creado en este navegador y vuelven los datos de ejemplo.', si: 'Reiniciar', peligro: true }))) return;
     await datos.reiniciarDemo();
@@ -163,6 +167,7 @@ async function subir(root, ctx) {
       try {
         const l = await datos.subirLeccion({ ninoId: a.ninoId, titulo: a.titulo, materia: a.materia, html: a.html });
         Object.assign(a, { estado: 'subida', id: l.id, error: '' });
+        datos.avisarLeccion(l.id).catch(() => {}); // "¡Tienes una lección nueva!" a la familia
         lecciones.push(l);
         ok++;
       } catch (x) { a.error = x.message; }

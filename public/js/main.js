@@ -20,6 +20,7 @@ import * as logros from './vistas/logros.js';
 import * as papas from './vistas/papas.js';
 import * as leccion from './vistas/leccion.js';
 import * as equipo from './vistas/equipo.js';
+import { registrarServiceWorker, revisarAvisos, desactivarAvisos } from './avisos.js';
 
 const RUTAS = {
   entrar:   { vista: ingreso, publica: true },
@@ -39,6 +40,7 @@ const $menu = document.getElementById('menu');
 let rutaAnterior = '';
 let turno = 0;
 let limpiar = null;
+let avisosRevisados = false;
 
 export const perfilActivo = () => leerLocal(CLAVE_PERFIL, null);
 export const elegirPerfil = (id) => guardarLocal(CLAVE_PERFIL, id);
@@ -101,6 +103,7 @@ async function render() {
   limpiar = typeof fin === 'function' ? fin : null;
   if (ruta.clave !== rutaAnterior) { window.scrollTo(0, 0); rutaAnterior = ruta.clave; }
   if (u && datos.estaRecuperando()) pedirClaveNueva();
+  if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); }
 }
 
 /** Llegó del correo "Olvidé mi contraseña": ya entró, falta escoger la clave nueva. */
@@ -153,6 +156,8 @@ $menu.addEventListener('click', async (e) => {
 });
 
 export async function salir() {
+  await desactivarAvisos(); // este dispositivo deja de recibir los avisos de esta cuenta
+  avisosRevisados = false;
   await datos.salir();
   elegirPerfil(null);
   aviso('Sesión cerrada. ¡Hasta pronto!', { emoji: '👋' });
@@ -173,6 +178,7 @@ function cambiarTema() { guardarLocal(CLAVE_TEMA, oscuro() ? 'light' : 'dark'); 
 
 // --- Arranque -----------------------------------------------------------------------------
 window.addEventListener('hashchange', render);
+registrarServiceWorker();
 aplicarTema();
 render();
 

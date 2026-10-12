@@ -11,6 +11,9 @@ export const NUBE = {
   clave: 'sb_publishable_XBNDXSaL4Ff3Al5uGA62cg_UJqREpd1',
 };
 
+/** Llave pública de las notificaciones (la privada vive solo en los secretos de Supabase). */
+export const VAPID_PUBLICA = 'BEVjTKOA50KtLVVyL-onOguIxrEGvRt7rrRxRIlZ3IfZ8aJgNMk9dAC26vaNjI6zeVC7W-ttgr7Jxn-FFnB-Gtc';
+
 /** Sin Supabase (o abriendo la app con ?demo) todo vive en este navegador con datos de prueba. */
 export const MODO_DEMO = !(NUBE.url && NUBE.clave) || new URLSearchParams(location.search).has('demo');
 

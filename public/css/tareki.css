@@ -376,3 +376,14 @@ ul.limpia { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 /* Lista de juegos del visor: que las estrellas no empujen la tarjeta */
 .mini-juegos div { min-width: 0; }
 .mini-juegos .estrellas { flex: none; font-size: .82em; letter-spacing: 0; }
+
+/* Tarjeta de avisos */
+.tarjeta-avisos .em { font-size: 34px; line-height: 1; flex: none; }
+.tarjeta-avisos b { font-family: var(--f-head); font-size: 1.15em; }
+.tarjeta-avisos.apagados, .tarjeta-avisos.instalar-ios { background: var(--sun-s); color: #1f2544; }
+.tarjeta-avisos.apagados .suave, .tarjeta-avisos.instalar-ios .suave { color: #4a5075; }
+.tarjeta-avisos.activos { background: var(--green-s); color: #0d2a17; }
+.tarjeta-avisos.activos .suave { color: #2a4a33; }
+.tarjeta-avisos.bloqueados { background: #ffe3e6; color: #4a0d16; }
+.pasos-ios { margin-top: 8px; }
+.pasos-ios li { margin-bottom: 4px; }

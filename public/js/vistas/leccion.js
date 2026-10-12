@@ -21,7 +21,9 @@ export async function render(root, ctx) {
   const id = ctx.params[0];
   const l = await datos.leccion(id);
   const nino = await datos.nino(l.ninoId);
-  const propia = ctx.usuario.rol === 'familia' && ctx.perfil?.id === l.ninoId;
+  // Si la familia la puede abrir, es de uno de sus hijos: se entra como ese niño
+  if (ctx.usuario.rol === 'familia' && ctx.perfil?.id !== l.ninoId) ctx.elegirPerfil(l.ninoId);
+  const propia = ctx.usuario.rol === 'familia';
   const m = materia(l.materia);
   const volver = ctx.usuario.rol === 'equipo' ? `#/papas/${l.ninoId}` : propia ? '#/inicio' : '#/papas';
 

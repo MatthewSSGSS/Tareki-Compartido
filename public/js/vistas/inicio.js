@@ -8,6 +8,8 @@ import { medallas } from '../analisis.js';
 import { esc, minutosTexto } from '../util.js';
 import { lulo, vacio } from '../ui.js';
 import { tarjetaLeccion, tarjetaRacha } from '../piezas.js';
+import { estadoAvisos, tarjetaAvisos } from '../avisos.js';
+import { MODO_DEMO } from '../config.js';
 
 export async function render(root, ctx) {
   const d = await cargarNino(ctx.perfil.id);
@@ -51,6 +53,7 @@ export async function render(root, ctx) {
 
       <aside class="lado pila">
         ${tarjetaRacha(racha)}
+        <div id="avisos"></div>
         <div class="cifras">
           <div class="cifra"><b>⭐ ${resumen.estrellas}</b><span>estrellas</span></div>
           <div class="cifra"><b>🎓 ${resumen.terminadas}</b><span>terminadas</span></div>
@@ -62,4 +65,7 @@ export async function render(root, ctx) {
         </a>
       </aside>
     </div>`;
+
+  // Si este dispositivo no recibe avisos, recordarlo (la racha se cuida mejor con ellos)
+  if (!MODO_DEMO) estadoAvisos().then((e) => { if (e === 'apagados' || e === 'instalar-ios') tarjetaAvisos(root.querySelector('#avisos')); });
 }

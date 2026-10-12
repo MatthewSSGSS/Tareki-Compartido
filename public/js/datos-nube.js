@@ -239,3 +239,20 @@ export async function familias() {
 }
 
 export async function reiniciarDemo() { /* solo existe en modo demostración */ }
+
+// --- Avisos (notificaciones push) ------------------------------------------------------------------
+export async function registrarPush({ endpoint, p256dh, auth, dispositivo }) {
+  ok(await cliente().rpc('registrar_push', { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth, p_dispositivo: dispositivo }));
+}
+export async function quitarPush(endpoint) {
+  ok(await cliente().rpc('quitar_push', { p_endpoint: endpoint }));
+}
+async function llamarAvisos(cuerpo) {
+  const { data, error } = await cliente().functions.invoke('avisos', { body: cuerpo });
+  if (error) falla(error, 'No se pudo enviar el aviso.');
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+export const probarAvisos = () => llamarAvisos({ tipo: 'prueba' });
+/** Avisa a la familia que llegó una lección (lo llama el equipo al asignarla). */
+export const avisarLeccion = (leccionId) => llamarAvisos({ tipo: 'leccion', leccion_id: leccionId });

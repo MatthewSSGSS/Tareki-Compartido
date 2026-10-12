@@ -12,6 +12,7 @@ import { esc, fechaBonita, fechaCorta, minutosTexto, nivelNota, plural, primerNo
 import { abrirHoja, cerrarHoja, confirmar, aviso, barra, estrellas, graficoBarras, claseNota, vacio } from '../ui.js';
 import { coincidencias } from '../revision.js';
 import { MATERIAS } from '../config.js';
+import { tarjetaAvisos } from '../avisos.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -51,6 +52,7 @@ export async function render(root, ctx) {
       <div class="card kpi"><span>Lecciones</span><b>🎓 ${resumen.terminadas}/${analisis.length}</b><small>${resumen.enCurso} en curso · ${resumen.nuevas} sin abrir</small></div>
     </div>
 
+    ${esEquipo ? '' : '<div id="avisos" style="margin-top:18px"></div>'}
     <div class="sep"></div>
     <div class="columnas">
       <section class="card ancho"><h2>💡 Qué hacer esta semana</h2>
@@ -84,6 +86,7 @@ export async function render(root, ctx) {
       </section>
     </div>`;
 
+  if (!esEquipo) tarjetaAvisos(root.querySelector('#avisos'));
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
     if (ctx.perfil) ctx.elegirPerfil(b.dataset.nino);
     ctx.refrescar();

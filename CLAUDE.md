@@ -23,5 +23,11 @@
 - `supabase/functions/registro`: única forma de crear cuentas (registro público apagado, "Verify JWT" apagado). Reserva el código, crea el usuario y el perfil con el rol del código (`familia`, `equipo`, `dueno`). Solo el dueño crea códigos de equipo.
 - Reemplazar el archivo de una lección sube `version` y conserva `estados` (el progreso).
 
+## Notificaciones (deben servir en todo dispositivo)
+- Web Push con el texto cifrado (RFC 8291 aes128gcm) en `supabase/functions/avisos` ("Verify JWT" apagado; secretos VAPID_* y CRON_SECRET en Supabase, copia en `privado/secretos-avisos.txt`). La llave pública VAPID está en `config.js`.
+- `supabase/avisos.sql`: tabla `suscripciones`, `registrar_push`/`quitar_push`, `avisos_diarios(dia)` y la tarea de las 6 p. m. Colombia (23:00 UTC). `privado/avisos-listo.sql` trae el CRON_SECRET puesto.
+- Avisos: lección nueva (el equipo llama `avisarLeccion` al asignar), racha en peligro o lecciones sin abrir (diario), prueba.
+- `public/js/avisos.js` decide qué mostrar por dispositivo: iPhone/iPad necesita iOS 16.4+ y la app instalada en inicio; navegadores dentro de WhatsApp/Instagram no sirven. `public/sw.js` muestra el aviso y abre la URL; si cambia, subir su VERSION.
+
 ## Probar
 `python -m http.server 8800 --directory public` y abrir http://localhost:8800. En modo demo: botones "Una familia" / "El equipo"; código de registro `TAREKI-DEMO`. Hay recorrido headless con Playwright (miniconda) en Edge y WebKit a 390×844 y 1366×900.

@@ -284,6 +284,12 @@ export async function buscarNinos(texto) {
 }
 
 /** Solo en modo demo: vuelve a los datos de prueba. */
+// En la demostración no hay avisos reales
+export async function registrarPush() { /* nada */ }
+export async function quitarPush() { /* nada */ }
+export async function probarAvisos() { return { enviados: 0 }; }
+export async function avisarLeccion() { /* nada */ }
+
 export async function reiniciarDemo() {
   Object.keys(localStorage).filter((k) => k.startsWith('tareki:')).forEach((k) => localStorage.removeItem(k));
   db = cargar();

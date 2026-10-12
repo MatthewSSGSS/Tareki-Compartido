@@ -20,4 +20,5 @@ export const {
   estado, estados, guardarDatos, guardarMeta, marcarAbierta,
   sumarActividad, actividad,
   familias, reiniciarDemo,
+  registrarPush, quitarPush, probarAvisos, avisarLeccion,
 } = d;
