@@ -67,6 +67,24 @@ export async function estadoAvisos() {
   return sub && Notification.permission === 'granted' ? 'activos' : 'apagados';
 }
 
+/** Se inscribe en el servicio de avisos del navegador (Google, Apple, Microsoft o Mozilla).
+ *  Si falla, reintenta una vez y luego explica en español qué revisar. */
+async function suscribir(reg) {
+  const opciones = { userVisibleOnly: true, applicationServerKey: b64aBytes(VAPID_PUBLICA) };
+  try {
+    return await reg.pushManager.subscribe(opciones);
+  } catch {
+    await new Promise((r) => setTimeout(r, 1500));
+    try { return await reg.pushManager.subscribe(opciones); } catch (e) {
+      console.error('Suscripción push', e);
+      const edge = /Edg\//.test(ua);
+      throw new Error(esIOS || esAndroid
+        ? 'El servicio de avisos del teléfono no respondió. Revisa tu conexión a internet e intenta de nuevo en un momento.'
+        : `${edge ? 'Edge' : 'El navegador'} no pudo conectarse al servicio de avisos. Revisa en Windows: Configuración → Sistema → Notificaciones (activadas, y también para ${edge ? 'Microsoft Edge' : 'tu navegador'}), actualiza el navegador y revisa que el antivirus o la VPN no lo bloqueen. También puedes probar con otro navegador.`);
+    }
+  }
+}
+
 /** Pide permiso y registra este dispositivo en la cuenta. Debe llamarse desde un toque. */
 export async function activarAvisos() {
   if (MODO_DEMO) throw new Error('En la demostración no hay avisos reales.');
@@ -76,7 +94,7 @@ export async function activarAvisos() {
   // Si el service worker no queda listo en 15 s, mejor avisar que quedarse esperando
   await Promise.race([navigator.serviceWorker.ready, new Promise((_, no) => setTimeout(() => no(new Error('La app no terminó de prepararse. Recarga la página e intenta de nuevo.')), 15000))]);
   let sub = await reg.pushManager.getSubscription();
-  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64aBytes(VAPID_PUBLICA) });
+  if (!sub) sub = await suscribir(reg);
   const j = sub.toJSON();
   await datos.registrarPush({ endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, dispositivo: nombreDispositivo() });
 }
