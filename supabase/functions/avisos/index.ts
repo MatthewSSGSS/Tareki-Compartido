@@ -274,6 +274,17 @@ Deno.serve(async (req) => {
     return responder(await enviarAVarios(admin, await equipo(admin), { titulo: `💬 ${m.familia?.nombre || "Una familia"} escribió`, cuerpo: corto, url: `#/equipo/chat/${m.familia_id}`, tag: `chat-${m.familia_id}` }));
   }
 
+  // Chat interno del equipo: avisa a los demás del equipo
+  if (entrada?.tipo === "chat-equipo" && entrada.id) {
+    const { data: m } = await admin.from("chat_equipo").select("id, autor, texto, quien:perfiles!chat_equipo_autor_fkey(nombre)").eq("id", entrada.id).maybeSingle();
+    if (!m || m.autor !== usuario.id) return responder({ error: "no autorizado" }, 403);
+    const corto = m.texto.length > 140 ? `${m.texto.slice(0, 137)}…` : m.texto;
+    const nombre = String(m.quien?.nombre || "Alguien").split(/\s+/)[0];
+    return responder(await enviarAVarios(admin, (await equipo(admin)).filter((id) => id !== usuario.id), {
+      titulo: `👥 ${nombre} (equipo)`, cuerpo: corto, url: "#/equipo/interno", tag: "chat-equipo",
+    }));
+  }
+
   // El equipo envía ya un mensaje
   if (entrada?.tipo === "mensaje" && entrada.id) {
     const { data: perfil } = await admin.from("perfiles").select("rol").eq("id", usuario.id).maybeSingle();

@@ -45,7 +45,7 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 7,
+    version: 8,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
       { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1), celular: '573001234567' },
@@ -96,6 +96,9 @@ export function semilla() {
       { id: 'c1', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: 'Hola, ¿la lección de fracciones también sirve para el quiz del viernes?', leido: true, creado: ts(2, 19) },
       { id: 'c2', familiaId: 'u-familia', autor: 'u-equipo', deEquipo: true, texto: '¡Hola Laura! Sí, cubre los mismos temas. Que Sofía haga la ficha dos veces antes del viernes 🐬', leido: true, creado: ts(2, 20) },
       { id: 'c3', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: 'Perfecto, gracias. Ya pagué la mensualidad, les mando el comprobante por WhatsApp.', leido: false, creado: ts(0, 9) },
+    ],
+    chatEquipo: [
+      { id: 'ce1', autor: 'u-equipo', texto: '¡Hola equipo! Desde hoy usamos este chat para coordinarnos 👥', creado: ts(1, 10) },
     ],
     sesion: null,
   };

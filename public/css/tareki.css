@@ -719,3 +719,8 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 .punto-menu { position: absolute; top: 2px; right: 50%; transform: translateX(22px); min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--pink); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; border: 2px solid var(--card); }
 .menu a { position: relative; }
 @media (min-width: 900px) { .punto-menu { position: static; transform: none; margin-left: auto; } }
+
+/* Chat interno del equipo: la pestaña y la conversación caben debajo del título */
+.pantalla-equipo .cabecera + .pestanas-pagina + .chat { height: calc(100dvh - var(--menu-alto) - 190px - env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 900px) { .pantalla-equipo .cabecera + .pestanas-pagina + .chat { height: calc(100dvh - 190px); } }
+@media (max-width: 520px) { .pestanas-pagina { gap: 4px; } .pestanas-pagina a { padding: 6px 10px; font-size: .9em; } }

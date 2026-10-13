@@ -26,7 +26,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 7) return d;
+    if (d && d.version === 8) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -431,6 +431,27 @@ export async function chatSinLeer() {
   const u = yo();
   if (!u) return 0;
   return (db.chat || []).filter((c) => !c.leido && (u.rol === 'equipo' ? !c.deEquipo : c.deEquipo && c.familiaId === u.id)).length;
+}
+
+// --- Chat interno del equipo ------------------------------------------------------------------------
+export async function chatEquipo() {
+  soloEquipo();
+  return (db.chatEquipo || []).map((c) => ({ ...c, autorNombre: db.usuarios.find((x) => x.id === c.autor)?.nombre || '' }));
+}
+export async function enviarChatEquipo(texto) {
+  soloEquipo();
+  const t = String(texto || '').trim();
+  if (!t) falla('Escribe un mensaje.');
+  const c = { id: uid(), autor: db.sesion, texto: t.slice(0, 1000), creado: ahora() };
+  (db.chatEquipo ||= []).push(c); guardar();
+  return { ...c, autorNombre: yo().nombre };
+}
+export async function marcarEquipoVisto() { const u = yo(); if (u?.rol === 'equipo') { (db.vistoEquipo ||= {})[u.id] = ahora(); guardar(); } }
+export async function equipoSinLeer() {
+  const u = yo();
+  if (u?.rol !== 'equipo') return 0;
+  const visto = (db.vistoEquipo || {})[u.id] || '';
+  return (db.chatEquipo || []).filter((c) => c.autor !== u.id && c.creado > visto).length;
 }
 
 // En la demostración no hay avisos reales

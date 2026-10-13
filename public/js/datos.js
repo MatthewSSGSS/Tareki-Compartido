@@ -24,4 +24,5 @@ export const {
   marcarIngreso, olvidarPerfil, ajustesCobro, guardarAjustesCobro, familiasResumen, historialAcceso, registrarPago, cambiarAcceso,
   mensajes, crearMensaje, enviarMensajeYa, borrarMensaje, avisarNinoNuevo, quitarFamilia, cambiarCelular, borrarHistorial,
   chat, chatResumen, enviarChat, marcarChatLeido, chatSinLeer,
+  chatEquipo, enviarChatEquipo, marcarEquipoVisto, equipoSinLeer,
 } = d;

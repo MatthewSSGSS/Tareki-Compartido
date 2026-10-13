@@ -28,6 +28,7 @@ export function render(root, ctx) {
   if (sec === 'familia') return familias.detalle(root, ctx);
   if (sec === 'mensajes') return mensajes.render(root, ctx);
   if (sec === 'chat') return ctx.params[1] ? chat.hiloEquipo(root, ctx) : chat.lista(root, ctx);
+  if (sec === 'interno') return chat.interno(root, ctx);
   return resumen(root, ctx);
 }
 

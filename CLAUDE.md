@@ -43,6 +43,7 @@
 ## Chat familia ↔ equipo
 - `supabase/chat.sql`: tabla `chat` (una conversación por familia; `de_equipo`, `leido` = leído por el otro lado), `marcar_chat_leido()`. Funciona aunque la familia esté vencida (el router deja pasar `#/chat`).
 - `js/vistas/chat.js`: familia `#/chat`; equipo `#/equipo/chat` y `#/equipo/chat/<id>` (pestañas junto a los avisos programados). Revisa mensajes nuevos cada 8 s; la función `avisos` (`tipo: 'chat'`) notifica al otro lado.
+- Chat interno del equipo (`supabase/chat-equipo.sql`, `#/equipo/interno`, `avisos` con `tipo: 'chat-equipo'` avisa a los demás). La vista `hilo()` de `chat.js` es genérica (recibe cargar/enviar/marcar).
 
 ## Notificaciones (deben servir en todo dispositivo)
 - Web Push con el texto cifrado (RFC 8291 aes128gcm) en `supabase/functions/avisos` ("Verify JWT" apagado; secretos VAPID_* y CRON_SECRET en Supabase, copia en `privado/secretos-avisos.txt`). La llave pública VAPID está en `config.js`.

@@ -387,6 +387,25 @@ export async function chatSinLeer() {
   return count || 0;
 }
 
+// --- Chat interno del equipo ------------------------------------------------------------------------
+export async function chatEquipo() {
+  const filas = ok(await cliente().from('chat_equipo').select('*, quien:perfiles!chat_equipo_autor_fkey(nombre)').order('creado', { ascending: false }).limit(300));
+  return filas.reverse().map((c) => ({ id: c.id, autor: c.autor, autorNombre: c.quien?.nombre || '', texto: c.texto, creado: c.creado }));
+}
+export async function enviarChatEquipo(texto) {
+  const yo = await usuario();
+  const t = String(texto || '').trim();
+  if (!t) throw new Error('Escribe un mensaje.');
+  const c = ok(await cliente().from('chat_equipo').insert({ autor: yo.id, texto: t.slice(0, 1000) }).select().single(), 'No se pudo enviar el mensaje.');
+  cliente().functions.invoke('avisos', { body: { tipo: 'chat-equipo', id: c.id } }).catch(() => {});
+  return { id: c.id, autor: c.autor, autorNombre: yo.nombre, texto: c.texto, creado: c.creado };
+}
+export async function marcarEquipoVisto() { await cliente().rpc('marcar_equipo_visto'); }
+export async function equipoSinLeer() {
+  const { data, error } = await cliente().rpc('equipo_sin_leer');
+  return error ? 0 : data || 0;
+}
+
 // --- Avisos (notificaciones push) ------------------------------------------------------------------
 export async function registrarPush({ endpoint, p256dh, auth, dispositivo }) {
   ok(await cliente().rpc('registrar_push', { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth, p_dispositivo: dispositivo }));

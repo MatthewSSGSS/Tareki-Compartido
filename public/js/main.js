@@ -111,7 +111,7 @@ async function render() {
 
   document.body.classList.toggle('sin-menu', !!def.publica || !!def.sinMenu);
   document.body.classList.toggle('en-leccion', !!def.pantallaCompleta);
-  const subEquipo = ruta.params[0] === 'familia' ? 'familias' : ruta.params[0] === 'chat' ? 'mensajes' : ruta.params[0] || 'resumen';
+  const subEquipo = ruta.params[0] === 'familia' ? 'familias' : ruta.params[0] === 'chat' || ruta.params[0] === 'interno' ? 'mensajes' : ruta.params[0] || 'resumen';
   pintarMenu(u, perfil, def.nav || (ruta.nombre === 'equipo' ? `equipo-${subEquipo}` : ''));
   $vista.replaceChildren(root);
   if (ruta.clave !== rutaAnterior) animarPantalla(root); // solo al cambiar de pantalla, no al refrescar
@@ -124,7 +124,7 @@ async function render() {
 
 /** Puntico con los mensajes de chat sin leer en el menú (Mensajes para el equipo, Papás para la familia). */
 async function contarSinLeer(u) {
-  const n = await datos.chatSinLeer().catch(() => 0);
+  const n = (await datos.chatSinLeer().catch(() => 0)) + (u.rol === 'equipo' ? await datos.equipoSinLeer().catch(() => 0) : 0);
   const a = $menu.querySelector(u.rol === 'equipo' ? 'a[href="#/equipo/chat"]' : 'a[href="#/papas"]');
   if (!a) return;
   a.querySelector('.punto-menu')?.remove();
