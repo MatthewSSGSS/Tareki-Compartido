@@ -11,6 +11,7 @@ import { tarjetaLeccion, tarjetaRacha } from '../piezas.js';
 import { estadoAvisos, tarjetaAvisos } from '../avisos.js';
 import { MODO_DEMO } from '../config.js';
 import { bannerVence, conectarBanner } from '../acceso.js';
+import { pintarMensajeNuevo } from '../buzon.js';
 
 export async function render(root, ctx) {
   const d = await cargarNino(ctx.perfil.id);
@@ -41,6 +42,7 @@ export async function render(root, ctx) {
           <span class="rc-num"><b>${racha.actual}</b><small>${racha.actual === 1 ? 'día seguido' : 'días seguidos'}</small></span>
           <span class="rc-semana">${racha.semana.map((d) => `<i class="${d.activo ? 'si' : ''} ${d.hoy ? 'hoy' : ''}" title="${d.dia}"></i>`).join('')}</span>
         </div>
+        <div id="msjNuevo"></div>
 
         ${siguiente ? (() => {
           const m = materia(siguiente.leccion.materia);
@@ -75,6 +77,7 @@ export async function render(root, ctx) {
     </div>`;
 
   conectarBanner(root, ctx.usuario);
+  pintarMensajeNuevo(root.querySelector('#msjNuevo'));
   // Si este dispositivo no recibe avisos, recordarlo (la racha se cuida mejor con ellos)
   if (!MODO_DEMO) estadoAvisos().then((e) => { if (e === 'apagados' || e === 'instalar-ios') tarjetaAvisos(root.querySelector('#avisos')); });
 }

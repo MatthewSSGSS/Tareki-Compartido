@@ -15,6 +15,7 @@ import { esc, plano, primerNombre, fechaBonita, diasEntre, hoy, plural } from '.
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
 import { tarjetaAvisos } from '../avisos.js';
 import * as familias from './familias.js';
+import * as mensajes from './mensajes.js';
 import { estadoAcceso, chipAcceso } from '../acceso.js';
 
 export function render(root, ctx) {
@@ -24,6 +25,7 @@ export function render(root, ctx) {
   if (sec === 'codigos') return codigos(root, ctx);
   if (sec === 'familias') return familias.lista(root, ctx);
   if (sec === 'familia') return familias.detalle(root, ctx);
+  if (sec === 'mensajes') return mensajes.render(root, ctx);
   return resumen(root, ctx);
 }
 
@@ -64,7 +66,7 @@ async function resumen(root, ctx) {
   root.innerHTML = `
     ${MODO_DEMO ? `<div class="banda-demo"><span>🧪 <b>Modo demostración:</b> datos de prueba guardados solo en este navegador.</span><button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button></div>` : ''}
     <div class="cabecera"><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1>
-      <span class="fila"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a></span></div>
+      <span class="fila"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a></span></div>
     <div class="kpis">
       <div class="card kpi"><span>Familias</span><b>👨‍👩‍👧 ${fams.length}</b></div>
       <div class="card kpi"><span>Niños</span><b>🧒 ${lista.length}</b></div>

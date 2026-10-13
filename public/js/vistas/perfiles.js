@@ -47,6 +47,7 @@ export async function render(root, ctx) {
     abrirFormularioNino(lista.find((n) => n.id === b.dataset.editar), () => ctx.refrescar());
   }));
   root.querySelector('[data-nuevo]').addEventListener('click', () => abrirFormularioNino(null, (n) => {
+    datos.avisarNinoNuevo(n.id).catch(() => {}); // el equipo ya le puede subir lecciones
     confeti();
     aviso(`¡Hola, ${n.nombre}! Ya tienes tu perfil.`, { emoji: n.avatar });
     entrar(n.id);

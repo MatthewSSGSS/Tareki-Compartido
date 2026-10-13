@@ -100,6 +100,7 @@ export async function detalle(root, ctx) {
           <button class="btn btn-verde" data-pago>💰 Registrar pago</button>
           ${f.suspendido ? '<button class="btn btn-azul" data-reactivar>▶️ Reactivar</button>' : '<button class="btn btn-blanco" data-suspender>⏸ Suspender</button>'}
           <button class="btn btn-blanco" data-fecha>📅 Cambiar fecha</button>
+          ${ctx.usuario.dueno ? '<button class="btn btn-blanco btn-quitar" data-quitar-fam>🗑️ Quitar familia</button>' : ''}
         </div>
       </section>
 
@@ -129,6 +130,31 @@ export async function detalle(root, ctx) {
       ? 'Reactivada, pero su fecha ya venció: registra un pago o cambia la fecha.' : '¡Familia reactivada!', ctx);
   });
   root.querySelector('[data-fecha]').addEventListener('click', () => cambiarFecha(f, ctx));
+  root.querySelector('[data-quitar-fam]')?.addEventListener('click', () => quitarFamilia(f, hijos, ctx));
+}
+
+/** Borra la familia para siempre (solo el dueño). Hay que escribir su nombre para confirmar. */
+function quitarFamilia(f, hijos, ctx) {
+  abrirHoja({
+    titulo: '¿Quitar esta familia para siempre?',
+    cuerpo: `<div class="alerta-caja">⚠️ Se borra <b>todo</b>: la cuenta de ${esc(f.nombre)}${hijos.length ? `, ${hijos.length === 1 ? 'el perfil de' : 'los perfiles de'} <b>${esc(hijos.map((n) => n.nombre).join(', '))}</b>` : ''}, sus lecciones, estrellas, notas, racha e historial de pagos. <b>No se puede deshacer.</b></div>
+      <p class="suave">Si solo dejaron de pagar, mejor usa <b>Suspender</b>: así, si vuelven, todo sigue ahí.</p>
+      <div class="campo"><label for="qNombre">Para confirmar, escribe el nombre: <b>${esc(f.nombre)}</b></label><input id="qNombre" autocomplete="off"></div>
+      <p class="error" id="qErr" role="alert"></p>`,
+    pie: '<button class="btn btn-blanco" data-no>Cancelar</button><button class="btn btn-peligro" data-si disabled>Quitar para siempre</button>',
+    montar: (el) => {
+      const si = el.querySelector('[data-si]');
+      el.querySelector('#qNombre').addEventListener('input', (e) => { si.disabled = e.target.value.trim().toLowerCase() !== f.nombre.trim().toLowerCase(); });
+      el.querySelector('[data-no]').addEventListener('click', () => cerrarHoja());
+      si.addEventListener('click', async () => {
+        si.disabled = true; si.textContent = 'Quitando…';
+        try {
+          await datos.quitarFamilia(f.id);
+          cerrarHoja(); aviso(`${f.nombre} fue quitada.`, { emoji: '🗑️' }); ctx.navegar('#/equipo/familias');
+        } catch (x) { el.querySelector('#qErr').textContent = x.message; si.textContent = 'Quitar para siempre'; }
+      });
+    },
+  });
 }
 
 async function accion(fn, mensaje, ctx) {

@@ -26,7 +26,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 3) return d;
+    if (d && d.version === 4) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -347,6 +347,40 @@ export async function cambiarAcceso({ familiaId, accion, hasta = null, nota = ''
   else if (accion === 'fecha') { if (!hasta) falla('Elige la fecha.'); f.accesoHasta = hasta; }
   else falla('Acción no válida.');
   db.historial.unshift({ id: uid(), familiaId, accion, hasta: f.accesoHasta, nota, por: db.sesion, creado: ahora() });
+  guardar();
+}
+
+// --- Mensajes del equipo (en la demo se "envían" al instante, sin notificación) -------------------
+export async function mensajes() {
+  const u = yo();
+  if (!u) return [];
+  const lista = (db.mensajes || []).filter((m) => u.rol === 'equipo' || (m.enviado && (m.destino === 'todas' || (m.destino === 'familias' && m.familias.includes(u.id)))));
+  return lista.map((m) => ({ ...m })).sort((a, b) => b.programado.localeCompare(a.programado));
+}
+export async function crearMensaje({ titulo, cuerpo, url, destino, familias = [], programado = null }) {
+  soloEquipo();
+  if (!String(titulo || '').trim()) falla('Escribe el título del mensaje.');
+  const cuando = programado ? new Date(programado) : new Date();
+  const m = { id: uid(), titulo: titulo.trim(), cuerpo: String(cuerpo || '').trim(), url: url || '#/', destino, familias: destino === 'familias' ? familias : [], programado: cuando.toISOString(), enviado: null, creadoPor: db.sesion, creado: ahora() };
+  (db.mensajes ||= []).push(m);
+  if (cuando <= new Date(Date.now() + 60000)) m.enviado = ahora();
+  guardar();
+  return { ...m, resultado: m.enviado ? { enviados: 0, personas: 0 } : undefined };
+}
+export async function enviarMensajeYa(id) { soloEquipo(); const m = db.mensajes.find((x) => x.id === id); if (m && !m.enviado) { m.enviado = ahora(); guardar(); } return { enviados: 0, personas: 0 }; }
+export async function borrarMensaje(id) { soloEquipo(); db.mensajes = db.mensajes.filter((m) => m.id !== id); guardar(); }
+export async function avisarNinoNuevo() { /* nada */ }
+export async function quitarFamilia(familiaId) {
+  if (!yo()?.dueno) falla('Solo el dueño puede quitar una familia.');
+  const hijos = db.ninos.filter((n) => n.familiaId === familiaId).map((n) => n.id);
+  const lecs = db.lecciones.filter((l) => hijos.includes(l.ninoId)).map((l) => l.id);
+  db.lecciones = db.lecciones.filter((l) => !lecs.includes(l.id));
+  lecs.forEach((id) => { delete db.estados[id]; try { localStorage.removeItem(CLAVE_HTML + id); } catch { /* nada */ } });
+  db.actividad = db.actividad.filter((a) => !hijos.includes(a.ninoId));
+  db.ninos = db.ninos.filter((n) => n.familiaId !== familiaId);
+  db.historial = db.historial.filter((h) => h.familiaId !== familiaId);
+  db.usuarios = db.usuarios.filter((u) => u.id !== familiaId);
+  db.invitaciones.forEach((i) => { if (i.usadaPor === familiaId) i.usadaPor = null; });
   guardar();
 }
 

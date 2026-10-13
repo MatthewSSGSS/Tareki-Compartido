@@ -13,6 +13,7 @@ import { abrirHoja, cerrarHoja, confirmar, aviso, barra, estrellas, graficoBarra
 import { coincidencias } from '../revision.js';
 import { MATERIAS } from '../config.js';
 import { tarjetaAvisos } from '../avisos.js';
+import { pintarBuzon } from '../buzon.js';
 import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
 
 export async function render(root, ctx) {
@@ -63,7 +64,8 @@ export async function render(root, ctx) {
           <button class="btn btn-peq ${estadoAcceso(ctx.usuario).dias <= 3 ? 'btn-sol' : 'btn-blanco'}" data-pagar>Cómo pagar</button>
         </div>
         <div id="avisos"></div>
-      </div>`}
+      </div>
+      <section class="card" style="margin-top:14px"><h2>📬 Mensajes del equipo</h2><div id="buzon"></div></section>`}
     <div class="sep"></div>
     <div class="columnas">
       <section class="card ancho"><h2>💡 Qué hacer esta semana</h2>
@@ -99,6 +101,7 @@ export async function render(root, ctx) {
 
   if (!esEquipo) {
     tarjetaAvisos(root.querySelector('#avisos'));
+    pintarBuzon(root.querySelector('#buzon'));
     root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
   }
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {

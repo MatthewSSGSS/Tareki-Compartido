@@ -145,3 +145,48 @@ export function graficoBarras(puntos, { max = 100, alto = 140, sufijo = '' } = {
 }
 
 export const claseNota = (n) => (n >= 80 ? 'verde' : n >= 60 ? 'amarillo' : 'rojo');
+
+// --- Animaciones al mostrar una pantalla --------------------------------------------
+// Tarjetas que entran en cascada, barras que se llenan y números que cuentan.
+// Nada se mueve si la persona pidió "reducir movimiento" en su teléfono.
+export function animarPantalla(root) {
+  if (pocoMovimiento()) return;
+  root.querySelectorAll('.card, .tabla-fila, .mensaje-fila, .buzon-fila, .leccion').forEach((el, i) => {
+    el.style.setProperty('--i', Math.min(i, 14));
+    el.classList.add('entra');
+    el.addEventListener('animationend', () => el.classList.remove('entra'), { once: true });
+  });
+  const barras = [...root.querySelectorAll('.barra i')].map((b) => [b, b.style.width]);
+  const columnas = [...root.querySelectorAll('.g-col i')].map((c) => [c, c.style.height]);
+  barras.forEach(([b]) => { b.style.width = '0%'; });
+  columnas.forEach(([c]) => { c.style.height = '0%'; });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    barras.forEach(([b, w]) => { b.style.width = w; });
+    columnas.forEach(([c, h], i) => { c.style.transitionDelay = `${i * 50}ms`; c.style.height = h; });
+  }));
+  root.querySelectorAll('.kpi b, .cifra b, .racha .numero, .rc-num b, .nota').forEach(contar);
+}
+
+/** Si el elemento muestra UN número (ej. "🔥 5", "83", "$60.000"), lo hace contar desde 0. */
+function contar(el) {
+  const texto = el.textContent;
+  const numeros = texto.match(/\d[\d.]*/g);
+  if (!numeros || numeros.length !== 1) return;
+  if (/[a-záéíóúñ]/i.test(texto.replace(/\d[\d.]*/, ''))) return; // "14 de octubre" no es un número que cuente
+  const recorrido = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let nodo;
+  while ((nodo = recorrido.nextNode())) if (/\d/.test(nodo.nodeValue)) break;
+  if (!nodo) return;
+  const crudo = nodo.nodeValue.match(/\d[\d.]*/)[0];
+  const meta = Number(crudo.replace(/\./g, ''));
+  if (!meta || meta > 999999) return;
+  const conPuntos = crudo.includes('.');
+  const original = nodo.nodeValue;
+  const inicio = performance.now(), dura = Math.min(900, 400 + meta * 8);
+  (function paso(t) {
+    const p = Math.min(1, (t - inicio) / dura), suave = 1 - Math.pow(1 - p, 3);
+    const v = Math.round(meta * suave);
+    nodo.nodeValue = original.replace(crudo, conPuntos ? v.toLocaleString('es-CO') : String(v));
+    if (p < 1) requestAnimationFrame(paso); else nodo.nodeValue = original;
+  })(inicio);
+}

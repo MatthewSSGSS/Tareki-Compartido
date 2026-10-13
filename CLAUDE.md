@@ -30,6 +30,12 @@
 - Los códigos de familia traen `dias_acceso` (la función `registro` pone `acceso_hasta`). Avisos push 3 días antes, 1 día antes y el último día.
 - Fechas: los momentos se guardan en UTC; para mostrarlos usar `diaDe()`/`fechaBonita()` (día local), nunca `slice(0, 10)`.
 
+## Mensajes del equipo y quitar familias
+- `supabase/mensajes.sql` (después de avisos.sql): tabla `mensajes` (destino todas/familias/equipo, `programado`, `enviado`), tarea `tareki-mensajes` cada 10 min, `quitar_familia()` (solo dueño; la app borra antes los archivos del almacén). `privado/mensajes-listo.sql` trae el CRON_SECRET y la regla de códigos del dueño.
+- La función `avisos` también maneja `mensaje`, `programados`, `familia-nueva` (la llama `registro` con x-cron-secret) y `nino-nuevo` (la llama la familia al crear un perfil): estos dos avisan a todo el equipo.
+- Familias: buzón en Papás y tarjeta 💌 en el inicio del niño (`js/buzon.js`); lo leído se guarda en el dispositivo.
+- Animaciones: `animarPantalla()` en `ui.js` (tarjetas en cascada, barras, números que cuentan) al cambiar de pantalla; todo se apaga con "reducir movimiento".
+
 ## Notificaciones (deben servir en todo dispositivo)
 - Web Push con el texto cifrado (RFC 8291 aes128gcm) en `supabase/functions/avisos` ("Verify JWT" apagado; secretos VAPID_* y CRON_SECRET en Supabase, copia en `privado/secretos-avisos.txt`). La llave pública VAPID está en `config.js`.
 - `supabase/avisos.sql`: tabla `suscripciones`, `registrar_push`/`quitar_push`, `avisos_diarios(dia)` y la tarea de las 6 p. m. Colombia (23:00 UTC). `privado/avisos-listo.sql` trae el CRON_SECRET puesto.

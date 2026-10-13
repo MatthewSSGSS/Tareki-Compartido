@@ -529,3 +529,72 @@ body { background-image: radial-gradient(color-mix(in srgb, var(--line) 9%, tran
 
 /* El botón activo del menú siempre con letra oscura (su fondo es amarillo claro) */
 .menu a.activo { color: #1f2544; }
+
+/* =============================================================================
+   Animaciones (se apagan con "reducir movimiento")
+   ============================================================================= */
+@keyframes entraArriba { from { opacity: 0; transform: translateY(16px) scale(.97); } }
+@keyframes entraPantalla { from { opacity: 0; transform: translateY(6px); } }
+@keyframes rebote { 0% { transform: scale(1); } 40% { transform: scale(1.18) rotate(-6deg); } 70% { transform: scale(.95); } 100% { transform: scale(1); } }
+@keyframes flotarSuave { 50% { transform: translateY(-4px); } }
+@keyframes parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+.pantalla { animation: entraPantalla .3s ease-out; }
+.entra { animation: entraArriba .5s cubic-bezier(.2, .9, .3, 1.2) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.btn { transition: transform .14s ease, box-shadow .14s ease, filter .14s ease; }
+.btn:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--line); filter: saturate(1.08); }
+.btn:active:not(:disabled) { transform: translate(3px, 3px) scale(.98); box-shadow: 1px 1px 0 var(--line); }
+.card.cifra, .kpi { transition: transform .15s ease, box-shadow .15s ease; }
+.kpi:hover, .cifra:hover { transform: translateY(-2px); }
+.menu a.activo .mi-emoji { animation: rebote .5s ease; }
+.menu a:hover .mi-emoji { transform: scale(1.12) rotate(-4deg); }
+.saludo .av-grande { animation: flotarSuave 3s ease-in-out infinite; }
+.marca-logo { transition: transform .2s; }
+.marca-logo:hover { transform: rotate(-8deg) scale(1.06); }
+.g-col i { transition: height .8s cubic-bezier(.2, .9, .3, 1.1); }
+.barra i { transition: width .9s cubic-bezier(.2, .9, .3, 1.05); }
+.medalla.ganada:hover .m { animation: rebote .5s ease; }
+.perfil .av { transition: transform .2s; }
+.perfil:hover .av { transform: scale(1.06) rotate(-4deg); }
+.chip.rosa { transition: transform .2s; }
+@media (prefers-reduced-motion: reduce) {
+  .pantalla, .entra, .menu a.activo .mi-emoji, .saludo .av-grande { animation: none !important; }
+  .btn:hover:not(:disabled), .kpi:hover, .cifra:hover { transform: none; }
+}
+
+/* Mensajes del equipo */
+.bajada { color: var(--muted); margin-top: 4px; font-weight: 700; }
+.mensaje-fila { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; align-items: start; background: var(--card); border: 3px solid var(--line); border-radius: 18px; padding: 12px 14px; box-shadow: var(--sombra-sm); }
+.mensaje-fila.programado { background: var(--blue-s); color: #10233a; }
+.mensaje-fila .em { font-size: 26px; }
+.mensaje-fila b { font-family: var(--f-head); font-size: 1.08em; }
+.mensaje-fila p { margin-top: 2px; font-size: .92em; }
+.mensaje-fila small { display: block; margin-top: 4px; color: var(--muted); font-size: .82em; }
+.mensaje-fila.programado small { color: #2d4a66; }
+.mf-acciones { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+@media (min-width: 700px) { .mensaje-fila { grid-template-columns: auto minmax(0, 1fr) auto; } .mf-acciones { grid-column: auto; } }
+.pestanas.tres { grid-template-columns: repeat(3, minmax(0, 1fr)); border-radius: 18px; }
+.pestanas.tres button { font-size: .92em; border-radius: 14px; }
+.elegir-familias { display: grid; gap: 6px; max-height: 200px; overflow-y: auto; margin-top: 8px; }
+.check-fam { display: flex; align-items: center; gap: 10px; background: var(--soft); border: 2px solid var(--line); border-radius: 12px; padding: 8px 12px; font-weight: 800; cursor: pointer; margin: 0; }
+.check-fam input { width: 20px; height: 20px; accent-color: var(--green); }
+textarea { width: 100%; background: var(--soft); border: 3px solid var(--line); border-radius: 16px; padding: 11px 14px; font-weight: 700; font-size: 16px; resize: vertical; }
+.vista-notif { display: flex; gap: 12px; align-items: flex-start; background: #2a2f45; color: #fff; border-radius: 18px; padding: 12px 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .18); }
+.vista-notif .vn-ico { width: 38px; height: 38px; border-radius: 10px; background: var(--sun); display: grid; place-items: center; font-size: 22px; flex: none; }
+.vista-notif b { font-size: .95em; } .vista-notif p { font-size: .88em; opacity: .85; margin-top: 2px; }
+
+/* Buzón de la familia */
+.buzon { display: grid; gap: 8px; }
+.buzon-fila { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; width: 100%; background: var(--soft); color: var(--ink); border: 2px solid var(--line); border-radius: 16px; padding: 10px 12px; cursor: pointer; }
+.buzon-fila:hover { background: var(--card); box-shadow: var(--sombra-sm); }
+.buzon-fila.nuevo { background: var(--pink-s); color: #1f2544; }
+.buzon-fila .em { font-size: 24px; }
+.buzon-fila b { display: block; font-family: var(--f-head); }
+.buzon-fila small { color: var(--muted); }
+.buzon-fila.nuevo small { color: #4a5075; }
+.bf-fecha { display: grid; justify-items: end; gap: 2px; }
+.mensaje-nuevo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; margin-top: 14px; text-align: left; cursor: pointer; background: var(--pink-s); color: #1f2544; }
+.mensaje-nuevo .sobre { font-size: 36px; animation: flotarSuave 2s ease-in-out infinite; }
+.mensaje-nuevo small { display: block; color: #4a5075; font-weight: 800; }
+.mensaje-nuevo b { font-family: var(--f-head); font-size: 1.12em; }
+.btn-quitar { color: var(--bad); border-color: var(--bad); }
+@media (max-width: 899px) { .menu a, .menu button.menu-item { font-size: .7em; } }

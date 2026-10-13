@@ -12,7 +12,7 @@
 import * as datos from './datos.js';
 import { MODO_DEMO } from './config.js';
 import { leerLocal, guardarLocal, esc, primerNombre } from './util.js';
-import { abrirHoja, cerrarHoja, hojaAbierta, aviso } from './ui.js';
+import { abrirHoja, cerrarHoja, hojaAbierta, aviso, animarPantalla } from './ui.js';
 import * as ingreso from './vistas/ingreso.js';
 import * as perfiles from './vistas/perfiles.js';
 import * as inicio from './vistas/inicio.js';
@@ -111,6 +111,7 @@ async function render() {
   const subEquipo = ruta.params[0] === 'familia' ? 'familias' : ruta.params[0] || 'resumen';
   pintarMenu(u, perfil, def.nav || (ruta.nombre === 'equipo' ? `equipo-${subEquipo}` : ''));
   $vista.replaceChildren(root);
+  if (ruta.clave !== rutaAnterior) animarPantalla(root); // solo al cambiar de pantalla, no al refrescar
   limpiar = typeof fin === 'function' ? fin : null;
   if (ruta.clave !== rutaAnterior) { window.scrollTo(0, 0); rutaAnterior = ruta.clave; }
   if (u && datos.estaRecuperando()) pedirClaveNueva();
@@ -141,7 +142,7 @@ function pintarMenu(u, perfil, activo) {
     `<a href="${href}" class="${id === activo ? 'activo' : ''}" ${id === activo ? 'aria-current="page"' : ''}><span class="mi-emoji" aria-hidden="true">${emoji}</span><span>${texto}</span></a>`;
   const items = u.rol === 'equipo'
     ? item('equipo-resumen', '#/equipo', '📊', 'Resumen') + item('equipo-subir', '#/equipo/subir', '⬆️', 'Subir')
-      + item('equipo-familias', '#/equipo/familias', '👨‍👩‍👧', 'Familias') + item('equipo-ninos', '#/equipo/ninos', '🧒', 'Niños') + item('equipo-codigos', '#/equipo/codigos', '🎟️', 'Códigos')
+      + item('equipo-familias', '#/equipo/familias', '👨‍👩‍👧', 'Familias') + item('equipo-mensajes', '#/equipo/mensajes', '✉️', 'Mensajes') + item('equipo-ninos', '#/equipo/ninos', '🧒', 'Niños') + item('equipo-codigos', '#/equipo/codigos', '🎟️', 'Códigos')
     : item('inicio', '#/inicio', '🏠', 'Inicio') + item('logros', '#/logros', '🏅', 'Logros')
       + item('papas', '#/papas', '👨‍👩‍👧', 'Papás') + `<a href="#/perfiles" class="solo-cel"><span class="mi-emoji" aria-hidden="true">${perfil ? esc(perfil.avatar) : '🔄'}</span><span>Cambiar</span></a>`;
   const tarjeta = u.rol === 'equipo'

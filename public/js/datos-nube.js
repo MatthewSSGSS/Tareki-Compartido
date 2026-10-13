@@ -31,7 +31,7 @@ function falla(e, porDefecto = 'Algo salió mal. Revisa tu conexión e intenta d
   if (/invalid login credentials/i.test(m)) throw new Error('El correo o la contraseña no coinciden.');
   if (/failed to fetch|network/i.test(m)) throw new Error('No hay conexión a internet. Intenta de nuevo.');
   if (/row-level security|permission denied|sin permiso/i.test(m)) throw new Error('No tienes permiso para hacer esto.');
-  if (/^(Ese|Escribe|La contraseña|Ya hay|Solo|Los meses|Elige|Acción)/.test(m)) throw new Error(m); // mensajes nuestros
+  if (/^(Ese|Escribe|La contraseña|Ya hay|Solo|Los meses|Elige|Acción|Esa familia)/.test(m)) throw new Error(m); // mensajes nuestros
   console.error(e);
   throw new Error(porDefecto);
 }
@@ -286,6 +286,50 @@ export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {
 
 export async function cambiarAcceso({ familiaId, accion, hasta = null, nota = '' }) {
   ok(await cliente().rpc('cambiar_acceso', { p_familia: familiaId, p_accion: accion, p_hasta: hasta, p_nota: nota }));
+}
+
+// --- Mensajes del equipo ---------------------------------------------------------------------------
+const aMensaje = (m) => ({ id: m.id, titulo: m.titulo, cuerpo: m.cuerpo, url: m.url, destino: m.destino, familias: m.familias || [], programado: m.programado, enviado: m.enviado, creadoPor: m.creado_por, creado: m.creado });
+
+/** Equipo: todos los mensajes. Familia: los que ya le llegaron. */
+export async function mensajes() {
+  return ok(await cliente().from('mensajes').select('*').order('programado', { ascending: false }).limit(200)).map(aMensaje);
+}
+
+/** Crea un mensaje. Si es para ya, lo envía de una vez; si no, sale solo a su hora (revisión cada 10 min). */
+export async function crearMensaje({ titulo, cuerpo, url, destino, familias = [], programado = null }) {
+  const yo = await usuario();
+  const cuando = programado ? new Date(programado) : new Date();
+  const m = ok(await cliente().from('mensajes').insert({
+    titulo: String(titulo).trim(), cuerpo: String(cuerpo || '').trim(), url: url || '#/', destino,
+    familias: destino === 'familias' ? familias : [], programado: cuando.toISOString(), creado_por: yo.id,
+  }).select().single(), 'No se pudo guardar el mensaje.');
+  if (cuando <= new Date(Date.now() + 60000)) return { ...aMensaje(m), resultado: await enviarMensajeYa(m.id) };
+  return aMensaje(m);
+}
+
+export async function enviarMensajeYa(id) {
+  const { data, error } = await cliente().functions.invoke('avisos', { body: { tipo: 'mensaje', id } });
+  if (error) falla(error, 'No se pudo enviar el mensaje.');
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+
+export async function borrarMensaje(id) { ok(await cliente().from('mensajes').delete().eq('id', id)); }
+
+/** Avisa al equipo que la familia creó un perfil (para que le suban lecciones). */
+export async function avisarNinoNuevo(ninoId) {
+  await cliente().functions.invoke('avisos', { body: { tipo: 'nino-nuevo', nino_id: ninoId } });
+}
+
+/** Quita una familia por completo (solo el dueño): primero los archivos, luego la cuenta. */
+export async function quitarFamilia(familiaId) {
+  const hijos = ok(await cliente().from('ninos').select('id').eq('familia_id', familiaId)).map((n) => n.id);
+  if (hijos.length) {
+    const archivos = ok(await cliente().from('lecciones').select('archivo').in('nino_id', hijos)).map((l) => l.archivo);
+    if (archivos.length) await cliente().storage.from('lecciones').remove(archivos);
+  }
+  ok(await cliente().rpc('quitar_familia', { p_familia: familiaId }), 'No se pudo quitar la familia.');
 }
 
 // --- Avisos (notificaciones push) ------------------------------------------------------------------

@@ -2,10 +2,14 @@
 // =============================================================================
 // Función "avisos" — envía las notificaciones push de Tareki.
 //
-// Tres formas de llamarla:
+// Formas de llamarla:
 //   • { tipo: "prueba" }               (usuario con sesión) → aviso de prueba a sus dispositivos.
 //   • { tipo: "leccion", leccion_id }  (cuenta de equipo)   → "¡Tienes una lección nueva!" a la familia.
-//   • { tipo: "diario" } + x-cron-secret (tarea de las 6 p. m.) → racha en peligro / lecciones sin abrir.
+//   • { tipo: "mensaje", id }          (cuenta de equipo)   → envía ya un mensaje del equipo.
+//   • { tipo: "nino-nuevo", nino_id }  (familia)            → avisa al equipo que hay un perfil nuevo.
+//   • { tipo: "diario" } + x-cron-secret (tarea de las 6 p. m.) → racha en peligro / lecciones sin abrir / acceso por vencer.
+//   • { tipo: "programados" } + x-cron-secret (cada 10 min)    → mensajes programados que ya tocan.
+//   • { tipo: "familia-nueva", familia_id } + x-cron-secret (función registro) → avisa al equipo.
 //
 // El texto va CIFRADO dentro del push (RFC 8291, aes128gcm), como lo exigen Apple,
 // Google, Mozilla y Microsoft. Así funciona en Android, iPhone/iPad (app instalada),
@@ -130,6 +134,36 @@ async function enviarAUsuario(admin: any, userId: string, aviso: Aviso) {
   return { enviados, total: subs?.length ?? 0, errores };
 }
 
+// deno-lint-ignore no-explicit-any
+async function enviarAVarios(admin: any, ids: string[], aviso: Aviso) {
+  let enviados = 0;
+  for (const id of [...new Set(ids)]) enviados += (await enviarAUsuario(admin, id, aviso)).enviados;
+  return { enviados, personas: new Set(ids).size };
+}
+
+// deno-lint-ignore no-explicit-any
+async function equipo(admin: any): Promise<string[]> {
+  const { data } = await admin.from("perfiles").select("id").eq("rol", "equipo");
+  return (data ?? []).map((x: { id: string }) => x.id);
+}
+
+/** Envía un mensaje del equipo (si nadie más lo envió ya: se "reserva" marcándolo como enviado). */
+// deno-lint-ignore no-explicit-any
+async function enviarMensaje(admin: any, id: string) {
+  const { data: m } = await admin.from("mensajes").update({ enviado: new Date().toISOString() }).eq("id", id).is("enviado", null).select().maybeSingle();
+  if (!m) return { enviados: 0, personas: 0, repetido: true };
+  let ids: string[] = [];
+  if (m.destino === "equipo") ids = await equipo(admin);
+  else if (m.destino === "familias") ids = m.familias ?? [];
+  else {
+    const { data } = await admin.from("perfiles").select("id").eq("rol", "familia");
+    ids = (data ?? []).map((x: { id: string }) => x.id);
+  }
+  return await enviarAVarios(admin, ids, { titulo: m.titulo, cuerpo: m.cuerpo, url: m.url || "#/", tag: `mensaje-${m.id}` });
+}
+
+const esCron = (req: Request) => !!CRON_SECRET && req.headers.get("x-cron-secret") === CRON_SECRET;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (!VAPID_PUBLICA || !VAPID_PRIVADA || !VAPID_SUJETO) return responder({ error: "Faltan los secretos VAPID en Supabase." }, 500);
@@ -151,6 +185,25 @@ Deno.serve(async (req) => {
       enviados += r.enviados;
     }
     return responder({ ok: true, avisos: filas?.length ?? 0, enviados });
+  }
+
+  // Mensajes programados (cada 10 minutos)
+  if (entrada?.tipo === "programados") {
+    if (!esCron(req)) return responder({ error: "no autorizado" }, 401);
+    const { data: pendientes } = await admin.from("mensajes").select("id").is("enviado", null).lte("programado", new Date().toISOString());
+    let enviados = 0;
+    for (const m of pendientes ?? []) enviados += (await enviarMensaje(admin, m.id)).enviados;
+    return responder({ ok: true, mensajes: pendientes?.length ?? 0, enviados });
+  }
+
+  // Se unió una familia (lo pide la función "registro")
+  if (entrada?.tipo === "familia-nueva" && entrada.familia_id) {
+    if (!esCron(req)) return responder({ error: "no autorizado" }, 401);
+    const { data: f } = await admin.from("perfiles").select("nombre").eq("id", entrada.familia_id).maybeSingle();
+    if (!f) return responder({ error: "familia no encontrada" }, 404);
+    return responder(await enviarAVarios(admin, await equipo(admin), {
+      titulo: "👨‍👩‍👧 ¡Se unió una familia nueva!", cuerpo: `${f.nombre} acaba de crear su cuenta en Tareki.`, url: `#/equipo/familia/${entrada.familia_id}`, tag: `familia-${entrada.familia_id}`,
+    }));
   }
 
   // Lo demás necesita una sesión
@@ -175,6 +228,24 @@ Deno.serve(async (req) => {
     return responder(await enviarAUsuario(admin, l.nino.familia_id, {
       titulo: `🎁 ¡${l.nino.nombre}, tienes una lección nueva!`, cuerpo: `«${l.titulo}» ya está lista. ¡A jugar! 🎮`, url: `#/leccion/${l.id}`, tag: `leccion-${l.id}`,
     }));
+  }
+
+  // Una familia creó el perfil de su hijo o hija → el equipo ya le puede subir lecciones
+  if (entrada?.tipo === "nino-nuevo" && entrada.nino_id) {
+    const { data: n } = await admin.from("ninos").select("id, nombre, familia_id, familia:perfiles!ninos_familia_id_fkey(nombre)").eq("id", entrada.nino_id).maybeSingle();
+    if (!n || n.familia_id !== usuario.id) return responder({ error: "no autorizado" }, 403);
+    const { error: repetido } = await admin.from("avisos_enviados").insert({ user_id: usuario.id, clave: `nino:${n.id}` });
+    if (repetido) return responder({ ok: true, repetido: true });
+    return responder(await enviarAVarios(admin, await equipo(admin), {
+      titulo: `🧒 Nuevo perfil: ${n.nombre}`, cuerpo: `${n.familia?.nombre || "Una familia"} creó el perfil de ${n.nombre}. Ya le pueden subir lecciones.`, url: `#/equipo/subir/${n.id}`, tag: `nino-${n.id}`,
+    }));
+  }
+
+  // El equipo envía ya un mensaje
+  if (entrada?.tipo === "mensaje" && entrada.id) {
+    const { data: perfil } = await admin.from("perfiles").select("rol").eq("id", usuario.id).maybeSingle();
+    if (perfil?.rol !== "equipo") return responder({ error: "no autorizado" }, 403);
+    return responder(await enviarMensaje(admin, entrada.id));
   }
 
   return responder({ error: "solicitud no válida" }, 400);

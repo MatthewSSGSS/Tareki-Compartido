@@ -45,7 +45,7 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 3,
+    version: 4,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
       { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1) },
@@ -88,6 +88,10 @@ export function semilla() {
       { id: 'h2', familiaId: 'u-familia', accion: 'pago', meses: 1, monto: 60000, metodo: 'Llave Bre-B', nota: '', hasta: sumarDias(h, 2), por: 'u-equipo', creado: ts(3) },
     ],
     cobro: { precio: 60000, llave: '@tareki', banco: 'Davivienda', titular: 'Tareki', whatsapp: '', nota: 'Envía el comprobante por WhatsApp.' },
+    mensajes: [
+      { id: 'm1', titulo: '🎉 ¡Bienvenidos a Tareki!', cuerpo: 'Desde hoy las lecciones llegan aquí. Si tienen dudas, escríbannos por WhatsApp.', url: '#/inicio', destino: 'todas', familias: [], programado: ts(5, 9), enviado: ts(5, 9), creadoPor: 'u-equipo', creado: ts(5, 9) },
+      { id: 'm2', titulo: '📚 Semana de evaluaciones', cuerpo: 'Esta semana hay quices en el colegio: practiquen 15 minutos al día con las fichas.', url: '#/inicio', destino: 'todas', familias: [], programado: `${sumarDias(h, 2)}T07:00:00`, enviado: null, creadoPor: 'u-equipo', creado: ts(0, 8) },
+    ],
     sesion: null,
   };
 }
