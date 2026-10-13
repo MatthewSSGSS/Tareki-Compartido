@@ -137,11 +137,13 @@ const AYUDA = esIOS
        <li>El navegador debe estar abierto (aunque sea minimizado) para recibir avisos en el computador.</li></ul>`;
 
 // --- Tarjeta para activar (papás y equipo) ---------------------------------------------------
+// Los pasos cambian según la versión de iOS: en iOS 26 "Compartir" está dentro del menú ⋯
 const PASOS_IOS = `<ol class="limpia pasos-ios">
-  <li>Abre este link en <b>Safari</b>.</li>
-  <li>Toca el botón <b>Compartir</b> <span class="ico-compartir" aria-hidden="true">⬆️</span> (abajo en iPhone, arriba en iPad).</li>
-  <li>Elige <b>«Agregar a inicio»</b> y luego <b>Agregar</b>.</li>
-  <li>Abre <b>Tareki desde el ícono</b> 🦉 de tu pantalla de inicio y vuelve aquí para activar los avisos.</li>
+  <li>Abre este link en <b>Safari</b> (si llegaste desde WhatsApp, también sirve).</li>
+  <li>Toca <b>Compartir</b> <span aria-hidden="true">⬆️</span>. Si no lo ves, toca primero los <b>tres puntos ⋯</b> y luego <b>Compartir</b>.</li>
+  <li>Baja en la lista y elige <b>«Agregar a inicio»</b> (o «Agregar a pantalla de inicio»).</li>
+  <li>Si aparece <b>«Abrir como app web»</b>, déjalo <b>activado</b>. Toca <b>Agregar</b>.</li>
+  <li>Cierra Safari y abre <b>Tareki desde el ícono</b> 🦉 de tu pantalla de inicio. Ahí te aparece el botón para activar los avisos.</li>
 </ol>`;
 
 const TEXTOS = {
