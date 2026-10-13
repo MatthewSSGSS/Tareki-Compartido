@@ -822,33 +822,44 @@ button.menu-perfil > span:last-child { min-width: 0; }
 .prueba-op small { color: var(--muted); font-weight: 700; }
 .prueba-elegir .link { justify-self: center; }
 
-/* Inscripción en la pantalla de entrada (precios por grado, qué incluye y cómo pagar) */
-.inscribirse { width: 100%; max-width: 440px; }
-.inscribirse-caja { display: grid; gap: 10px; }
-.inscribirse-caja h2 { margin: 0; }
-.inscribirse-caja h3 { margin: 8px 0 0; font-size: 1.1em; }
-.inscribirse-caja p { margin: 0; }
-.incluye { display: grid; gap: 6px; }
-.incluye li { display: grid; grid-template-columns: 28px 1fr; gap: 6px; align-items: start; font-weight: 700; }
-.incluye li span { font-size: 1.15em; }
-.precios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.precios > div { display: grid; gap: 2px; background: var(--sun-s); border: 3px solid var(--line); border-radius: 16px; padding: 10px 12px; text-align: center; }
-.precios span { font-weight: 800; color: #4a5075; font-size: .9em; }
-.precios b { font-family: var(--f-head); font-size: 1.6em; color: #1f2544; }
-.precios-nota { text-align: center; margin-top: -4px !important; }
-.pasos-inscripcion { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-weight: 700; }
-.pasos-inscripcion .link { font: inherit; font-weight: 800; }
-.inscribirse-botones .btn { flex: 1 1 180px; justify-content: center; }
 .pago-detalle { display: grid; gap: 2px; margin-top: 6px; font-size: .9em; }
 .pago-detalle li { display: flex; justify-content: space-between; gap: 10px; font-weight: 700; color: var(--muted); }
 .pago-detalle b { font-family: inherit; font-size: 1em; color: var(--ink); }
 .dos-precios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .dos-precios label { display: grid; gap: 4px; font-weight: 800; font-size: .9em; }
-@media (min-width: 900px) {
-  .ingreso.con-info { grid-template-columns: minmax(0, 440px) minmax(0, 480px); justify-content: center; align-items: start; gap: 32px; padding-top: 24px; }
-  .ingreso.con-info .inscribirse { max-width: 480px; }
-}
-.ingreso.con-info { gap: 18px; }
-.pasos-inscripcion .link { padding: 0; margin: 0; min-height: 0; vertical-align: baseline; }
-.ir-precios { justify-self: center; margin-top: -8px; color: var(--ink); text-decoration: none; background: var(--sun-s); border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .92em; text-align: center; }
-@media (min-width: 900px) { .ir-precios { display: none; } }
+
+/* "¿Aún no tienes cuenta?" (pantalla de entrada) */
+.nueva-cuenta { position: relative; display: grid; gap: 10px; padding: 18px; border: 3px solid var(--line); border-radius: var(--r); box-shadow: var(--sombra);
+  background: linear-gradient(135deg, var(--sun-s), var(--pink-s)); color: #1f2544; overflow: hidden; }
+.nc-lulo { position: absolute; right: -10px; top: -8px; width: 92px; height: 92px; transform: rotate(10deg); opacity: .95; pointer-events: none; }
+.nc-titulo { font-family: var(--f-head); font-size: 1.35em; line-height: 1.1; padding-right: 72px; }
+.nc-texto { margin: 0; font-weight: 700; color: #3a4066; padding-right: 60px; }
+.nc-precios { display: flex; align-items: stretch; gap: 8px; }
+.nc-precios span { flex: 1; display: grid; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 6px 10px; text-align: center; }
+.nc-precios small { font-weight: 800; color: #4a5075; font-size: .78em; }
+.nc-precios b { font-family: var(--f-head); font-size: 1.3em; line-height: 1.1; }
+.nc-precios em { font-style: normal; font-weight: 800; font-size: .75em; color: #4a5075; align-self: center; line-height: 1.15; }
+.nc-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.nc-botones .btn { justify-content: center; padding-left: 8px; padding-right: 8px; }
+@media (max-width: 360px) { .nc-botones { grid-template-columns: 1fr; } }
+
+/* Ventana "Inscribe a tu familia" */
+.insc { display: grid; gap: 18px; }
+.insc h3 { margin: 0 0 8px; font-size: 1.1em; }
+.incluye { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.incluye > div { display: grid; gap: 2px; background: var(--soft); border: 2px solid var(--line); border-radius: 14px; padding: 10px; }
+.incluye span { font-size: 1.5em; line-height: 1; }
+.incluye b { font-family: var(--f-head); font-size: 1em; line-height: 1.15; }
+.incluye small { color: var(--muted); font-weight: 700; font-size: .82em; line-height: 1.3; }
+@media (min-width: 700px) { .incluye { grid-template-columns: repeat(3, 1fr); } }
+.precios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.precios > div { display: grid; gap: 2px; background: var(--sun-s); border: 3px solid var(--line); border-radius: 16px; padding: 10px 12px; text-align: center; }
+.precios span { font-weight: 800; color: #4a5075; font-size: .9em; }
+.precios b { font-family: var(--f-head); font-size: 1.6em; color: #1f2544; }
+.precios-nota { text-align: center; margin: 6px 0 0 !important; }
+.pasos-num { list-style: none; counter-reset: paso; margin: 0; padding: 0; display: grid; gap: 10px; }
+.pasos-num li { counter-increment: paso; display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: start; font-weight: 700; }
+.pasos-num li::before { content: counter(paso); width: 32px; height: 32px; border-radius: 50%; background: var(--sun); color: #1f2544; border: 2px solid var(--line); display: grid; place-items: center; font-family: var(--f-head); font-weight: 800; }
+.pasos-num .link { font: inherit; font-weight: 800; padding: 0; }
+.nc-botones .btn { white-space: nowrap; font-size: 1em; }
+@media (max-width: 420px) { .nc-botones .btn { font-size: .92em; } }
