@@ -598,3 +598,49 @@ textarea { width: 100%; background: var(--soft); border: 3px solid var(--line); 
 .mensaje-nuevo b { font-family: var(--f-head); font-size: 1.12em; }
 .btn-quitar { color: var(--bad); border-color: var(--bad); }
 @media (max-width: 899px) { .menu a, .menu button.menu-item { font-size: .7em; } }
+
+/* =============================================================================
+   Menú v3 — íconos en cuadritos parejos, opción activa liviana, pie separado
+   ============================================================================= */
+.menu .mi-emoji { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; font-size: 1.35em; line-height: 1; background: transparent; transition: background .2s, transform .2s, box-shadow .2s; }
+.menu a.activo .mi-emoji { background: var(--sun); box-shadow: 0 0 0 2px var(--line); }
+.menu a.activo { background: transparent; }
+
+@media (min-width: 900px) {
+  .app { grid-template-columns: 236px minmax(0, 1fr); }
+  .menu { padding: 20px 12px 16px; gap: 2px; overflow-y: auto; scrollbar-width: thin; }
+  .menu .menu-marca { margin: 0 8px 16px; }
+  .menu .menu-marca .marca-logo { width: 40px; height: 40px; font-size: 22px; border-radius: 13px; }
+  .menu .menu-marca .marca-nombre { font-size: 1.5em; }
+
+  /* Tarjeta del perfil, más liviana */
+  .menu .menu-perfil { margin: 0 2px 14px; padding: 8px 10px; gap: 10px; border-width: 2px; border-radius: 16px; background: var(--soft); box-shadow: none; transition: background .2s; }
+  .menu .menu-perfil:hover { background: color-mix(in srgb, var(--sun) 18%, var(--soft)); }
+  .menu .menu-perfil .av { width: 38px; height: 38px; font-size: 22px; border-width: 2px; }
+  .menu .menu-perfil b { font-family: var(--f-head); font-size: 1em; line-height: 1.1; display: block; }
+  .menu .menu-perfil small { font-size: .74em; }
+
+  .menu-items { gap: 2px; }
+  .menu-items::before { margin: 2px 12px 6px; font-size: .68em; }
+
+  /* Cada opción */
+  .menu a, .menu button.menu-item { position: relative; gap: 12px; padding: 6px 10px; border: 0; border-radius: 14px; font-size: 1em; color: var(--muted); box-shadow: none !important; }
+  .menu a:hover:not(.activo), .menu button.menu-item:hover { background: var(--soft); color: var(--ink); }
+  .menu a:hover .mi-emoji, .menu button.menu-item:hover .mi-emoji { background: var(--card); box-shadow: 0 0 0 2px var(--soft); transform: none; }
+  .menu a.activo { background: color-mix(in srgb, var(--sun) 18%, var(--card)); color: var(--ink); border: 0; }
+  .menu a.activo::before { content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 5px; border-radius: 0 6px 6px 0; background: var(--sun); }
+
+  /* Pie: modo oscuro y salir, separados y más chicos */
+  .menu .menu-pie { margin-top: auto; padding-top: 12px; border-top: 2px dashed color-mix(in srgb, var(--muted) 35%, transparent); gap: 2px; }
+  .menu .menu-pie .menu-item { font-size: .92em; padding: 4px 10px; }
+  .menu .menu-pie .mi-emoji { width: 30px; height: 30px; font-size: 1.15em; }
+}
+
+/* Celular: barra de abajo con el mismo lenguaje (cuadrito amarillo en la activa) */
+@media (max-width: 899px) {
+  .menu { padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .menu a, .menu button.menu-item { gap: 2px; padding: 2px 0; }
+  .menu .mi-emoji { width: 34px; height: 30px; font-size: 1.25em; border-radius: 10px; }
+  .menu a.activo { background: transparent; color: var(--ink); }
+  .menu a.activo .mi-emoji { box-shadow: 0 0 0 2px var(--line); transform: none; }
+}
