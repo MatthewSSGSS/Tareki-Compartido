@@ -371,8 +371,17 @@ export async function enviarChat({ familiaId, texto }) {
   const t = String(texto || '').trim();
   if (!t) throw new Error('Escribe un mensaje.');
   const c = ok(await cliente().from('chat').insert({ familia_id: familiaId, autor: yo.id, de_equipo: yo.rol === 'equipo', texto: t.slice(0, 1000) }).select().single(), 'No se pudo enviar el mensaje.');
-  cliente().functions.invoke('avisos', { body: { tipo: 'chat', id: c.id } }).catch(() => {}); // notificación al otro lado
-  return aChat({ ...c, quien: { nombre: yo.nombre } });
+  // Notificación al otro lado. La promesa dice a cuántos dispositivos salió ({enviados, total}).
+  const notificacion = cliente().functions.invoke('avisos', { body: { tipo: 'chat', id: c.id } })
+    .then(({ data }) => data || null).catch(() => null);
+  return { ...aChat({ ...c, quien: { nombre: yo.nombre } }), notificacion };
+}
+
+/** Dispositivos con avisos activados de una cuenta (el equipo lo ve en la ficha de la familia). */
+export async function dispositivosDe(usuarioId) {
+  const { data, error } = await cliente().rpc('dispositivos_de', { p_usuario: usuarioId });
+  if (error) return null; // falta correr el SQL: no se sabe
+  return data || [];
 }
 
 export async function marcarChatLeido(familiaId) { await cliente().rpc('marcar_chat_leido', { p_familia: familiaId }); }

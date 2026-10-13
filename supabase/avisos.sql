@@ -129,3 +129,14 @@ $$);
 select cron.schedule('tareki-limpieza', '0 9 * * *', $$
   delete from public.avisos_enviados where enviado < now() - interval '30 days';
 $$);
+
+-- 5) Dispositivos con avisos de una cuenta (el equipo lo ve en la ficha de la familia) ---------
+create or replace function public.dispositivos_de(p_usuario uuid)
+returns table (dispositivo text, creado timestamptz)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not (public.es_equipo() or p_usuario = auth.uid()) then raise exception 'Sin permiso'; end if;
+  return query select s.dispositivo, s.creado from public.suscripciones s where s.user_id = p_usuario order by s.creado desc;
+end $$;
+revoke all on function public.dispositivos_de(uuid) from public, anon;
+grant execute on function public.dispositivos_de(uuid) to authenticated;

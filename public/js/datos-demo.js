@@ -420,8 +420,9 @@ export async function enviarChat({ familiaId, texto }) {
   if (!(u.rol === 'equipo' || u.id === familiaId)) falla('No tienes permiso.');
   const c = { id: uid(), familiaId, autor: u.id, deEquipo: u.rol === 'equipo', texto: t.slice(0, 1000), leido: false, creado: ahora() };
   (db.chat ||= []).push(c); guardar();
-  return { ...c, autorNombre: u.nombre };
+  return { ...c, autorNombre: u.nombre, notificacion: Promise.resolve({ demo: true, enviados: 0, total: 0 }) };
 }
+export async function dispositivosDe() { return []; }
 export async function marcarChatLeido(familiaId) {
   const u = yo();
   (db.chat || []).forEach((c) => { if (c.familiaId === familiaId && (u.rol === 'equipo' ? !c.deEquipo : c.deEquipo)) c.leido = true; });

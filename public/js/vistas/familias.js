@@ -91,6 +91,7 @@ export async function detalle(root, ctx) {
       <button class="btn btn-wa" data-wa>WhatsApp</button>
       <span class="chip">📱 ${f.celular ? esc(numeroBonito(f.celular)) : 'Sin celular'}</span>
       <button class="link peq" data-cel>${f.celular ? 'Cambiar número' : 'Agregar número'}</button>
+      <span class="chip" id="estadoAvisos">🔔 …</span>
     </div>
 
     <div class="kpis">
@@ -129,6 +130,15 @@ export async function detalle(root, ctx) {
     </div>`;
 
   root.querySelector('[data-pago]').addEventListener('click', () => registrarPago(f, ctx));
+  datos.dispositivosDe(f.id).then((lista) => {
+    const el = root.querySelector('#estadoAvisos');
+    if (!el) return;
+    if (lista === null) { el.remove(); return; }
+    if (!lista.length) { el.textContent = '🔕 No ha activado los avisos'; el.classList.add('rojo'); el.title = 'No le llegan notificaciones. Pídele que entre a Papás y toque «Activar avisos».'; return; }
+    const nombres = [...new Set(lista.map((d) => d.dispositivo).filter(Boolean))].join(', ');
+    el.textContent = `🔔 Avisos activos en ${lista.length === 1 ? '1 dispositivo' : `${lista.length} dispositivos`}${nombres ? ` (${nombres})` : ''}`;
+    el.classList.add('verde');
+  });
   root.querySelector('[data-wa]').addEventListener('click', async () => abrirWhatsApp(f, hijos.map((n) => n.nombre), await datos.ajustesCobro().catch(() => ({}))));
   root.querySelector('[data-cel]').addEventListener('click', () => editarCelular(f.id, f.celular, () => ctx.refrescar()));
   root.querySelector('[data-suspender]')?.addEventListener('click', async () => {

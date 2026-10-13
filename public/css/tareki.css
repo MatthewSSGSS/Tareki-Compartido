@@ -724,3 +724,7 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 .pantalla-equipo .cabecera + .pestanas-pagina + .chat { height: calc(100dvh - var(--menu-alto) - 190px - env(safe-area-inset-bottom, 0px)); }
 @media (min-width: 900px) { .pantalla-equipo .cabecera + .pestanas-pagina + .chat { height: calc(100dvh - 190px); } }
 @media (max-width: 520px) { .pestanas-pagina { gap: 4px; } .pestanas-pagina a { padding: 6px 10px; font-size: .9em; } }
+
+/* Chat: si la notificación le llegó a la familia */
+.entrega { align-self: flex-end; max-width: min(80%, 520px); font-size: .78em; font-weight: 800; color: var(--green); margin: -4px 4px 4px; text-align: right; }
+.entrega.no { color: var(--bad); }

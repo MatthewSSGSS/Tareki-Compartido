@@ -140,7 +140,26 @@ async function hilo(root, ctx, { cargar, enviar: enviarMensaje, marcar, titulo, 
     try {
       const m = await enviarMensaje(texto);
       mensajes.push(m); pintar();
+      if (yo.rol === 'equipo' && !interno && m.notificacion) mostrarEntrega(m.notificacion);
     } catch (x) { $texto.value = texto; aviso(x.message, { emoji: '⚠️' }); }
+  }
+
+  /** Debajo del último mensaje: si la notificación le llegó a la familia o no. */
+  async function mostrarEntrega(promesa) {
+    const r = await promesa;
+    const burbuja = [...$lista.querySelectorAll('.burbuja.mia')].at(-1);
+    if (!burbuja || !r) return;
+    const nota = document.createElement('div');
+    nota.className = 'entrega';
+    if (r.demo) nota.textContent = '🧪 En la demostración no se envían notificaciones.';
+    else if (r.enviados > 0) nota.textContent = `🔔 Notificación enviada a ${r.enviados === 1 ? 'su celular' : `${r.enviados} de sus dispositivos`}.`;
+    else {
+      nota.classList.add('no');
+      nota.innerHTML = r.total ? '⚠️ No se pudo entregar la notificación (su dispositivo la rechazó). Lo verá al abrir la app.'
+        : `🔕 Esta familia no tiene los avisos activados: lo verá cuando abra la app.${whatsapp ? ' Si es urgente, escríbele por WhatsApp.' : ''}`;
+    }
+    burbuja.after(nota);
+    $lista.scrollTop = $lista.scrollHeight;
   }
 
   root.querySelector('#form').addEventListener('submit', (e) => { e.preventDefault(); enviar(); });
