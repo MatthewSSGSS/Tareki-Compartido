@@ -280,9 +280,18 @@ Deno.serve(async (req) => {
     if (!m || m.autor !== usuario.id) return responder({ error: "no autorizado" }, 403);
     const corto = m.texto.length > 140 ? `${m.texto.slice(0, 137)}…` : m.texto;
     const nombre = String(m.quien?.nombre || "Alguien").split(/\s+/)[0];
-    return responder(await enviarAVarios(admin, (await equipo(admin)).filter((id) => id !== usuario.id), {
-      titulo: `👥 ${nombre} (equipo)`, cuerpo: corto, url: "#/equipo/interno", tag: "chat-equipo",
-    }));
+    // Uno por uno, para contarle a quien escribió a quién le llegó y a quién no
+    const otros = (await equipo(admin)).filter((id) => id !== usuario.id);
+    const { data: perfiles } = await admin.from("perfiles").select("id, nombre").in("id", otros.length ? otros : ["00000000-0000-0000-0000-000000000000"]);
+    const nombreDe = (id: string) => String(perfiles?.find((p: { id: string }) => p.id === id)?.nombre || "Alguien").split(/\s+/)[0];
+    const llego: string[] = [], noLlego: string[] = [];
+    let enviados = 0;
+    for (const id of otros) {
+      const r = await enviarAUsuario(admin, id, { titulo: `👥 ${nombre} (equipo)`, cuerpo: corto, url: "#/equipo/interno", tag: "chat-equipo" });
+      enviados += r.enviados;
+      (r.enviados > 0 ? llego : noLlego).push(nombreDe(id));
+    }
+    return responder({ enviados, personas: otros.length, llego, noLlego });
   }
 
   // El equipo envía ya un mensaje

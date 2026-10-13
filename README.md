@@ -1,4 +1,4 @@
-# Tareki 🐬
+# Learnground 🐬
 
 App de Lección Divertida: cada niño entra con la cuenta de su familia, ve **solo sus lecciones**, guarda su progreso, mantiene su racha 🔥 y gana medallas. Los papás ven el rendimiento con consejos, y el equipo sube lecciones y crea códigos de invitación.
 

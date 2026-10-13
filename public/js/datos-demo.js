@@ -445,7 +445,11 @@ export async function enviarChatEquipo(texto) {
   if (!t) falla('Escribe un mensaje.');
   const c = { id: uid(), autor: db.sesion, texto: t.slice(0, 1000), creado: ahora() };
   (db.chatEquipo ||= []).push(c); guardar();
-  return { ...c, autorNombre: yo().nombre };
+  return { ...c, autorNombre: yo().nombre, notificacion: Promise.resolve({ demo: true }) };
+}
+export async function equipoConAvisos() {
+  soloEquipo();
+  return db.usuarios.filter((u) => u.rol === 'equipo').map((u) => ({ id: u.id, nombre: u.nombre, dispositivos: [] }));
 }
 export async function marcarEquipoVisto() { const u = yo(); if (u?.rol === 'equipo') { (db.vistoEquipo ||= {})[u.id] = ahora(); guardar(); } }
 export async function equipoSinLeer() {

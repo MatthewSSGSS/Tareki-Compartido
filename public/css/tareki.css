@@ -728,3 +728,7 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 /* Chat: si la notificación le llegó a la familia */
 .entrega { align-self: flex-end; max-width: min(80%, 520px); font-size: .78em; font-weight: 800; color: var(--green); margin: -4px 4px 4px; text-align: right; }
 .entrega.no { color: var(--bad); }
+
+/* Chat del equipo: quién tiene los avisos activados */
+.avisos-equipo { display: flex; flex-wrap: wrap; gap: 6px; margin: -6px 0 12px; }
+.avisos-equipo:empty { display: none; }

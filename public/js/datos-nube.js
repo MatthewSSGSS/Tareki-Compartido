@@ -406,9 +406,17 @@ export async function enviarChatEquipo(texto) {
   const t = String(texto || '').trim();
   if (!t) throw new Error('Escribe un mensaje.');
   const c = ok(await cliente().from('chat_equipo').insert({ autor: yo.id, texto: t.slice(0, 1000) }).select().single(), 'No se pudo enviar el mensaje.');
-  cliente().functions.invoke('avisos', { body: { tipo: 'chat-equipo', id: c.id } }).catch(() => {});
-  return { id: c.id, autor: c.autor, autorNombre: yo.nombre, texto: c.texto, creado: c.creado };
+  // La promesa dice a quién del equipo le llegó la notificación ({llego, noLlego})
+  const notificacion = cliente().functions.invoke('avisos', { body: { tipo: 'chat-equipo', id: c.id } })
+    .then(({ data }) => data || null).catch(() => null);
+  return { id: c.id, autor: c.autor, autorNombre: yo.nombre, texto: c.texto, creado: c.creado, notificacion };
 }
+/** Las personas del equipo y si tienen avisos activados (para el chat interno). */
+export async function equipoConAvisos() {
+  const miembros = ok(await cliente().from('perfiles').select('id, nombre').eq('rol', 'equipo').order('nombre'));
+  return Promise.all(miembros.map(async (m) => ({ ...m, dispositivos: await dispositivosDe(m.id) })));
+}
+
 export async function marcarEquipoVisto() { await cliente().rpc('marcar_equipo_visto'); }
 export async function equipoSinLeer() {
   const { data, error } = await cliente().rpc('equipo_sin_leer');
