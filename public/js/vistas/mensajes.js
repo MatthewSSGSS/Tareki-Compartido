@@ -11,8 +11,8 @@ import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.j
 import { fechaLarga } from '../acceso.js';
 
 const PLANTILLAS = [
-  { emoji: '📢', nombre: 'Aviso general', titulo: '📢 Aviso de Tareki', cuerpo: '' , url: '#/inicio' },
-  { emoji: '💳', nombre: 'Recordar pago', titulo: '💳 Recordatorio de mensualidad', cuerpo: 'Les recordamos pagar la mensualidad de Tareki para que el aprendizaje siga sin pausas. ¡Gracias!', url: '#/papas' },
+  { emoji: '📢', nombre: 'Aviso general', titulo: '📢 Aviso de Learnground', cuerpo: '' , url: '#/inicio' },
+  { emoji: '💳', nombre: 'Recordar pago', titulo: '💳 Recordatorio de mensualidad', cuerpo: 'Les recordamos pagar la mensualidad de Learnground para que el aprendizaje siga sin pausas. ¡Gracias!', url: '#/papas' },
   { emoji: '🎉', nombre: 'Felicitar', titulo: '🎉 ¡Felicitaciones!', cuerpo: '¡Qué semana! Se nota el esfuerzo. Sigan así 🐬', url: '#/logros' },
   { emoji: '📚', nombre: 'Lecciones nuevas', titulo: '📚 Hay lecciones nuevas', cuerpo: 'Ya subimos lecciones nuevas. ¡Ábranlas hoy y ganen estrellas!', url: '#/inicio' },
   { emoji: '📝', nombre: 'Antes de evaluación', titulo: '📝 Se viene evaluación', cuerpo: 'Esta semana hay evaluación en el colegio: practiquen la ficha y el simulacro 15 minutos al día.', url: '#/inicio' },

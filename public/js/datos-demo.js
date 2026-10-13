@@ -26,7 +26,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 4) return d;
+    if (d && d.version === 5) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -65,8 +65,8 @@ export async function revisarCodigo(codigo) {
   const c = normalizarCodigo(codigo);
   const inv = db.invitaciones.find((i) => i.codigo === c);
   if (!inv) falla('Ese código no existe. Revisa que esté bien escrito.');
-  if (inv.usadaPor) falla('Ese código ya se usó. Pídele uno nuevo al equipo de Tareki.');
-  if (inv.expira < hoy()) falla('Ese código ya venció. Pídele uno nuevo al equipo de Tareki.');
+  if (inv.usadaPor) falla('Ese código ya se usó. Pídele uno nuevo al equipo de Learnground.');
+  if (inv.expira < hoy()) falla('Ese código ya venció. Pídele uno nuevo al equipo de Learnground.');
   return { codigo: inv.codigo, nota: inv.nota, rol: inv.rol || 'familia' };
 }
 
@@ -94,7 +94,7 @@ export async function crearInvitacion({ nota, rol = 'familia', diasAcceso = 30 }
   if (rol === 'equipo' && !yo().dueno) falla('Solo el dueño puede invitar al equipo.');
   const letras = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   let codigo;
-  do { codigo = 'TAREKI-' + Array.from({ length: 6 }, () => letras[Math.random() * letras.length | 0]).join(''); }
+  do { codigo = 'LEARN-' + Array.from({ length: 6 }, () => letras[Math.random() * letras.length | 0]).join(''); }
   while (db.invitaciones.some((i) => i.codigo === codigo));
   const inv = { codigo, rol, diasAcceso, nota: String(nota || '').trim(), creadaPor: db.sesion, creada: ahora(), expira: sumarDias(hoy(), INVITACION_DIAS), usadaPor: null, usada: null };
   db.invitaciones.unshift(inv); guardar();

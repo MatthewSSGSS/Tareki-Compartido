@@ -1,5 +1,5 @@
 -- =============================================================================
--- Tareki — base de datos en Supabase
+-- Learnground — base de datos en Supabase
 -- Se pega completo en: Supabase → SQL Editor → New query → Run.
 -- Se puede ejecutar varias veces sin dañar nada.
 --
@@ -222,8 +222,8 @@ declare i public.invitaciones;
 begin
   select * into i from public.invitaciones where invitaciones.codigo = upper(trim(p_codigo));
   if not found then raise exception 'Ese código no existe. Revisa que esté bien escrito.'; end if;
-  if i.usada_por is not null or i.usada is not null then raise exception 'Ese código ya se usó. Pídele uno nuevo al equipo de Tareki.'; end if;
-  if i.expira < current_date then raise exception 'Ese código ya venció. Pídele uno nuevo al equipo de Tareki.'; end if;
+  if i.usada_por is not null or i.usada is not null then raise exception 'Ese código ya se usó. Pídele uno nuevo al equipo de Learnground.'; end if;
+  if i.expira < current_date then raise exception 'Ese código ya venció. Pídele uno nuevo al equipo de Learnground.'; end if;
   return query select i.codigo, i.nota, i.rol;
 end $$;
 

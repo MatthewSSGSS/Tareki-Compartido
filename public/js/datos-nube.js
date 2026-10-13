@@ -95,7 +95,7 @@ export async function crearInvitacion({ nota, rol = 'familia', diasAcceso = 30 }
   const yo = await usuario();
   const letras = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   for (let intento = 0; intento < 5; intento++) {
-    const codigo = 'TAREKI-' + Array.from(crypto.getRandomValues(new Uint32Array(6)), (n) => letras[n % letras.length]).join('');
+    const codigo = 'LEARN-' + Array.from(crypto.getRandomValues(new Uint32Array(6)), (n) => letras[n % letras.length]).join('');
     const { data, error } = await cliente().from('invitaciones')
       .insert({ codigo, rol, nota: String(nota || '').trim(), creada_por: yo.id, expira: sumarDias(hoy(), INVITACION_DIAS), dias_acceso: diasAcceso })
       .select().single();

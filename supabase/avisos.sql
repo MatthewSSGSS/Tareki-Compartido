@@ -1,5 +1,5 @@
 -- =============================================================================
--- Tareki — notificaciones push (se ejecuta DESPUÉS de esquema.sql)
+-- Learnground — notificaciones push (se ejecuta DESPUÉS de esquema.sql)
 -- Se pega completo en: Supabase → SQL Editor → New query → Run.
 -- Se puede ejecutar varias veces sin dañar nada.
 --
@@ -78,9 +78,9 @@ begin
       and exists (select 1 from public.suscripciones s where s.user_id = p.id)
   loop
     return query select f.id,
-      case f.faltan when 0 then '⏰ Hoy es el último día de acceso a Tareki' when 1 then '⏰ Tu acceso a Tareki vence mañana' else '⏰ Tu acceso a Tareki vence en 3 días' end,
+      case f.faltan when 0 then '⏰ Hoy es el último día de acceso a Learnground' when 1 then '⏰ Tu acceso a Learnground vence mañana' else '⏰ Tu acceso a Learnground vence en 3 días' end,
       case when f.hijos is null then 'Paga la mensualidad para seguir aprendiendo sin pausas. Toca para ver cómo pagar.'
-           else format('Paga la mensualidad para que %s no se pierda%s ni un día de Tareki. Toca para ver cómo pagar.', f.hijos, case when f.hijos like '%%,%%' then 'n' else '' end) end,
+           else format('Paga la mensualidad para que %s no se pierda%s ni un día de Learnground. Toca para ver cómo pagar.', f.hijos, case when f.hijos like '%%,%%' then 'n' else '' end) end,
       '#/papas', format('vence:%s:%s:%s', f.id, f.acceso_hasta, f.faltan);
   end loop;
 

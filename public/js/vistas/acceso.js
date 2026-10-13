@@ -19,7 +19,7 @@ export async function render(root, ctx) {
 
   root.innerHTML = `
     <div class="cabecera">
-      <span class="fila"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></span>
+      <span class="fila"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></span>
       <button class="btn btn-peq btn-blanco" data-salir>🚪 Salir</button>
     </div>
     <div class="pila" style="max-width:560px;margin:0 auto">

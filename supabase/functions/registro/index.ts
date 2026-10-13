@@ -53,8 +53,8 @@ Deno.serve(async (req) => {
   if (!inv) {
     const { data: existe } = await admin.from("invitaciones").select("usada, expira").eq("codigo", codigo).maybeSingle();
     if (!existe) return error("Ese código no existe. Revisa que esté bien escrito.");
-    if (existe.usada) return error("Ese código ya se usó. Pídele uno nuevo al equipo de Tareki.");
-    return error("Ese código ya venció. Pídele uno nuevo al equipo de Tareki.");
+    if (existe.usada) return error("Ese código ya se usó. Pídele uno nuevo al equipo de Learnground.");
+    return error("Ese código ya venció. Pídele uno nuevo al equipo de Learnground.");
   }
   const liberar = () => admin.from("invitaciones").update({ usada: null }).eq("codigo", codigo).is("usada_por", null);
 

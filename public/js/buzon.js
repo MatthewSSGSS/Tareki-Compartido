@@ -21,7 +21,7 @@ function abrirMensaje(m, alLeer) {
   marcarLeido(m.id);
   abrirHoja({
     titulo: m.titulo,
-    cuerpo: `<p class="suave peq">Del equipo de Tareki · ${fechaBonita(m.enviado)}</p>${m.cuerpo ? `<p style="font-size:1.08em">${esc(m.cuerpo)}</p>` : ''}`,
+    cuerpo: `<p class="suave peq">Del equipo de Learnground · ${fechaBonita(m.enviado)}</p>${m.cuerpo ? `<p style="font-size:1.08em">${esc(m.cuerpo)}</p>` : ''}`,
     pie: m.url && m.url !== '#/' ? `<a class="btn" href="${esc(m.url)}">Ir ahora</a>` : '<button class="btn" data-ok>¡Listo!</button>',
     montar: (el) => el.querySelector('[data-ok]')?.addEventListener('click', () => cerrarHoja()),
     cerrar: alLeer,
@@ -32,7 +32,7 @@ function abrirMensaje(m, alLeer) {
 export async function pintarBuzon(el) {
   const lista = (await datos.mensajes().catch(() => [])).filter((m) => m.enviado).slice(0, 8);
   const ya = leidos();
-  if (!lista.length) { el.innerHTML = '<p class="suave">Aquí aparecen los avisos del equipo de Tareki.</p>'; return; }
+  if (!lista.length) { el.innerHTML = '<p class="suave">Aquí aparecen los avisos del equipo de Learnground.</p>'; return; }
   el.innerHTML = `<div class="buzon">${lista.map((m) => `
     <button class="buzon-fila ${ya.has(m.id) ? '' : 'nuevo'}" data-m="${esc(m.id)}">
       <span class="em" aria-hidden="true">${ya.has(m.id) ? '📭' : '📬'}</span>

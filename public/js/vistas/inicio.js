@@ -54,7 +54,7 @@ export async function render(root, ctx) {
           </section>`;
         })() : ''}
 
-        ${analisis.length ? '' : `<div class="sep"></div>${vacio({ emoji: '📭', titulo: 'Todavía no tienes lecciones', texto: 'Cuando el equipo de Tareki te mande una, aparecerá aquí. ¡Lulo te avisará! 🐬' })}`}
+        ${analisis.length ? '' : `<div class="sep"></div>${vacio({ emoji: '📭', titulo: 'Todavía no tienes lecciones', texto: 'Cuando el equipo de Learnground te mande una, aparecerá aquí. ¡Lulo te avisará! 🐬' })}`}
         ${seccion('🎁 ¡Nuevas para ti!', nuevas.filter((a) => a !== siguiente))}
         ${seccion('🎮 Sigue jugando', enCurso.filter((a) => a !== siguiente))}
         ${seccion('✅ Terminadas', terminadas)}

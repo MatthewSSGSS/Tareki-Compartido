@@ -1,5 +1,5 @@
 // =============================================================================
-// equipo.js — Panel del equipo Tareki.
+// equipo.js — Panel del equipo Learnground.
 //   #/equipo              Resumen: quién necesita atención
 //   #/equipo/subir[/id]   Subir una o varias lecciones HTML y asignarlas
 //   #/equipo/ninos        Todos los niños y familias
@@ -102,7 +102,7 @@ async function resumen(root, ctx) {
 // --- Subir lecciones --------------------------------------------------------------------------
 // Se pueden soltar varios HTML a la vez. Para cada uno se sugiere el niño según el
 // nombre que trae adentro (el nombre completo pesa más que el primer nombre), y se
-// avisa si menciona a otros niños de Tareki o si el niño ya tiene una lección igual.
+// avisa si menciona a otros niños de Learnground o si el niño ya tiene una lección igual.
 
 const MAX_BYTES = 10 * 1024 * 1024;
 
@@ -126,7 +126,7 @@ async function subir(root, ctx) {
     const out = [];
     if (a.tamano > MAX_BYTES) out.push({ ok: false, texto: 'Pesa más de 10 MB. Revisa que no tenga fotos muy pesadas.' });
     if (!a.ninoId) {
-      out.push({ ok: false, texto: a.coinc.length ? `Menciona a varios niños (${a.coinc.map((c) => c.nino.nombre).join(', ')}): elige a quién va.` : 'No trae el nombre de ningún niño de Tareki: elige a quién va.' });
+      out.push({ ok: false, texto: a.coinc.length ? `Menciona a varios niños (${a.coinc.map((c) => c.nino.nombre).join(', ')}): elige a quién va.` : 'No trae el nombre de ningún niño de Learnground: elige a quién va.' });
       return out;
     }
     const nino = lista.find((n) => n.id === a.ninoId);
@@ -311,8 +311,8 @@ async function codigos(root, ctx) {
 function compartir(inv, alCerrar) {
   const link = `${location.origin}${location.pathname}#/registro/${inv.codigo}`;
   const texto = inv.rol === 'familia'
-    ? `¡Hola! 👋 Esta es la invitación para crear la cuenta de su familia en Tareki, donde estarán las lecciones de su hijo o hija:\n${link}\n\nCódigo: ${inv.codigo} (sirve una sola vez y vence en 7 días).`
-    : `¡Hola! 👋 Te invito al equipo de Tareki. Crea tu cuenta aquí:\n${link}\n\nCódigo: ${inv.codigo} (sirve una sola vez y vence en 7 días). No lo compartas: da acceso a las lecciones de todos los niños.`;
+    ? `¡Hola! 👋 Esta es la invitación para crear la cuenta de su familia en Learnground, donde estarán las lecciones de su hijo o hija:\n${link}\n\nCódigo: ${inv.codigo} (sirve una sola vez y vence en 7 días).`
+    : `¡Hola! 👋 Te invito al equipo de Learnground. Crea tu cuenta aquí:\n${link}\n\nCódigo: ${inv.codigo} (sirve una sola vez y vence en 7 días). No lo compartas: da acceso a las lecciones de todos los niños.`;
   abrirHoja({
     titulo: 'Código listo 🎟️',
     cuerpo: `

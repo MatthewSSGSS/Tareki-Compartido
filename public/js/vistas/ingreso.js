@@ -17,7 +17,7 @@ export function render(root, ctx) {
   root.innerHTML = `
     <div class="flotan" aria-hidden="true">${FLOTAN.map((e, i) => `<span style="left:${(i * 37) % 92}%;top:${(i * 53) % 88}%;animation-delay:-${i * 0.9}s">${e}</span>`).join('')}</div>
     <div class="ingreso"><div class="ingreso-caja">
-      <div class="marca"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></div>
+      <div class="marca"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></div>
       <p class="lema">Lecciones divertidas para aprender jugando</p>
       <div class="pestanas" role="tablist">
         <button role="tab" data-modo="entrar">Entrar</button>
@@ -28,7 +28,7 @@ export function render(root, ctx) {
         <b>🧪 Modo demostración</b>
         <span>Todo se guarda solo en este navegador. Prueba la app como:</span>
         <div class="fila"><button class="btn btn-peq btn-sol" data-demo="familia">👨‍👩‍👧 Una familia</button><button class="btn btn-peq btn-azul" data-demo="equipo">🧑‍🏫 El equipo</button></div>
-        <span class="suave peq">Para probar el registro usa el código <b>TAREKI-DEMO</b>.</span>
+        <span class="suave peq">Para probar el registro usa el código <b>LEARN-DEMO</b>.</span>
       </div>` : ''}
     </div></div>`;
 
@@ -78,8 +78,8 @@ export function render(root, ctx) {
   function pintarCodigo(inicial) {
     caja.innerHTML = `<form class="pila" id="fCodigo" novalidate>
       <h2>Crea la cuenta de tu familia</h2>
-      <p class="suave">El equipo de Tareki te dio un código. Escríbelo aquí.</p>
-      <div class="campo"><label for="cCodigo">Código de invitación</label><input id="cCodigo" class="codigo-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="TAREKI-XXXX" value="${esc(inicial)}"></div>
+      <p class="suave">El equipo de Learnground te dio un código. Escríbelo aquí.</p>
+      <div class="campo"><label for="cCodigo">Código de invitación</label><input id="cCodigo" class="codigo-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="LEARN-XXXXXX" value="${esc(inicial)}"></div>
       <p class="error" id="cErr" role="alert"></p>
       <button class="btn bloque" type="submit">Continuar</button>
     </form>`;
@@ -116,7 +116,7 @@ export function render(root, ctx) {
           aviso('¡Cuenta creada! Ahora creen juntos el perfil de su hijo o hija.', { emoji: '🎉', ms: 5000 });
           ctx.navegar('#/perfiles');
         } else {
-          aviso('¡Ya eres parte del equipo de Tareki!', { emoji: '🎉', ms: 5000 });
+          aviso('¡Ya eres parte del equipo de Learnground!', { emoji: '🎉', ms: 5000 });
           ctx.navegar('#/equipo');
         }
       } catch (x) { caja.querySelector('#rErr').textContent = x.message; }

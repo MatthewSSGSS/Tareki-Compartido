@@ -1,5 +1,5 @@
 // =============================================================================
-// config.js — Constantes editables de Tareki.
+// config.js — Constantes editables de Learnground.
 // =============================================================================
 
 export const APP_VERSION = '0.1.0';

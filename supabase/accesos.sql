@@ -1,5 +1,5 @@
 -- =============================================================================
--- Tareki — acceso por mensualidad, pagos manuales y actividad de familias
+-- Learnground — acceso por mensualidad, pagos manuales y actividad de familias
 -- Se ejecuta DESPUÉS de esquema.sql. Se puede ejecutar varias veces.
 -- (Para instalar desde cero: esquema.sql → accesos.sql → avisos.sql)
 --

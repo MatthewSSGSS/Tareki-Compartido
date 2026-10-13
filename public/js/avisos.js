@@ -4,7 +4,7 @@
 // Dónde funcionan (Web Push):
 //   • Android (Chrome, Samsung Internet, Edge, Firefox): sí, con o sin instalar.
 //   • Computador (Chrome, Edge, Firefox; Safari en Mac 16+): sí.
-//   • iPhone y iPad (iOS/iPadOS 16.4 o más nuevo): SOLO si Tareki está instalada en
+//   • iPhone y iPad (iOS/iPadOS 16.4 o más nuevo): SOLO si Learnground está instalada en
 //     la pantalla de inicio desde Safari y se abre desde ese ícono. Apple lo exige así.
 //   • Navegadores dentro de WhatsApp, Instagram o Facebook: no; hay que abrir el link
 //     en Safari o Chrome.
@@ -27,7 +27,7 @@ const soportaPush = () => 'serviceWorker' in navigator && 'PushManager' in windo
 // --- Instalar (Android y computador: el navegador avisa cuando se puede) -------------------
 let pedidoInstalar = null;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedidoInstalar = e; });
-window.addEventListener('appinstalled', () => { pedidoInstalar = null; aviso('¡Tareki quedó instalada! Búscala en tu pantalla de inicio.', { emoji: '📲' }); });
+window.addEventListener('appinstalled', () => { pedidoInstalar = null; aviso('¡Learnground quedó instalada! Búscala en tu pantalla de inicio.', { emoji: '📲' }); });
 export const puedeInstalar = () => !!pedidoInstalar;
 export async function instalar() {
   if (!pedidoInstalar) return false;
@@ -124,11 +124,11 @@ export async function revisarAvisos() {
 
 // Si el aviso salió pero el dispositivo no lo muestra, casi siempre es una configuración del teléfono
 const AYUDA = esIOS
-  ? `<ul class="limpia"><li>Ve a <b>Configuración → Notificaciones → Tareki</b> y activa <b>Permitir notificaciones</b> (y «Pantalla bloqueada» y «Banners»).</li>
+  ? `<ul class="limpia"><li>Ve a <b>Configuración → Notificaciones → Learnground</b> y activa <b>Permitir notificaciones</b> (y «Pantalla bloqueada» y «Banners»).</li>
      <li>Revisa que no esté activo <b>No molestar</b> o un <b>Modo de concentración</b> (luna 🌙 en el Centro de control).</li>
-     <li>Si sigue sin llegar: toca <b>Apagar en este dispositivo</b>, cierra Tareki por completo y vuelve a abrirla desde el ícono para activarlos otra vez.</li></ul>`
+     <li>Si sigue sin llegar: toca <b>Apagar en este dispositivo</b>, cierra Learnground por completo y vuelve a abrirla desde el ícono para activarlos otra vez.</li></ul>`
   : esAndroid
-    ? `<ul class="limpia"><li>Abre <b>Ajustes → Aplicaciones → Chrome</b> (o el navegador que uses, o «Tareki» si la instalaste) <b>→ Notificaciones</b> y actívalas.</li>
+    ? `<ul class="limpia"><li>Abre <b>Ajustes → Aplicaciones → Chrome</b> (o el navegador que uses, o «Learnground» si la instalaste) <b>→ Notificaciones</b> y actívalas.</li>
        <li>En Chrome: toca el candado 🔒 junto a la dirección <b>→ Permisos → Notificaciones → Permitir</b>.</li>
        <li>Revisa que no esté activo <b>No molestar</b> ni el <b>ahorro de batería</b> extremo.</li>
        <li>Si sigue sin llegar: toca <b>Apagar en este dispositivo</b> y vuelve a activarlos.</li></ul>`
@@ -143,16 +143,16 @@ const PASOS_IOS = `<ol class="limpia pasos-ios">
   <li>Toca <b>Compartir</b> <span aria-hidden="true">⬆️</span>. Si no lo ves, toca primero los <b>tres puntos ⋯</b> y luego <b>Compartir</b>.</li>
   <li>Baja en la lista y elige <b>«Agregar a inicio»</b> (o «Agregar a pantalla de inicio»).</li>
   <li>Si aparece <b>«Abrir como app web»</b>, déjalo <b>activado</b>. Toca <b>Agregar</b>.</li>
-  <li>Cierra Safari y abre <b>Tareki desde el ícono</b> de Lulo 🐬 de tu pantalla de inicio. Ahí te aparece el botón para activar los avisos.</li>
+  <li>Cierra Safari y abre <b>Learnground desde el ícono</b> de Lulo 🐬 de tu pantalla de inicio. Ahí te aparece el botón para activar los avisos.</li>
 </ol>`;
 
 const TEXTOS = {
   'activos': { emoji: '🔔', titulo: 'Avisos activados en este dispositivo', texto: 'Te avisamos cuando llegue una lección nueva y a las 6 p. m. si la racha está en peligro.' },
   'apagados': { emoji: '🔕', titulo: 'Activa los avisos', texto: 'Te avisamos cuando llegue una lección nueva y si la racha está en peligro. Así nadie se pierde un día.' },
-  'bloqueados': { emoji: '🚫', titulo: 'Los avisos están bloqueados', texto: 'Este navegador los bloqueó. Toca el candado 🔒 junto a la dirección (o ve a Configuración → Notificaciones) y permite las notificaciones de Tareki. Luego recarga la página.' },
-  'instalar-ios': { emoji: '📲', titulo: 'En iPhone, primero instala Tareki', texto: `Apple solo permite avisos si la app está en tu pantalla de inicio:${PASOS_IOS}` },
-  'ios-viejo': { emoji: '📱', titulo: 'Este iPhone no puede recibir avisos', texto: 'Se necesita iOS 16.4 o más nuevo (Configuración → General → Actualización de software). Igual puedes usar Tareki normalmente.' },
-  'abrir-navegador': { emoji: '🌐', titulo: 'Abre Tareki en tu navegador', texto: 'Estás dentro de WhatsApp u otra app. Toca los tres puntos ⋯ y elige «Abrir en el navegador» (Safari o Chrome) para activar los avisos.' },
+  'bloqueados': { emoji: '🚫', titulo: 'Los avisos están bloqueados', texto: 'Este navegador los bloqueó. Toca el candado 🔒 junto a la dirección (o ve a Configuración → Notificaciones) y permite las notificaciones de Learnground. Luego recarga la página.' },
+  'instalar-ios': { emoji: '📲', titulo: 'En iPhone, primero instala Learnground', texto: `Apple solo permite avisos si la app está en tu pantalla de inicio:${PASOS_IOS}` },
+  'ios-viejo': { emoji: '📱', titulo: 'Este iPhone no puede recibir avisos', texto: 'Se necesita iOS 16.4 o más nuevo (Configuración → General → Actualización de software). Igual puedes usar Learnground normalmente.' },
+  'abrir-navegador': { emoji: '🌐', titulo: 'Abre Learnground en tu navegador', texto: 'Estás dentro de WhatsApp u otra app. Toca los tres puntos ⋯ y elige «Abrir en el navegador» (Safari o Chrome) para activar los avisos.' },
   'no-soporta': { emoji: '😕', titulo: 'Este navegador no recibe avisos', texto: 'Prueba con Chrome, Edge, Firefox o Safari actualizados.' },
 };
 
@@ -176,7 +176,7 @@ export async function tarjetaAvisos(el) {
       <div class="fila envolver">
         ${estado === 'apagados' ? '<button class="btn btn-verde btn-peq" data-activar>🔔 Activar avisos</button>' : ''}
         ${estado === 'activos' ? '<button class="btn btn-blanco btn-peq" data-probar>Enviar aviso de prueba</button><button class="link peq" data-apagar>Apagar en este dispositivo</button>' : ''}
-        ${puedeInstalar() && !esInstalada() ? '<button class="btn btn-sol btn-peq" data-instalar>📲 Instalar Tareki</button>' : ''}
+        ${puedeInstalar() && !esInstalada() ? '<button class="btn btn-sol btn-peq" data-instalar>📲 Instalar Learnground</button>' : ''}
       </div>
       <div class="diag-avisos" hidden></div>
       ${estado === 'activos' ? `<details class="ayuda-avisos"><summary>¿No te llegó el aviso de prueba?</summary>${AYUDA}</details>` : ''}

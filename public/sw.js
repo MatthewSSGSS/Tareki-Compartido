@@ -1,16 +1,16 @@
 // =============================================================================
-// sw.js — Service worker de Tareki.
+// sw.js — Service worker de Learnground.
 //
 // • Recibe las notificaciones push (aunque la app esté cerrada) y las muestra.
 //   El texto viene cifrado dentro del push; el navegador lo descifra solo.
-// • Al tocar la notificación, abre Tareki en la pantalla indicada.
+// • Al tocar la notificación, abre Learnground en la pantalla indicada.
 // • Guarda una copia de la app para que abra rápido y sin internet muestre algo.
 //   Estrategia: primero internet (así los cambios publicados se ven de una).
 //
 // Si cambias este archivo, sube VERSION.
 // =============================================================================
 
-const VERSION = 'v4';
+const VERSION = 'v5';
 const CACHE = `tareki-${VERSION}`;
 
 self.addEventListener('install', (e) => {
@@ -40,7 +40,7 @@ async function anotar(dato) {
 self.addEventListener('push', (e) => {
   let a = {};
   try { a = e.data ? e.data.json() : {}; } catch { a = { cuerpo: e.data?.text() || '' }; }
-  const titulo = a.titulo || 'Tareki 🐬';
+  const titulo = a.titulo || 'Learnground 🐬';
   e.waitUntil((async () => {
     try {
       await self.registration.showNotification(titulo, {

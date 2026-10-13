@@ -46,9 +46,9 @@ export function chipAcceso(f) {
 
 /** Bloque con los datos para pagar (llave, valor, a nombre de quién y botón de WhatsApp). */
 export function datosDePago(cobro, usuario) {
-  const mensaje = `Hola 👋 Soy ${usuario?.nombre || ''}. Acabo de pagar la mensualidad de Tareki${cobro.precio ? ` (${pesos(cobro.precio)})` : ''}. Te envío el comprobante.`;
+  const mensaje = `Hola 👋 Soy ${usuario?.nombre || ''}. Acabo de pagar la mensualidad de Learnground${cobro.precio ? ` (${pesos(cobro.precio)})` : ''}. Te envío el comprobante.`;
   const wa = cobro.whatsapp ? `https://wa.me/${cobro.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}` : '';
-  if (!cobro.llave && !cobro.precio) return '<p class="suave">El equipo de Tareki te dirá cómo pagar.</p>';
+  if (!cobro.llave && !cobro.precio) return '<p class="suave">El equipo de Learnground te dirá cómo pagar.</p>';
   return `<div class="pago">
     ${cobro.precio ? `<div class="pago-valor"><span>Mensualidad</span><b>${pesos(cobro.precio)}</b></div>` : ''}
     ${cobro.llave ? `<div class="pago-llave"><span>Llave ${esc(cobro.banco || '')} (Bre-B)</span><b data-llave>${esc(cobro.llave)}</b>
@@ -83,7 +83,7 @@ export function bannerVence(usuario) {
   if (!e.activo || e.dias > 3) return '';
   const cuando = e.dias === 0 ? 'hoy es el último día' : e.dias === 1 ? 'vence mañana' : `vence en ${e.dias} días (${fechaLarga(e.hasta)})`;
   return `<div class="card banner-vence"><span class="em" aria-hidden="true">⏰</span>
-    <div><b>Tu acceso a Tareki ${cuando}</b><p class="peq">Paga la mensualidad para seguir aprendiendo sin pausas. No se pierde nada de lo avanzado.</p></div>
+    <div><b>Tu acceso a Learnground ${cuando}</b><p class="peq">Paga la mensualidad para seguir aprendiendo sin pausas. No se pierde nada de lo avanzado.</p></div>
     <button class="btn btn-peq btn-sol" data-como-pagar>Cómo pagar</button></div>`;
 }
 export function conectarBanner(root, usuario) {

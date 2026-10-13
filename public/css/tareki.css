@@ -1,5 +1,5 @@
 /* =============================================================================
-   tareki.css — Estilo de Tareki (mismo lenguaje visual de las lecciones:
+   tareki.css — Estilo de Learnground (mismo lenguaje visual de las lecciones:
    bordes gruesos, sombras sólidas, colores vivos, Baloo 2 + Nunito).
    Celular: una columna y menú abajo. Computador (≥ 900 px): menú lateral y
    tableros de varias columnas.
@@ -659,3 +659,8 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 .visor .cargando img.lulo-buho { width: 120px; height: 120px; animation: flotarSuave 1.6s ease-in-out infinite; }
 .vista-notif .vn-ico { background: none; overflow: hidden; }
 .vista-notif .vn-ico img { width: 38px; height: 38px; }
+
+/* Nombre "Learnground": que quepa en pantallas pequeñas */
+.ingreso .marca-nombre { font-size: clamp(1.9em, 9vw, 2.6em); }
+.cabecera .marca-nombre { font-size: clamp(1.25em, 6vw, 1.7em); }
+@media (min-width: 900px) { .menu .menu-marca { gap: 8px; margin: 0 4px 16px; } .menu .menu-marca .marca-nombre { font-size: 1.32em; } .menu .menu-marca img.marca-logo { width: 40px; height: 40px; } }

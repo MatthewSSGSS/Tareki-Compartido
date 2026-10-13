@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Tareki**: app web para que cada niño (4.º grado) vea sus lecciones de Lección Divertida con su cuenta, guarde su progreso, mantenga una racha y reciba notificaciones; los papás ven el rendimiento con consejos; el equipo sube lecciones y crea códigos de invitación. Dueño: Mateo (MatthewSSGSS). Se publica en Cloudflare Pages desde este repo.
+**Learnground** (antes Tareki; el repo y el proyecto de Supabase conservan el nombre viejo): app web para que cada niño (4.º grado) vea sus lecciones de Lección Divertida con su cuenta, guarde su progreso, mantenga una racha y reciba notificaciones; los papás ven el rendimiento con consejos; el equipo sube lecciones y crea códigos de invitación. Dueño: Mateo (MatthewSSGSS). Se publica en Cloudflare Pages desde este repo.
 
 ## Restricciones clave
 - **El repo es público.** Nunca subir lecciones reales ni nada con nombres de niños: las lecciones van al almacén privado (Supabase Storage) desde el panel del equipo. `privado/` está en `.gitignore` para pruebas locales.

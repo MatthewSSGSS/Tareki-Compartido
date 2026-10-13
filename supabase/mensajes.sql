@@ -1,5 +1,5 @@
 -- =============================================================================
--- Tareki — mensajes programados del equipo y quitar una familia
+-- Learnground — mensajes programados del equipo y quitar una familia
 -- Se ejecuta DESPUÉS de esquema.sql, accesos.sql y avisos.sql. Se puede repetir.
 -- Antes de ejecutarlo, reemplaza __CRON_SECRET__ (privado/mensajes-listo.sql ya viene listo).
 -- =============================================================================

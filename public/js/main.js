@@ -146,10 +146,10 @@ function pintarMenu(u, perfil, activo) {
     : item('inicio', '#/inicio', '🏠', 'Inicio') + item('logros', '#/logros', '🏅', 'Logros')
       + item('papas', '#/papas', '👨‍👩‍👧', 'Papás') + `<a href="#/perfiles" class="solo-cel"><span class="mi-emoji" aria-hidden="true">${perfil ? esc(perfil.avatar) : '🔄'}</span><span>Cambiar</span></a>`;
   const tarjeta = u.rol === 'equipo'
-    ? `<div class="menu-perfil"><span class="av" style="background:var(--purple-s)">🧑‍🏫</span><span><b>${esc(primerNombre(u.nombre))}</b><small>Equipo Tareki</small></span></div>`
+    ? `<div class="menu-perfil"><span class="av" style="background:var(--purple-s)">🧑‍🏫</span><span><b>${esc(primerNombre(u.nombre))}</b><small>Equipo Learnground</small></span></div>`
     : perfil ? `<a class="menu-perfil" href="#/perfiles" title="Cambiar de perfil"><span class="av" style="background:${esc(perfil.color)}">${esc(perfil.avatar)}</span><span><b>${esc(perfil.nombre)}</b><small>Cambiar de perfil</small></span></a>` : '';
   $menu.innerHTML = `
-    <a class="menu-marca" href="#/"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></a>
+    <a class="menu-marca" href="#/"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></a>
     ${tarjeta}
     <div class="menu-items">${items}</div>
     <div class="menu-pie">
@@ -195,4 +195,4 @@ registrarServiceWorker();
 aplicarTema();
 render();
 
-if (MODO_DEMO) console.info('Tareki en modo demostración: los datos viven solo en este navegador.');
+if (MODO_DEMO) console.info('Learnground en modo demostración: los datos viven solo en este navegador.');

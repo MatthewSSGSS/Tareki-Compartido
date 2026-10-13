@@ -120,7 +120,7 @@ export const barra = (pct, clase = '') =>
 
 export const estrellas = (n, de = 3) => `<span class="estrellas" aria-label="${n} de ${de} estrellas">${'⭐'.repeat(n)}<span class="apagadas">${'⭐'.repeat(Math.max(0, de - n))}</span></span>`;
 
-/** Lulo, el delfín rosado de Tareki, con un globo de diálogo. */
+/** Lulo, el delfín rosado de Learnground, con un globo de diálogo. */
 export const lulo = (texto, clase = '') =>
   `<div class="lulo ${clase}"><img class="lulo-buho" src="img/lulo-128.png" alt="" aria-hidden="true"><p class="lulo-globo">${texto}</p></div>`;
 

@@ -15,7 +15,7 @@ export async function render(root, ctx) {
 
   root.innerHTML = `
     <div class="cabecera">
-      <span class="fila"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></span>
+      <span class="fila"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></span>
       <span class="fila"><a class="btn btn-peq btn-blanco" href="#/papas">👨‍👩‍👧 Papás</a><button class="btn-redondo" data-salir title="Salir" aria-label="Salir">🚪</button></span>
     </div>
     ${bannerVence(ctx.usuario)}

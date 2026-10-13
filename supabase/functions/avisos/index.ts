@@ -1,6 +1,6 @@
 // @ts-nocheck — Este archivo corre en Supabase (Deno). VS Code no conoce Deno y lo marcaría en rojo.
 // =============================================================================
-// Función "avisos" — envía las notificaciones push de Tareki.
+// Función "avisos" — envía las notificaciones push de Learnground.
 //
 // Formas de llamarla:
 //   • { tipo: "prueba" }               (usuario con sesión) → aviso de prueba a sus dispositivos.
@@ -202,7 +202,7 @@ Deno.serve(async (req) => {
     const { data: f } = await admin.from("perfiles").select("nombre").eq("id", entrada.familia_id).maybeSingle();
     if (!f) return responder({ error: "familia no encontrada" }, 404);
     return responder(await enviarAVarios(admin, await equipo(admin), {
-      titulo: "👨‍👩‍👧 ¡Se unió una familia nueva!", cuerpo: `${f.nombre} acaba de crear su cuenta en Tareki.`, url: `#/equipo/familia/${entrada.familia_id}`, tag: `familia-${entrada.familia_id}`,
+      titulo: "👨‍👩‍👧 ¡Se unió una familia nueva!", cuerpo: `${f.nombre} acaba de crear su cuenta en Learnground.`, url: `#/equipo/familia/${entrada.familia_id}`, tag: `familia-${entrada.familia_id}`,
     }));
   }
 
@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
 
   if (entrada?.tipo === "prueba") {
     return responder(await enviarAUsuario(admin, usuario.id, {
-      titulo: "¡Los avisos de Tareki funcionan! ✅", cuerpo: "Así te avisaremos de lecciones nuevas y de la racha 🔥", url: "#/", tag: "prueba",
+      titulo: "¡Los avisos de Learnground funcionan! ✅", cuerpo: "Así te avisaremos de lecciones nuevas y de la racha 🔥", url: "#/", tag: "prueba",
     }));
   }
 
