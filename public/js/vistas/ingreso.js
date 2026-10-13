@@ -4,7 +4,7 @@
 // =============================================================================
 
 import * as datos from '../datos.js';
-import { MODO_DEMO } from '../config.js';
+import { MODO_DEMO, NUBE } from '../config.js';
 import { esc } from '../util.js';
 import { aviso, confeti, abrirHoja, cerrarHoja } from '../ui.js';
 
@@ -13,23 +13,37 @@ const FLOTAN = ['📚', '⭐', '🎈', '✏️', '🔢', '🌎', '🧠', '🎨',
 export function render(root, ctx) {
   const codigoUrl = ctx.params[0] || '';
   let modo = codigoUrl ? 'codigo' : 'entrar';
+  // En la app real, ?demo abre la "versión de prueba": solo se elige cómo verla (sin el formulario de entrar)
+  const PRUEBA = MODO_DEMO && !!NUBE.url && !codigoUrl;
 
   root.innerHTML = `
     <div class="flotan" aria-hidden="true">${FLOTAN.map((e, i) => `<span style="left:${(i * 37) % 92}%;top:${(i * 53) % 88}%;animation-delay:-${i * 0.9}s">${e}</span>`).join('')}</div>
     <div class="ingreso"><div class="ingreso-caja">
       <div class="marca"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></div>
       <p class="lema">Lecciones divertidas para aprender jugando</p>
-      <div class="pestanas" role="tablist">
+      ${PRUEBA ? '' : `<div class="pestanas" role="tablist">
         <button role="tab" data-modo="entrar">Entrar</button>
         <button role="tab" data-modo="codigo">Tengo un código</button>
-      </div>
-      <div class="card" id="caja"></div>
-      ${MODO_DEMO ? `<div class="demo-caja">
+      </div>`}
+      <div class="card" id="caja" ${PRUEBA ? 'hidden' : ''}></div>
+      ${PRUEBA ? `<div class="card prueba-elegir">
+        <h2>🎮 Versión de prueba</h2>
+        <p>Mira cómo funciona Learnground con datos inventados y una lección de muestra. No necesitas cuenta y nada de lo que hagas aquí es real.</p>
+        <div class="prueba-opciones">
+          <button class="prueba-op" data-demo="familia"><span class="em">👨‍👩‍👧</span><b>Como familia</b><small>Lo que ven los niños y los papás: lecciones, juegos, racha, logros y el progreso con consejos.</small></button>
+          <button class="prueba-op" data-demo="equipo"><span class="em">🧑‍🏫</span><b>Como equipo</b><small>El panel para subir lecciones, ver a cada niño, las familias, los mensajes y los pedidos.</small></button>
+        </div>
+        <a class="link peq" href="./">← Volver para entrar con mi cuenta</a>
+      </div>` : MODO_DEMO ? `<div class="demo-caja">
         <b>🧪 Modo demostración</b>
         <span>Todo se guarda solo en este navegador. Prueba la app como:</span>
         <div class="fila"><button class="btn btn-peq btn-sol" data-demo="familia">👨‍👩‍👧 Una familia</button><button class="btn btn-peq btn-azul" data-demo="equipo">🧑‍🏫 El equipo</button></div>
         <span class="suave peq">Para probar el registro usa el código <b>LEARN-DEMO</b>.</span>
-      </div>` : ''}
+      </div>` : `<a class="prueba-caja" href="?demo#/entrar">
+        <span class="em" aria-hidden="true">🎮</span>
+        <span><b>¿Quieres ver cómo funciona?</b><small>Entra a la versión de prueba: una lección de muestra y datos inventados. Sin cuenta.</small></span>
+        <span class="btn btn-peq btn-sol">Probar</span>
+      </a>`}
     </div></div>`;
 
   const caja = root.querySelector('#caja');

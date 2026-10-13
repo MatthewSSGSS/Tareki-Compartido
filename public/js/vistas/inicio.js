@@ -7,7 +7,7 @@ import { fraseRacha } from '../racha.js';
 import { medallas } from '../analisis.js';
 import { esc, minutosTexto } from '../util.js';
 import { lulo, vacio } from '../ui.js';
-import { tarjetaLeccion, tarjetaRacha } from '../piezas.js';
+import { tarjetaLeccion, tarjetaRacha, bandaPrueba } from '../piezas.js';
 import { estadoAvisos, tarjetaAvisos } from '../avisos.js';
 import { MODO_DEMO } from '../config.js';
 import { bannerVence, conectarBanner } from '../acceso.js';
@@ -29,7 +29,7 @@ export async function render(root, ctx) {
     ? `<div class="titulo-seccion"><h2>${titulo}</h2><span class="suave peq">${lista.length}</span></div>
        <div class="lecciones ${rejilla ? 'rejilla' : ''}">${lista.map(tarjetaLeccion).join('')}</div>` : '';
 
-  root.innerHTML = `
+  root.innerHTML = `${bandaPrueba()}
     <div class="tablero">
       <div class="principal">
         <section class="card saludo" style="background:${esc(nino.color)}">

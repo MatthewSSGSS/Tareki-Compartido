@@ -18,6 +18,7 @@ import { numeroBonito, numeroWa, linkWa } from '../whatsapp.js';
 import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
 import { abrirPedir, pintarMisPedidos } from './pedidos.js';
 import { abrirApariencia } from '../apariencia.js';
+import { bandaPrueba } from '../piezas.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -42,6 +43,7 @@ export async function render(root, ctx) {
   const prom = resumen.promedio;
 
   root.innerHTML = `
+    ${esEquipo ? '' : bandaPrueba()}
     ${esEquipo
       ? `<div class="cabecera"><a class="btn btn-peq btn-blanco" href="#/equipo/ninos">← Niños</a><span class="chip">Familia: ${esc(nino.familia?.nombre || '—')}</span></div>`
       : lista.length > 1 ? `<div class="selector-ninos" role="group" aria-label="Elegir niño">${lista.map((x) => `<button data-nino="${esc(x.id)}" aria-pressed="${x.id === nino.id}"><span class="av" style="background:${esc(x.color)}">${esc(x.avatar)}</span>${esc(x.nombre)}</button>`).join('')}</div>` : ''}

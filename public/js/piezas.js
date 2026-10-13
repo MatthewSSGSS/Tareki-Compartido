@@ -5,6 +5,12 @@
 import { esc, fechaBonita, DIAS_CORTOS, plural } from './util.js';
 import { barra, estrellas } from './ui.js';
 import { materia } from './carga.js';
+import { MODO_DEMO, NUBE } from './config.js';
+
+/** Franja de la versión de prueba (datos inventados). En la app real lleva "Salir de la prueba". */
+export const bandaPrueba = ({ reiniciar = false } = {}) => (MODO_DEMO ? `
+  <div class="banda-demo"><span>🧪 <b>Versión de prueba:</b> datos inventados que se guardan solo en este navegador.</span>
+    <span class="fila envolver">${reiniciar ? '<button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button>' : ''}${NUBE.url ? '<a class="btn btn-peq btn-blanco" href="./">Salir de la prueba</a>' : ''}</span></div>` : '');
 
 const ESTADO = {
   nueva: { texto: '¡Nueva!', boton: '¡Empezar! ▶' },

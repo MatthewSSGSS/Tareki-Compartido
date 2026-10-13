@@ -8,12 +8,13 @@ import { AVATARES, COLORES, GRADOS } from '../config.js';
 import { esc, primerNombre } from '../util.js';
 import { abrirHoja, cerrarHoja, aviso, confeti, lulo } from '../ui.js';
 import { bannerVence, conectarBanner } from '../acceso.js';
+import { bandaPrueba } from '../piezas.js';
 
 export async function render(root, ctx) {
   const lista = await datos.ninos();
   const nombre = primerNombre(ctx.usuario.nombre);
 
-  root.innerHTML = `
+  root.innerHTML = `${bandaPrueba()}
     <div class="cabecera">
       <span class="fila"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></span>
       <span class="fila"><a class="btn btn-peq btn-blanco" href="#/papas">👨‍👩‍👧 Papás</a><button class="btn-redondo" data-salir title="Salir" aria-label="Salir">🚪</button></span>

@@ -21,6 +21,7 @@ import * as pedidos from './pedidos.js';
 import { estadoAcceso, chipAcceso } from '../acceso.js';
 import { abrirMiNombre } from '../cuenta.js';
 import { abrirApariencia } from '../apariencia.js';
+import { bandaPrueba } from '../piezas.js';
 
 export function render(root, ctx) {
   const sec = ctx.params[0] || 'resumen';
@@ -71,7 +72,7 @@ async function resumen(root, ctx) {
   const recientes = [...lista].sort((a, b) => (b.ultimoDia || '').localeCompare(a.ultimoDia || ''));
 
   root.innerHTML = `
-    ${MODO_DEMO ? `<div class="banda-demo"><span>🧪 <b>Modo demostración:</b> datos de prueba guardados solo en este navegador.</span><button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button></div>` : ''}
+    ${bandaPrueba({ reiniciar: true })}
     <div class="cabecera"><div><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1><span class="fila envolver" style="gap:14px"><button class="link peq" data-mi-nombre-res>✏️ Cambiar mi nombre</button><button class="link peq" data-apariencia-res>🎨 Apariencia</button></span></div>
       <span class="fila"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a></span></div>
     <div class="kpis">
