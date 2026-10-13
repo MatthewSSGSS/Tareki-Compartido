@@ -7,7 +7,7 @@
 import * as datos from './datos.js';
 import { esc, hoy, diasEntre, fechaBonita, primerNombre, diaDe } from './util.js';
 import { abrirHoja, aviso } from './ui.js';
-import { MODO_DEMO } from './config.js';
+import { VERSION_PRUEBA } from './config.js';
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 /** "12 de noviembre" (siempre con la fecha, no "hace 3 días"). */
@@ -50,7 +50,7 @@ export function datosDePago(cobro, usuario) {
   const mensaje = `Hola 👋 Soy ${usuario?.nombre || ''}. Acabo de pagar la mensualidad de Learnground${cobro.precio ? ` (${pesos(cobro.precio)})` : ''}. Te envío el comprobante.`;
   const wa = cobro.whatsapp ? `https://wa.me/${cobro.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}` : '';
   // En la versión de prueba no se muestran datos de pago (nadie debe pagarle a una llave de ejemplo)
-  if (MODO_DEMO && usuario?.rol !== 'equipo') {
+  if (VERSION_PRUEBA && usuario?.rol !== 'equipo') {
     return `<div class="pago"><div class="ok-caja">🧪 <b>Esto es la versión de prueba: aquí no se paga nada.</b></div>
       <p class="suave">En tu cuenta real, aquí aparecen el valor de la mensualidad, la llave Bre-B para pagar desde la app de tu banco (Davivienda, Bancolombia, Nequi, Daviplata…), los pasos y un botón para enviarnos el comprobante por WhatsApp.</p></div>`;
   }
@@ -85,6 +85,7 @@ export async function abrirComoPagar(usuario) {
 
 /** Aviso amarillo cuando faltan 3 días o menos (familias). Devuelve '' si no aplica. */
 export function bannerVence(usuario) {
+  if (VERSION_PRUEBA) return ''; // en la prueba no hay mensualidad: se paga antes de recibir el código
   const e = estadoAcceso(usuario);
   if (!e.activo || e.dias > 3) return '';
   const cuando = e.dias === 0 ? 'hoy es el último día' : e.dias === 1 ? 'vence mañana' : `vence en ${e.dias} días (${fechaLarga(e.hasta)})`;

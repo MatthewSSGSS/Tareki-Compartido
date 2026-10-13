@@ -5,12 +5,16 @@
 import { esc, fechaBonita, DIAS_CORTOS, plural } from './util.js';
 import { barra, estrellas } from './ui.js';
 import { materia } from './carga.js';
-import { MODO_DEMO, NUBE } from './config.js';
+import { MODO_DEMO, NUBE, CONTACTO_WHATSAPP } from './config.js';
+
+/** Enlace de WhatsApp para pedir la inscripción ('' si no hay número). */
+export const linkInscribirse = () => (CONTACTO_WHATSAPP
+  ? `https://wa.me/${CONTACTO_WHATSAPP.replace(/\D/g, '')}?text=${encodeURIComponent('Hola 👋 Probé Learnground y quiero inscribir a mi familia. ¿Cómo pago la mensualidad?')}` : '');
 
 /** Franja de la versión de prueba (datos inventados). En la app real lleva "Salir de la prueba". */
 export const bandaPrueba = ({ reiniciar = false } = {}) => (MODO_DEMO ? `
-  <div class="banda-demo"><span>🧪 <b>Versión de prueba:</b> datos inventados que se guardan solo en este navegador.</span>
-    <span class="fila envolver">${reiniciar ? '<button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button>' : ''}${NUBE.url ? '<a class="btn btn-peq btn-blanco" href="./">Salir de la prueba</a>' : ''}</span></div>` : '');
+  <div class="banda-demo"><span>🧪 <b>Versión de prueba:</b> datos inventados que se guardan solo en este navegador.${reiniciar ? '' : ' Para inscribirte: pagas la mensualidad y te enviamos tu código.'}</span>
+    <span class="fila envolver">${reiniciar ? '<button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button>' : linkInscribirse() ? `<a class="btn btn-peq btn-wa" href="${linkInscribirse()}" target="_blank" rel="noopener">💬 Quiero inscribirme</a>` : ''}${NUBE.url ? '<a class="btn btn-peq btn-blanco" href="./">Salir de la prueba</a>' : ''}</span></div>` : '');
 
 const ESTADO = {
   nueva: { texto: '¡Nueva!', boton: '¡Empezar! ▶' },

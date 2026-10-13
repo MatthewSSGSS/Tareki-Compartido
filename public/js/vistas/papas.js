@@ -18,7 +18,8 @@ import { numeroBonito, numeroWa, linkWa } from '../whatsapp.js';
 import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
 import { abrirPedir, pintarMisPedidos } from './pedidos.js';
 import { abrirApariencia } from '../apariencia.js';
-import { bandaPrueba } from '../piezas.js';
+import { bandaPrueba, linkInscribirse } from '../piezas.js';
+import { VERSION_PRUEBA } from '../config.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -62,12 +63,16 @@ export async function render(root, ctx) {
     ${esEquipo ? '' : `
       <div class="titulo-seccion"><h2>👤 Tu cuenta</h2></div>
       <div class="cuenta">
-        <div class="card cuenta-pago ${estadoAcceso(ctx.usuario).dias <= 3 ? 'pronto' : ''}">
+        ${VERSION_PRUEBA ? `<div class="card cuenta-pago"><span class="em" aria-hidden="true">🎟️</span>
+          <div><span class="suave peq">¿Te gustó?</span><b>Inscribe a tu familia</b>
+            <small class="suave">Primero pagas la mensualidad y te enviamos tu código de invitación para crear tu cuenta.</small></div>
+          ${linkInscribirse() ? `<a class="btn btn-peq btn-wa" href="${linkInscribirse()}" target="_blank" rel="noopener">💬 Inscribirme</a>` : ''}
+        </div>` : `<div class="card cuenta-pago ${estadoAcceso(ctx.usuario).dias <= 3 ? 'pronto' : ''}">
           <span class="em" aria-hidden="true">💳</span>
           <div><span class="suave peq">Acceso hasta el</span><b>${fechaLarga(estadoAcceso(ctx.usuario).hasta)}</b>
             <small class="suave">${estadoAcceso(ctx.usuario).dias === 0 ? 'Hoy es el último día' : estadoAcceso(ctx.usuario).dias <= 3 ? `Vence en ${estadoAcceso(ctx.usuario).dias === 1 ? '1 día' : `${estadoAcceso(ctx.usuario).dias} días`}` : 'Mensualidad al día ✓'}</small></div>
           <button class="btn btn-peq ${estadoAcceso(ctx.usuario).dias <= 3 ? 'btn-sol' : 'btn-blanco'}" data-pagar>Cómo pagar</button>
-        </div>
+        </div>`}
         <div id="avisos"></div>
       </div>
       <div class="card cuenta-cel"><span class="em" aria-hidden="true">📱</span><div><span class="suave peq">Tu WhatsApp</span><b>${ctx.usuario.celular ? esc(numeroBonito(ctx.usuario.celular)) : 'Sin registrar'}</b><small class="suave">Aquí te escribimos sobre pagos y novedades.</small></div><button class="btn btn-peq btn-blanco" data-cel>${ctx.usuario.celular ? 'Cambiar' : 'Agregar'}</button></div>

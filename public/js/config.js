@@ -16,6 +16,11 @@ export const VAPID_PUBLICA = 'BEVjTKOA50KtLVVyL-onOguIxrEGvRt7rrRxRIlZ3IfZ8aJgNM
 
 /** Sin Supabase (o abriendo la app con ?demo) todo vive en este navegador con datos de prueba. */
 export const MODO_DEMO = !(NUBE.url && NUBE.clave) || new URLSearchParams(location.search).has('demo');
+/** La versión de prueba para familias (?demo). Con ?demo&dev se ve la demostración completa (pagos, equipo…). */
+export const VERSION_PRUEBA = MODO_DEMO && !new URLSearchParams(location.search).has('dev');
+
+/** WhatsApp para inscribirse (lo ve quien está en la versión de prueba), ej. '573001234567'. Vacío = sin botón. */
+export const CONTACTO_WHATSAPP = '';
 
 export const AVATARES = ['🦊', '🐯', '🐼', '🐸', '🦁', '🐨', '🐙', '🦄', '🐧', '🐶', '🐱', '🐵', '🦖', '🐬', '🦋', '🐢'];
 
