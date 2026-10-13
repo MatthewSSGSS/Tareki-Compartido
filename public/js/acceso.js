@@ -7,6 +7,7 @@
 import * as datos from './datos.js';
 import { esc, hoy, diasEntre, fechaBonita, primerNombre, diaDe } from './util.js';
 import { abrirHoja, aviso } from './ui.js';
+import { MODO_DEMO } from './config.js';
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 /** "12 de noviembre" (siempre con la fecha, no "hace 3 días"). */
@@ -48,6 +49,11 @@ export function chipAcceso(f) {
 export function datosDePago(cobro, usuario) {
   const mensaje = `Hola 👋 Soy ${usuario?.nombre || ''}. Acabo de pagar la mensualidad de Learnground${cobro.precio ? ` (${pesos(cobro.precio)})` : ''}. Te envío el comprobante.`;
   const wa = cobro.whatsapp ? `https://wa.me/${cobro.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}` : '';
+  // En la versión de prueba no se muestran datos de pago (nadie debe pagarle a una llave de ejemplo)
+  if (MODO_DEMO && usuario?.rol !== 'equipo') {
+    return `<div class="pago"><div class="ok-caja">🧪 <b>Esto es la versión de prueba: aquí no se paga nada.</b></div>
+      <p class="suave">En tu cuenta real, aquí aparecen el valor de la mensualidad, la llave Bre-B para pagar desde la app de tu banco (Davivienda, Bancolombia, Nequi, Daviplata…), los pasos y un botón para enviarnos el comprobante por WhatsApp.</p></div>`;
+  }
   if (!cobro.llave && !cobro.precio) return '<p class="suave">El equipo de Learnground te dirá cómo pagar.</p>';
   return `<div class="pago">
     ${cobro.precio ? `<div class="pago-valor"><span>Mensualidad</span><b>${pesos(cobro.precio)}</b></div>` : ''}
