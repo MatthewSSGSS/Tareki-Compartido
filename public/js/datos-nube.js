@@ -47,7 +47,12 @@ export async function usuario() {
   const u = data.session?.user;
   if (!u) { perfilCache = null; return null; }
   if (perfilCache?.id !== u.id) {
-    const { data: p } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo, acceso_hasta, suspendido').eq('id', u.id).maybeSingle();
+    let { data: p, error } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo, acceso_hasta, suspendido').eq('id', u.id).maybeSingle();
+    // Si la base todavía no tiene las columnas de la mensualidad (falta correr accesos.sql), seguir funcionando sin bloquear a nadie
+    if (error && /acceso_hasta|suspendido|column/i.test(error.message)) {
+      ({ data: p } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo').eq('id', u.id).maybeSingle());
+      if (p) p = { ...p, acceso_hasta: '2999-12-31', suspendido: false };
+    }
     if (!p) return null; // cuenta sin perfil (no debería pasar)
     perfilCache = { id: p.id, rol: p.rol, dueno: p.dueno, nombre: p.nombre, correo: p.correo, accesoHasta: p.acceso_hasta, suspendido: p.suspendido };
   }
