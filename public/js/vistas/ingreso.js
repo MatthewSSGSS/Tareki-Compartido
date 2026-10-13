@@ -10,11 +10,20 @@ import { aviso, confeti, abrirHoja, cerrarHoja } from '../ui.js';
 
 const FLOTAN = ['📚', '⭐', '🎈', '✏️', '🔢', '🌎', '🧠', '🎨', '🚀', '🔬'];
 
-export function render(root, ctx) {
+export async function render(root, ctx) {
   const codigoUrl = ctx.params[0] || '';
   let modo = codigoUrl ? 'codigo' : 'entrar';
   // En la app real, ?demo abre la "versión de prueba": solo se elige cómo verla (sin el formulario de entrar)
-  const PRUEBA = MODO_DEMO && !!NUBE.url && !codigoUrl;
+  // (con ?demo&dev se ve la demostración completa, también la del equipo, para probar la app)
+  const URL_PARAMS = new URLSearchParams(location.search);
+  const PRUEBA = MODO_DEMO && !!NUBE.url && !codigoUrl && !URL_PARAMS.has('dev');
+  // Desde "Probar" de la app real se entra directo como familia (sin pasar por esta pantalla)
+  if (PRUEBA && URL_PARAMS.has('familia')) {
+    history.replaceState(null, '', `${location.pathname}?demo${location.hash}`);
+    await datos.ingresar('familia@tareki.demo', 'tareki');
+    ctx.navegar('#/');
+    return;
+  }
 
   root.innerHTML = `
     <div class="flotan" aria-hidden="true">${FLOTAN.map((e, i) => `<span style="left:${(i * 37) % 92}%;top:${(i * 53) % 88}%;animation-delay:-${i * 0.9}s">${e}</span>`).join('')}</div>
@@ -30,8 +39,7 @@ export function render(root, ctx) {
         <h2>🎮 Versión de prueba</h2>
         <p>Mira cómo funciona Learnground con datos inventados y una lección de muestra. No necesitas cuenta y nada de lo que hagas aquí es real.</p>
         <div class="prueba-opciones">
-          <button class="prueba-op" data-demo="familia"><span class="em">👨‍👩‍👧</span><b>Como familia</b><small>Lo que ven los niños y los papás: lecciones, juegos, racha, logros y el progreso con consejos.</small></button>
-          <button class="prueba-op" data-demo="equipo"><span class="em">🧑‍🏫</span><b>Como equipo</b><small>El panel para subir lecciones, ver a cada niño, las familias, los mensajes y los pedidos.</small></button>
+          <button class="prueba-op" data-demo="familia"><span class="em">👨‍👩‍👧</span><b>Entrar a la prueba</b><small>Lo que ven los niños y los papás: lecciones, juegos, racha, logros y el progreso con consejos.</small></button>
         </div>
         <a class="link peq" href="./">← Volver para entrar con mi cuenta</a>
       </div>` : MODO_DEMO ? `<div class="demo-caja">
@@ -39,7 +47,7 @@ export function render(root, ctx) {
         <span>Todo se guarda solo en este navegador. Prueba la app como:</span>
         <div class="fila"><button class="btn btn-peq btn-sol" data-demo="familia">👨‍👩‍👧 Una familia</button><button class="btn btn-peq btn-azul" data-demo="equipo">🧑‍🏫 El equipo</button></div>
         <span class="suave peq">Para probar el registro usa el código <b>LEARN-DEMO</b>.</span>
-      </div>` : `<a class="prueba-caja" href="?demo#/entrar">
+      </div>` : `<a class="prueba-caja" href="?demo&familia#/entrar">
         <span class="em" aria-hidden="true">🎮</span>
         <span><b>¿Quieres ver cómo funciona?</b><small>Entra a la versión de prueba: una lección de muestra y datos inventados. Sin cuenta.</small></span>
         <span class="btn btn-peq btn-sol">Probar</span>

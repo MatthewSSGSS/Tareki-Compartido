@@ -57,4 +57,4 @@
 - `public/js/avisos.js` decide qué mostrar por dispositivo: iPhone/iPad necesita iOS 16.4+ y la app instalada en inicio; navegadores dentro de WhatsApp/Instagram no sirven. `public/sw.js` muestra el aviso y abre la URL; si cambia, subir su VERSION.
 
 ## Probar
-`python -m http.server 8800 --directory public` y abrir http://localhost:8800. En modo demo: botones "Una familia" / "El equipo"; código de registro `TAREKI-DEMO`. Hay recorrido headless con Playwright (miniconda) en Edge y WebKit a 390×844 y 1366×900.
+`python -m http.server 8800 --directory public` y abrir http://localhost:8800. En la app real, "Probar" (pantalla de entrada) abre `?demo&familia`: versión de prueba **solo como familia**, con franja "Salir de la prueba" (`bandaPrueba()` en `piezas.js`). Para la demostración completa (también el equipo) usar `?demo&dev`: botones "Una familia" / "El equipo"; código de registro `LEARN-DEMO`. Hay recorrido headless con Playwright (miniconda) en Edge y WebKit a 390×844 y 1366×900.
