@@ -8,6 +8,14 @@ import { hoy, sumarDias } from './util.js';
 
 const ARCHIVO_MUESTRA = 'demo/fracciones.html';
 
+// "Foto" del cuaderno para el pedido de muestra (un dibujo, no una foto real)
+const FOTO_MUESTRA = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <rect width="600" height="800" fill="#fffdf4"/><line x1="70" y1="0" x2="70" y2="800" stroke="#ff9dbd" stroke-width="3"/>
+  ${Array.from({ length: 22 }, (_, i) => `<line x1="0" x2="600" y1="${90 + i * 32}" y2="${90 + i * 32}" stroke="#bcd7f5" stroke-width="2"/>`).join('')}
+  <g font-family="Comic Sans MS, cursive" fill="#2a3a8c"><text x="90" y="80" font-size="34">Tema: multiplicación</text>
+  <text x="90" y="178" font-size="28">• Por 2 cifras: 24 × 13</text><text x="90" y="242" font-size="28">• Problemas con dinero</text>
+  <text x="90" y="306" font-size="28">• Tablas del 6, 7 y 8</text><text x="90" y="402" font-size="26" fill="#d0405a">Evaluación: viernes</text></g></svg>`)}`;
+
 // Lo mismo que la lección de muestra le cuenta a la app al abrirse (FTOP, GAMES y TIPS).
 const META_MUESTRA = {
   titulo: 'Las fracciones',
@@ -45,7 +53,7 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 8,
+    version: 9,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
       { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1), celular: '573001234567' },
@@ -95,7 +103,11 @@ export function semilla() {
     chat: [
       { id: 'c1', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: 'Hola, ¿la lección de fracciones también sirve para el quiz del viernes?', leido: true, creado: ts(2, 19) },
       { id: 'c2', familiaId: 'u-familia', autor: 'u-equipo', deEquipo: true, texto: '¡Hola Laura! Sí, cubre los mismos temas. Que Sofía haga la ficha dos veces antes del viernes 🐬', leido: true, creado: ts(2, 20) },
+      { id: 'c3p', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: '📚 Pedido de lección para Tomás\n🔢 Matemáticas · para esta semana\n📝 Multiplicación por 2 cifras y problemas con dinero. En el colegio le están costando las tablas del 6, 7 y 8.\n📷 1 foto', leido: false, creado: ts(0, 8), pedidoId: 'p1' },
       { id: 'c3', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: 'Perfecto, gracias. Ya pagué la mensualidad, les mando el comprobante por WhatsApp.', leido: false, creado: ts(0, 9) },
+    ],
+    pedidos: [
+      { id: 'p1', familiaId: 'u-familia', ninoId: 'n-tomas', materia: 'mate', temas: 'Multiplicación por 2 cifras y problemas con dinero. En el colegio le están costando las tablas del 6, 7 y 8.', para: sumarDias(h, 4), fotos: [FOTO_MUESTRA], estado: 'nuevo', atendidoPor: null, creado: ts(0, 8), actualizado: ts(0, 8) },
     ],
     chatEquipo: [
       { id: 'ce1', autor: 'u-equipo', texto: '¡Hola equipo! Desde hoy usamos este chat para coordinarnos 👥', creado: ts(1, 10) },

@@ -343,15 +343,24 @@ export async function quitarFamilia(familiaId) {
     const archivos = ok(await cliente().from('lecciones').select('archivo').in('nino_id', hijos)).map((l) => l.archivo);
     if (archivos.length) await cliente().storage.from('lecciones').remove(archivos);
   }
+  const { data: peds } = await cliente().from('pedidos').select('fotos').eq('familia_id', familiaId);
+  const fotos = (peds || []).flatMap((p) => p.fotos || []);
+  if (fotos.length) await cliente().storage.from('adjuntos').remove(fotos);
   ok(await cliente().rpc('quitar_familia', { p_familia: familiaId }), 'No se pudo quitar la familia.');
 }
 
 // --- Chat familia ↔ equipo -------------------------------------------------------------------------
-const aChat = (c) => ({ id: c.id, familiaId: c.familia_id, autor: c.autor, autorNombre: c.quien?.nombre || '', deEquipo: c.de_equipo, texto: c.texto, leido: c.leido, creado: c.creado });
+const aChat = (c) => ({
+  id: c.id, familiaId: c.familia_id, autor: c.autor, autorNombre: c.quien?.nombre || '', deEquipo: c.de_equipo, texto: c.texto, leido: c.leido, creado: c.creado,
+  pedidoId: c.pedido_id || null, pedido: c.pedido ? { id: c.pedido.id, estado: c.pedido.estado, fotos: c.pedido.fotos || [] } : null,
+});
 
 /** La conversación de una familia (la familia: la suya; el equipo: la que pida). */
 export async function chat(familiaId) {
-  return ok(await cliente().from('chat').select('*, quien:perfiles!chat_autor_fkey(nombre)').eq('familia_id', familiaId).order('creado').limit(500)).map(aChat);
+  const consulta = (campos) => cliente().from('chat').select(campos).eq('familia_id', familiaId).order('creado').limit(500);
+  let r = await consulta('*, quien:perfiles!chat_autor_fkey(nombre), pedido:pedidos(id, estado, fotos)');
+  if (r.error) r = await consulta('*, quien:perfiles!chat_autor_fkey(nombre)'); // aún no se corre pedidos.sql
+  return ok(r).map(aChat);
 }
 
 /** Equipo: el último mensaje y los sin leer de cada familia. */
@@ -366,11 +375,12 @@ export async function chatResumen() {
   return [...por.values()];
 }
 
-export async function enviarChat({ familiaId, texto }) {
+export async function enviarChat({ familiaId, texto, pedidoId = null }) {
   const yo = await usuario();
   const t = String(texto || '').trim();
   if (!t) throw new Error('Escribe un mensaje.');
-  const c = ok(await cliente().from('chat').insert({ familia_id: familiaId, autor: yo.id, de_equipo: yo.rol === 'equipo', texto: t.slice(0, 1000) }).select().single(), 'No se pudo enviar el mensaje.');
+  const fila = { familia_id: familiaId, autor: yo.id, de_equipo: yo.rol === 'equipo', texto: t.slice(0, 1000), ...(pedidoId ? { pedido_id: pedidoId } : {}) };
+  const c = ok(await cliente().from('chat').insert(fila).select().single(), 'No se pudo enviar el mensaje.');
   // Notificación al otro lado. La promesa dice a cuántos dispositivos salió ({enviados, total}).
   const notificacion = cliente().functions.invoke('avisos', { body: { tipo: 'chat', id: c.id } })
     .then(({ data }) => data || null).catch(() => null);
@@ -394,6 +404,72 @@ export async function chatSinLeer() {
   q = yo.rol === 'equipo' ? q.eq('de_equipo', false) : q.eq('de_equipo', true).eq('familia_id', yo.id);
   const { count } = await q;
   return count || 0;
+}
+
+// --- Pedidos de lecciones (la familia pide, el equipo arma) -------------------------------------------
+const aPedido = (p) => ({
+  id: p.id, familiaId: p.familia_id, familiaNombre: p.familia?.nombre || '', ninoId: p.nino_id, nino: p.nino || null,
+  materia: p.materia, temas: p.temas, para: p.para, fotos: p.fotos || [], estado: p.estado,
+  atendidoPor: p.atendido_por, atendidoNombre: p.atendio?.nombre || '', creado: p.creado, actualizado: p.actualizado,
+});
+const sinPedidos = (error) => /schema cache|does not exist/i.test(error?.message || '');
+const FALTA_SQL = 'Los pedidos aún no están activados en Supabase (falta correr pedidos.sql).';
+
+/** La familia: los suyos. El equipo: todos (los más nuevos primero). */
+export async function pedidos() {
+  const { data, error } = await cliente().from('pedidos')
+    .select('*, nino:ninos(id, nombre, avatar, color), familia:perfiles!pedidos_familia_id_fkey(nombre), atendio:perfiles!pedidos_atendido_por_fkey(nombre)')
+    .order('creado', { ascending: false }).limit(300);
+  if (error) { if (sinPedidos(error)) return []; falla(error, 'No se pudieron cargar los pedidos.'); }
+  return data.map(aPedido);
+}
+
+/** Cuántos pedidos esperan a que alguien del equipo los tome. */
+export async function pedidosNuevos() {
+  const { count, error } = await cliente().from('pedidos').select('id', { count: 'exact', head: true }).eq('estado', 'nuevo');
+  return error ? 0 : count || 0;
+}
+
+/** Sube las fotos (Blobs ya achicados), guarda el pedido y lo pone en el chat (eso avisa al equipo). */
+export async function crearPedido({ ninoId, materia, temas, para, fotos = [], textoChat }) {
+  const yo = await usuario();
+  const id = crypto.randomUUID();
+  const rutas = [];
+  try {
+    for (const [i, f] of fotos.entries()) {
+      const ext = f.type === 'image/png' ? 'png' : f.type === 'image/webp' ? 'webp' : 'jpg';
+      const ruta = `${yo.id}/${id}/${i + 1}.${ext}`;
+      const { error } = await cliente().storage.from('adjuntos').upload(ruta, f, { contentType: f.type || 'image/jpeg', upsert: false });
+      if (error) { if (/bucket not found/i.test(error.message)) throw new Error(FALTA_SQL); falla(error, `No se pudo subir la foto ${i + 1}. Intenta de nuevo.`); }
+      rutas.push(ruta);
+    }
+    const { error } = await cliente().from('pedidos').insert({ id, familia_id: yo.id, nino_id: ninoId || null, materia, temas: String(temas || '').slice(0, 2000), para: para || null, fotos: rutas });
+    if (error) { if (sinPedidos(error)) throw new Error(FALTA_SQL); falla(error, 'No se pudo enviar el pedido.'); }
+  } catch (e) {
+    if (rutas.length) cliente().storage.from('adjuntos').remove(rutas).catch(() => {});
+    throw e;
+  }
+  const mensaje = await enviarChat({ familiaId: yo.id, texto: textoChat, pedidoId: id }).catch(() => null);
+  return { id, mensaje };
+}
+
+/** Equipo: nuevo → en_proceso → listo (queda anotado quién lo tomó). */
+export async function cambiarEstadoPedido(id, estado) {
+  const yo = await usuario();
+  ok(await cliente().from('pedidos').update({ estado, atendido_por: estado === 'nuevo' ? null : yo.id, actualizado: new Date().toISOString() }).eq('id', id), 'No se pudo cambiar el pedido.');
+}
+
+export async function borrarPedido(pedido) {
+  if (pedido.fotos?.length) await cliente().storage.from('adjuntos').remove(pedido.fotos);
+  ok(await cliente().from('pedidos').delete().eq('id', pedido.id), 'No se pudo borrar el pedido.');
+}
+
+/** Enlaces temporales (1 hora) para ver las fotos; con descargar: true, para bajarlas. */
+export async function urlsFotos(rutas, { descargar = false } = {}) {
+  if (!rutas?.length) return [];
+  const { data, error } = await cliente().storage.from('adjuntos').createSignedUrls(rutas, 3600, descargar ? { download: true } : undefined);
+  if (error) return rutas.map(() => null);
+  return rutas.map((r) => data.find((d) => d.path === r)?.signedUrl || null);
 }
 
 // --- Chat interno del equipo ------------------------------------------------------------------------

@@ -17,6 +17,7 @@
 import { semilla } from './demo.js';
 import { uid, hoy, sumarDias, plano, fechaLocal } from './util.js';
 import { INVITACION_DIAS } from './config.js';
+import { comprimirFoto, aDataUrl } from './fotos.js';
 
 const CLAVE = 'tareki:demo';
 const CLAVE_HTML = 'tareki:demo:html:';
@@ -26,7 +27,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 8) return d;
+    if (d && d.version === 9) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -392,6 +393,7 @@ export async function quitarFamilia(familiaId) {
   db.actividad = db.actividad.filter((a) => !hijos.includes(a.ninoId));
   db.ninos = db.ninos.filter((n) => n.familiaId !== familiaId);
   db.historial = db.historial.filter((h) => h.familiaId !== familiaId);
+  db.pedidos = (db.pedidos || []).filter((p) => p.familiaId !== familiaId);
   db.usuarios = db.usuarios.filter((u) => u.id !== familiaId);
   db.invitaciones.forEach((i) => { if (i.usadaPor === familiaId) i.usadaPor = null; });
   guardar();
@@ -401,7 +403,10 @@ export async function quitarFamilia(familiaId) {
 export async function chat(familiaId) {
   const u = yo();
   if (!u || !(u.rol === 'equipo' || u.id === familiaId)) falla('No tienes permiso para ver esto.');
-  return (db.chat || []).filter((c) => c.familiaId === familiaId).map((c) => ({ ...c, autorNombre: db.usuarios.find((x) => x.id === c.autor)?.nombre || '' }));
+  return (db.chat || []).filter((c) => c.familiaId === familiaId).map((c) => {
+    const p = c.pedidoId && (db.pedidos || []).find((x) => x.id === c.pedidoId);
+    return { ...c, autorNombre: db.usuarios.find((x) => x.id === c.autor)?.nombre || '', pedido: p ? { id: p.id, estado: p.estado, fotos: p.fotos } : null };
+  });
 }
 export async function chatResumen() {
   soloEquipo();
@@ -413,12 +418,12 @@ export async function chatResumen() {
   }
   return [...por.values()];
 }
-export async function enviarChat({ familiaId, texto }) {
+export async function enviarChat({ familiaId, texto, pedidoId = null }) {
   const u = yo();
   const t = String(texto || '').trim();
   if (!t) falla('Escribe un mensaje.');
   if (!(u.rol === 'equipo' || u.id === familiaId)) falla('No tienes permiso.');
-  const c = { id: uid(), familiaId, autor: u.id, deEquipo: u.rol === 'equipo', texto: t.slice(0, 1000), leido: false, creado: ahora() };
+  const c = { id: uid(), familiaId, autor: u.id, deEquipo: u.rol === 'equipo', texto: t.slice(0, 1000), leido: false, creado: ahora(), pedidoId };
   (db.chat ||= []).push(c); guardar();
   return { ...c, autorNombre: u.nombre, notificacion: Promise.resolve({ demo: true, enviados: 0, total: 0 }) };
 }
@@ -433,6 +438,50 @@ export async function chatSinLeer() {
   if (!u) return 0;
   return (db.chat || []).filter((c) => !c.leido && (u.rol === 'equipo' ? !c.deEquipo : c.deEquipo && c.familiaId === u.id)).length;
 }
+
+// --- Pedidos de lecciones --------------------------------------------------------------------------
+const aPedido = (p) => {
+  const n = db.ninos.find((x) => x.id === p.ninoId);
+  return {
+    ...p, familiaNombre: db.usuarios.find((x) => x.id === p.familiaId)?.nombre || '',
+    nino: n ? { id: n.id, nombre: n.nombre, avatar: n.avatar, color: n.color } : null,
+    atendidoNombre: db.usuarios.find((x) => x.id === p.atendidoPor)?.nombre || '',
+  };
+};
+export async function pedidos() {
+  const u = yo();
+  if (!u) return [];
+  return (db.pedidos || []).filter((p) => u.rol === 'equipo' || p.familiaId === u.id).map(aPedido).sort((a, b) => b.creado.localeCompare(a.creado));
+}
+export async function pedidosNuevos() { return yo()?.rol === 'equipo' ? (db.pedidos || []).filter((p) => p.estado === 'nuevo').length : 0; }
+export async function crearPedido({ ninoId, materia, temas, para, fotos = [], textoChat }) {
+  const u = yo();
+  if (!u || u.rol !== 'familia') falla('Solo una familia puede pedir lecciones.');
+  if (ninoId && !db.ninos.some((n) => n.id === ninoId && n.familiaId === u.id)) falla('No tienes permiso.');
+  // En la demostración las fotos se guardan en el navegador: más pequeñas para que quepan
+  const datosFotos = [];
+  for (const f of fotos.slice(0, 8)) datosFotos.push(await aDataUrl(await comprimirFoto(f, { max: 700, calidad: 0.6 })));
+  const p = { id: uid(), familiaId: u.id, ninoId: ninoId || null, materia, temas: String(temas || '').slice(0, 2000), para: para || null, fotos: datosFotos, estado: 'nuevo', atendidoPor: null, creado: ahora(), actualizado: ahora() };
+  (db.pedidos ||= []).push(p); guardar();
+  const mensaje = await enviarChat({ familiaId: u.id, texto: textoChat, pedidoId: p.id });
+  return { id: p.id, mensaje };
+}
+export async function cambiarEstadoPedido(id, estado) {
+  soloEquipo();
+  const p = (db.pedidos || []).find((x) => x.id === id);
+  if (!p) falla('Ese pedido ya no existe.');
+  Object.assign(p, { estado, atendidoPor: estado === 'nuevo' ? null : db.sesion, actualizado: ahora() });
+  guardar();
+}
+export async function borrarPedido(pedido) {
+  const u = yo();
+  const p = (db.pedidos || []).find((x) => x.id === pedido.id);
+  if (!p) return;
+  if (!(u?.rol === 'equipo' || (p.familiaId === u?.id && p.estado === 'nuevo'))) falla('No tienes permiso.');
+  db.pedidos = db.pedidos.filter((x) => x.id !== p.id);
+  guardar();
+}
+export async function urlsFotos(rutas) { return [...(rutas || [])]; }
 
 // --- Chat interno del equipo ------------------------------------------------------------------------
 export async function chatEquipo() {

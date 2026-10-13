@@ -25,4 +25,5 @@ export const {
   mensajes, crearMensaje, enviarMensajeYa, borrarMensaje, avisarNinoNuevo, quitarFamilia, cambiarCelular, borrarHistorial,
   chat, chatResumen, enviarChat, marcarChatLeido, chatSinLeer, dispositivosDe,
   chatEquipo, enviarChatEquipo, marcarEquipoVisto, equipoSinLeer, equipoConAvisos,
+  pedidos, pedidosNuevos, crearPedido, cambiarEstadoPedido, borrarPedido, urlsFotos,
 } = d;

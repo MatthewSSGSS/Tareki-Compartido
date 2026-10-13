@@ -16,6 +16,7 @@ import { tarjetaAvisos } from '../avisos.js';
 import { pintarBuzon } from '../buzon.js';
 import { numeroBonito, numeroWa, linkWa } from '../whatsapp.js';
 import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
+import { abrirPedir, pintarMisPedidos } from './pedidos.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -69,6 +70,9 @@ export async function render(root, ctx) {
       <div class="card cuenta-cel"><span class="em" aria-hidden="true">📱</span><div><span class="suave peq">Tu WhatsApp</span><b>${ctx.usuario.celular ? esc(numeroBonito(ctx.usuario.celular)) : 'Sin registrar'}</b><small class="suave">Aquí te escribimos sobre pagos y novedades.</small></div><button class="btn btn-peq btn-blanco" data-cel>${ctx.usuario.celular ? 'Cambiar' : 'Agregar'}</button></div>
       <div class="card escribenos" id="escribenos"><span class="em" aria-hidden="true">💬</span><div><b>¿Dudas? Escríbenos</b><small class="suave">Le llega a todo el equipo de Learnground.</small></div>
         <div class="fila envolver"><a class="btn btn-peq" href="#/chat">💬 Chat con el equipo <span class="chip" id="chatN" hidden></span></a><a class="btn btn-peq btn-wa" id="waEquipo" target="_blank" rel="noopener" hidden>WhatsApp</a></div></div>
+      <div class="card escribenos pedir"><span class="em" aria-hidden="true">📚</span><div><b>¿Necesitan una lección?</b><small class="suave">Cuéntanos los temas y súbenos fotos del cuaderno o la guía: nosotros la armamos.</small></div>
+        <div class="fila envolver"><button class="btn btn-peq btn-sol" data-pedir>📚 Pedir una lección</button></div></div>
+      <div id="misPedidos"></div>
       <section class="card" style="margin-top:14px"><h2>📬 Avisos del equipo</h2><div id="buzon"></div></section>`}
     <div class="sep"></div>
     <div class="columnas">
@@ -110,6 +114,8 @@ export async function render(root, ctx) {
     datos.ajustesCobro().then((c) => { const a = root.querySelector('#waEquipo'); if (a && numeroWa(c.whatsapp)) { a.href = linkWa(c.whatsapp, `Hola 👋 Soy ${ctx.usuario.nombre}, de Learnground.`); a.hidden = false; } }).catch(() => {});
     root.querySelector('[data-cel]')?.addEventListener('click', () => editarCelular(ctx.usuario.id, ctx.usuario.celular, () => ctx.refrescar()));
     root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
+    pintarMisPedidos(root.querySelector('#misPedidos'), ctx);
+    root.querySelector('[data-pedir]')?.addEventListener('click', () => abrirPedir(ctx, { alEnviar: () => pintarMisPedidos(root.querySelector('#misPedidos'), ctx) }));
   }
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
     if (ctx.perfil) ctx.elegirPerfil(b.dataset.nino);
