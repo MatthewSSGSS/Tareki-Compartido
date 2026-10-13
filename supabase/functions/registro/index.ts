@@ -27,13 +27,16 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return error("Método no permitido.");
 
-  let entrada: { codigo?: string; nombre?: string; correo?: string; clave?: string };
+  let entrada: { codigo?: string; nombre?: string; correo?: string; clave?: string; celular?: string };
   try { entrada = await req.json(); } catch { return error("Solicitud inválida."); }
 
   const codigo = String(entrada.codigo || "").trim().toUpperCase();
   const nombre = String(entrada.nombre || "").trim().slice(0, 60);
   const correo = String(entrada.correo || "").trim().toLowerCase();
   const clave = String(entrada.clave || "");
+  // Celular para WhatsApp (familias). Si es colombiano sin indicativo, se le pone 57.
+  let celular = String(entrada.celular || "").replace(/\D/g, "").slice(0, 15);
+  if (celular.length === 10 && celular.startsWith("3")) celular = "57" + celular;
   if (!codigo) return error("Escribe el código de invitación.");
   if (!nombre) return error("Escribe tu nombre.");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return error("Ese correo no se ve bien.");
@@ -75,7 +78,7 @@ Deno.serve(async (req) => {
   const hasta = new Date(`${hoyCo}T12:00:00Z`);
   hasta.setUTCDate(hasta.getUTCDate() + (inv.dias_acceso || 30));
   const accesoHasta = rol === "familia" ? hasta.toISOString().slice(0, 10) : null;
-  const { error: e3 } = await admin.from("perfiles").insert({ id, rol, dueno: inv.rol === "dueno", nombre, correo, acceso_hasta: accesoHasta });
+  const { error: e3 } = await admin.from("perfiles").insert({ id, rol, dueno: inv.rol === "dueno", nombre, correo, acceso_hasta: accesoHasta, celular: rol === "familia" ? celular : "" });
   if (e3) {
     await admin.auth.admin.deleteUser(id);
     await liberar();

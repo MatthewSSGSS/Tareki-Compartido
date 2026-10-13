@@ -101,6 +101,7 @@ export function render(root, ctx) {
       <h2>${inv.rol === 'familia' ? 'Tus datos (papá o mamá)' : 'Tus datos'}</h2>
       <div class="campo"><label for="rNombre">Tu nombre</label><input id="rNombre" autocomplete="name" required></div>
       <div class="campo"><label for="rCorreo">Correo</label><input id="rCorreo" type="email" autocomplete="email" inputmode="email" required><small>Aquí te llegan los avisos y la recuperación de contraseña.</small></div>
+      ${inv.rol === 'familia' ? `<div class="campo"><label for="rCel">Celular (WhatsApp)</label><input id="rCel" type="tel" inputmode="tel" autocomplete="tel" placeholder="300 123 4567" required><small>Para avisarte de pagos y novedades por WhatsApp.</small></div>` : ''}
       <div class="campo"><label for="rClave">Contraseña</label><input id="rClave" type="password" autocomplete="new-password" minlength="8" required><small>Mínimo 8 caracteres. No la compartas con otras familias.</small></div>
       <p class="error" id="rErr" role="alert"></p>
       <button class="btn bloque btn-verde" type="submit">Crear cuenta</button>
@@ -110,7 +111,9 @@ export function render(root, ctx) {
     f.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        await datos.registrarFamilia({ codigo: inv.codigo, nombre: f.rNombre.value, correo: f.rCorreo.value, clave: f.rClave.value });
+        const cel = f.rCel ? f.rCel.value.replace(/\D/g, '') : '';
+        if (f.rCel && cel.length < 10) { caja.querySelector('#rErr').textContent = 'Escribe tu celular de WhatsApp (10 dígitos).'; return; }
+        await datos.registrarFamilia({ codigo: inv.codigo, nombre: f.rNombre.value, correo: f.rCorreo.value, clave: f.rClave.value, celular: cel });
         confeti();
         if (inv.rol === 'familia') {
           aviso('¡Cuenta creada! Ahora creen juntos el perfil de su hijo o hija.', { emoji: '🎉', ms: 5000 });

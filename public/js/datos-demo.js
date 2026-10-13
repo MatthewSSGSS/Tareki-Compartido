@@ -26,7 +26,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 5) return d;
+    if (d && d.version === 6) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -40,7 +40,7 @@ const falla = (msg) => { throw new Error(msg); };
 
 // --- Sesión -------------------------------------------------------------------------
 const yo = () => db.usuarios.find((u) => u.id === db.sesion) || null;
-const sinClave = (u) => (u ? { id: u.id, correo: u.correo, rol: u.rol, nombre: u.nombre, dueno: !!u.dueno, accesoHasta: u.accesoHasta || null, suspendido: !!u.suspendido } : null);
+const sinClave = (u) => (u ? { id: u.id, correo: u.correo, rol: u.rol, nombre: u.nombre, dueno: !!u.dueno, accesoHasta: u.accesoHasta || null, suspendido: !!u.suspendido, celular: u.celular || '' } : null);
 
 export async function usuario() { return sinClave(yo()); }
 
@@ -71,7 +71,7 @@ export async function revisarCodigo(codigo) {
 }
 
 /** Crea la cuenta de una familia. En Supabase esto lo hará una función del servidor. */
-export async function registrarFamilia({ codigo, nombre, correo, clave }) {
+export async function registrarFamilia({ codigo, nombre, correo, clave, celular = '' }) {
   await revisarCodigo(codigo);
   correo = String(correo).trim().toLowerCase();
   if (!nombre.trim()) falla('Escribe tu nombre.');
@@ -81,7 +81,7 @@ export async function registrarFamilia({ codigo, nombre, correo, clave }) {
   const inv = db.invitaciones.find((i) => i.codigo === normalizarCodigo(codigo));
   const rolNuevo = inv.rol === 'familia' || !inv.rol ? 'familia' : 'equipo';
   const u = { id: uid(), correo, clave, rol: rolNuevo, dueno: inv.rol === 'dueno', nombre: nombre.trim(), creado: ahora(),
-    accesoHasta: rolNuevo === 'familia' ? sumarDias(hoy(), inv.diasAcceso || 30) : null, suspendido: false };
+    accesoHasta: rolNuevo === 'familia' ? sumarDias(hoy(), inv.diasAcceso || 30) : null, suspendido: false, celular: limpiarCel(celular) };
   db.usuarios.push(u);
   if (rolNuevo === 'familia') db.historial.unshift({ id: uid(), familiaId: u.id, accion: 'registro', hasta: u.accesoHasta, nota: `Código ${inv.codigo}`, por: '', creado: ahora() });
   inv.usadaPor = u.id; inv.usada = ahora();
@@ -310,7 +310,7 @@ export async function familiasResumen() {
     const hijos = db.ninos.filter((n) => n.familiaId === u.id).map((n) => n.id);
     const act = db.actividad.filter((a) => hijos.includes(a.ninoId) && (a.minutos || a.logros));
     return {
-      id: u.id, nombre: u.nombre, correo: u.correo, creado: u.creado, accesoHasta: u.accesoHasta || null, suspendido: !!u.suspendido,
+      id: u.id, nombre: u.nombre, correo: u.correo, celular: u.celular || '', creado: u.creado, accesoHasta: u.accesoHasta || null, suspendido: !!u.suspendido,
       ultimoIngreso: u.ultimoIngreso || null, ultimoEstudio: act.map((a) => a.dia).sort().at(-1) || null,
       minutos7: act.filter((a) => a.dia >= desde).reduce((s, a) => s + a.minutos, 0),
       ninos: hijos.length, lecciones: db.lecciones.filter((l) => hijos.includes(l.ninoId)).length,
@@ -328,6 +328,14 @@ function familia(familiaId) {
   const f = db.usuarios.find((u) => u.id === familiaId && u.rol === 'familia');
   if (!f) falla('Esa familia no existe.');
   return f;
+}
+
+const limpiarCel = (c) => { let n = String(c || '').replace(/\D/g, '').slice(0, 15); if (n.length === 10 && n.startsWith('3')) n = `57${n}`; return n; };
+export async function cambiarCelular(familiaId, celular) {
+  const u = yo();
+  if (!(u && (u.rol === 'equipo' || u.id === familiaId))) falla('Solo el equipo o la misma familia pueden cambiarlo.');
+  const f = db.usuarios.find((x) => x.id === familiaId);
+  f.celular = limpiarCel(celular); guardar(); return f.celular;
 }
 
 export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {

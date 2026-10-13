@@ -664,3 +664,17 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 .ingreso .marca-nombre { font-size: clamp(1.9em, 9vw, 2.6em); }
 .cabecera .marca-nombre { font-size: clamp(1.25em, 6vw, 1.7em); }
 @media (min-width: 900px) { .menu .menu-marca { gap: 8px; margin: 0 4px 16px; } .menu .menu-marca .marca-nombre { font-size: 1.32em; } .menu .menu-marca img.marca-logo { width: 40px; height: 40px; } }
+
+/* WhatsApp */
+.cuenta-cel { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; margin-top: 14px; box-shadow: var(--sombra-sm); }
+.cuenta-cel .em { font-size: 28px; }
+.cuenta-cel b { display: block; font-family: var(--f-head); font-size: 1.2em; }
+.cuenta-cel small { display: block; }
+.serie { display: grid; gap: 8px; }
+.serie-fila { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; text-decoration: none; color: var(--ink); background: var(--soft); border: 2px solid var(--line); border-radius: 16px; padding: 8px 12px; }
+.serie-fila:hover { background: var(--card); box-shadow: var(--sombra-sm); }
+.serie-fila .av { width: 40px; height: 40px; font-size: 20px; border-width: 2px; }
+.serie-fila b { display: block; font-family: var(--f-head); }
+.serie-fila small { color: var(--muted); }
+.serie-fila.enviado { opacity: .6; }
+.serie-fila.enviado .serie-estado { background: var(--soft); color: var(--muted); }

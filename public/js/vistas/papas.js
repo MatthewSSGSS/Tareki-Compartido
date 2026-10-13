@@ -14,6 +14,7 @@ import { coincidencias } from '../revision.js';
 import { MATERIAS } from '../config.js';
 import { tarjetaAvisos } from '../avisos.js';
 import { pintarBuzon } from '../buzon.js';
+import { numeroBonito } from '../whatsapp.js';
 import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
 
 export async function render(root, ctx) {
@@ -65,6 +66,7 @@ export async function render(root, ctx) {
         </div>
         <div id="avisos"></div>
       </div>
+      <div class="card cuenta-cel"><span class="em" aria-hidden="true">📱</span><div><span class="suave peq">Tu WhatsApp</span><b>${ctx.usuario.celular ? esc(numeroBonito(ctx.usuario.celular)) : 'Sin registrar'}</b><small class="suave">Aquí te escribimos sobre pagos y novedades.</small></div><button class="btn btn-peq btn-blanco" data-cel>${ctx.usuario.celular ? 'Cambiar' : 'Agregar'}</button></div>
       <section class="card" style="margin-top:14px"><h2>📬 Mensajes del equipo</h2><div id="buzon"></div></section>`}
     <div class="sep"></div>
     <div class="columnas">
@@ -102,6 +104,7 @@ export async function render(root, ctx) {
   if (!esEquipo) {
     tarjetaAvisos(root.querySelector('#avisos'));
     pintarBuzon(root.querySelector('#buzon'));
+    root.querySelector('[data-cel]')?.addEventListener('click', () => editarCelular(ctx.usuario.id, ctx.usuario.celular, () => ctx.refrescar()));
     root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
   }
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
@@ -112,6 +115,21 @@ export async function render(root, ctx) {
     const a = analisis.find((x) => x.leccion.id === b.dataset.detalle);
     detalleLeccion(a, nino, { esEquipo, alCambiar: () => ctx.refrescar() });
   }));
+}
+
+/** Pide el celular (WhatsApp) y lo guarda. Lo usan la familia (Papás) y el equipo (ficha de la familia). */
+export function editarCelular(familiaId, actual, alGuardar) {
+  abrirHoja({
+    titulo: 'Celular de WhatsApp',
+    cuerpo: `<div class="campo"><label for="celNuevo">Número</label><input id="celNuevo" type="tel" inputmode="tel" value="${esc(actual || '')}" placeholder="300 123 4567" autofocus><small>Si es de Colombia, basta con los 10 dígitos.</small></div><p class="error" id="celErr" role="alert"></p>`,
+    pie: '<button class="btn" data-ok>Guardar</button>',
+    montar: (el) => el.querySelector('[data-ok]').addEventListener('click', async () => {
+      const v = el.querySelector('#celNuevo').value.replace(/\D/g, '');
+      if (v.length < 10) { el.querySelector('#celErr').textContent = 'Escribe el número completo (10 dígitos).'; return; }
+      try { await datos.cambiarCelular(familiaId, v); cerrarHoja(); aviso('Celular guardado.', { emoji: '📱' }); alGuardar?.(); }
+      catch (x) { el.querySelector('#celErr').textContent = x.message; }
+    }),
+  });
 }
 
 /** Ventana con todo lo de una lección: juegos, fichas, temas y tips de la lección. */

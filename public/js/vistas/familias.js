@@ -10,6 +10,8 @@ import * as datos from '../datos.js';
 import { esc, hoy, sumarDias, diasEntre, fechaBonita, minutosTexto, plano, plural, primerNombre, DIAS_CORTOS } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
 import { estadoAcceso, chipAcceso, fechaLarga, pesos, miles, mascaraPesos } from '../acceso.js';
+import { abrirWhatsApp, numeroBonito } from '../whatsapp.js';
+import { editarCelular } from './papas.js';
 
 const inactiva = (f) => (f.ultimoEstudio ? diasEntre(f.ultimoEstudio, hoy()) : null);
 const textoIngreso = (f) => (f.ultimoIngreso ? `entró ${fechaBonita(f.ultimoIngreso)}` : 'nunca ha entrado');
@@ -83,7 +85,12 @@ export async function detalle(root, ctx) {
   root.innerHTML = `
     <div class="cabecera"><a class="btn btn-peq btn-blanco" href="#/equipo/familias">← Familias</a>${chipAcceso(f)}</div>
     <div class="cabecera"><h1>👨‍👩‍👧 ${esc(f.nombre)}</h1></div>
-    <p class="suave" style="margin:-10px 0 16px">${esc(f.correo)} · se unió ${fechaBonita(f.creado)}</p>
+    <p class="suave" style="margin:-10px 0 12px">${esc(f.correo)} · se unió ${fechaBonita(f.creado)}</p>
+    <div class="fila envolver" style="margin-bottom:18px">
+      <button class="btn btn-wa" data-wa>💬 WhatsApp</button>
+      <span class="chip">📱 ${f.celular ? esc(numeroBonito(f.celular)) : 'Sin celular'}</span>
+      <button class="link peq" data-cel>${f.celular ? 'Cambiar número' : 'Agregar número'}</button>
+    </div>
 
     <div class="kpis">
       <div class="card kpi"><span>Acceso hasta</span><b>${f.accesoHasta ? fechaLarga(f.accesoHasta) : '—'}</b><small>${f.suspendido ? 'Suspendido' : e.activo ? (e.dias === 0 ? 'Vence hoy' : `Quedan ${plural(e.dias, 'día', 'días')}`) : 'Vencido'}</small></div>
@@ -121,6 +128,8 @@ export async function detalle(root, ctx) {
     </div>`;
 
   root.querySelector('[data-pago]').addEventListener('click', () => registrarPago(f, ctx));
+  root.querySelector('[data-wa]').addEventListener('click', async () => abrirWhatsApp(f, hijos.map((n) => n.nombre), await datos.ajustesCobro().catch(() => ({}))));
+  root.querySelector('[data-cel]').addEventListener('click', () => editarCelular(f.id, f.celular, () => ctx.refrescar()));
   root.querySelector('[data-suspender]')?.addEventListener('click', async () => {
     if (!(await confirmar({ titulo: `¿Suspender a ${esc(f.nombre)}?`, texto: 'No podrán entrar a las lecciones hasta que la reactives. <b>No se borra nada</b>: niños, lecciones y progreso quedan guardados.', si: 'Suspender', peligro: true }))) return;
     await accion(() => datos.cambiarAcceso({ familiaId: f.id, accion: 'suspender' }), 'Familia suspendida. Sus datos quedan guardados.', ctx);

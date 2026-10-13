@@ -47,14 +47,15 @@ export async function usuario() {
   const u = data.session?.user;
   if (!u) { perfilCache = null; return null; }
   if (perfilCache?.id !== u.id) {
-    let { data: p, error } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo, acceso_hasta, suspendido').eq('id', u.id).maybeSingle();
-    // Si la base todavía no tiene las columnas de la mensualidad (falta correr accesos.sql), seguir funcionando sin bloquear a nadie
-    if (error && /acceso_hasta|suspendido|column/i.test(error.message)) {
-      ({ data: p } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo').eq('id', u.id).maybeSingle());
-      if (p) p = { ...p, acceso_hasta: '2999-12-31', suspendido: false };
+    // Si a la base le faltan columnas nuevas (falta correr algún .sql), seguir funcionando con lo que haya
+    let p = null;
+    for (const campos of ['id, rol, dueno, nombre, correo, acceso_hasta, suspendido, celular', 'id, rol, dueno, nombre, correo, acceso_hasta, suspendido', 'id, rol, dueno, nombre, correo']) {
+      const r = await cliente().from('perfiles').select(campos).eq('id', u.id).maybeSingle();
+      if (!r.error) { p = r.data; break; }
     }
+    if (p && !('acceso_hasta' in p)) p = { ...p, acceso_hasta: '2999-12-31', suspendido: false };
     if (!p) return null; // cuenta sin perfil (no debería pasar)
-    perfilCache = { id: p.id, rol: p.rol, dueno: p.dueno, nombre: p.nombre, correo: p.correo, accesoHasta: p.acceso_hasta, suspendido: p.suspendido };
+    perfilCache = { id: p.id, rol: p.rol, dueno: p.dueno, nombre: p.nombre, correo: p.correo, accesoHasta: p.acceso_hasta, suspendido: p.suspendido, celular: p.celular || '' };
   }
   return { ...perfilCache };
 }
@@ -84,8 +85,8 @@ export async function revisarCodigo(codigo) {
   return filas[0];
 }
 
-export async function registrarFamilia({ codigo, nombre, correo, clave }) {
-  const { data, error } = await cliente().functions.invoke('registro', { body: { codigo, nombre, correo, clave } });
+export async function registrarFamilia({ codigo, nombre, correo, clave, celular = '' }) {
+  const { data, error } = await cliente().functions.invoke('registro', { body: { codigo, nombre, correo, clave, celular } });
   if (error) falla(error, 'No pudimos crear la cuenta. Intenta de nuevo.');
   if (data?.error) throw new Error(data.error);
   return ingresar(correo, clave);
@@ -270,7 +271,7 @@ export async function guardarAjustesCobro(a) {
 
 export async function familiasResumen() {
   return ok(await cliente().rpc('familias_resumen')).map((f) => ({
-    id: f.id, nombre: f.nombre, correo: f.correo, creado: f.creado, accesoHasta: f.acceso_hasta, suspendido: f.suspendido,
+    id: f.id, nombre: f.nombre, correo: f.correo, celular: f.celular || '', creado: f.creado, accesoHasta: f.acceso_hasta, suspendido: f.suspendido,
     ultimoIngreso: f.ultimo_ingreso, ultimoEstudio: f.ultimo_estudio, minutos7: f.minutos_7, ninos: f.ninos, lecciones: f.lecciones,
   }));
 }
@@ -278,6 +279,13 @@ export async function familiasResumen() {
 export async function historialAcceso(familiaId) {
   const filas = ok(await cliente().from('historial_acceso').select('*, quien:perfiles!historial_acceso_por_fkey(nombre)').eq('familia_id', familiaId).order('creado', { ascending: false }));
   return filas.map((h) => ({ id: h.id, accion: h.accion, meses: h.meses, monto: h.monto, metodo: h.metodo, nota: h.nota, hasta: h.hasta, por: h.quien?.nombre || '', creado: h.creado }));
+}
+
+/** Cambia el celular (WhatsApp) de una familia: la misma familia o el equipo. */
+export async function cambiarCelular(familiaId, celular) {
+  const limpio = ok(await cliente().rpc('cambiar_celular', { p_familia: familiaId, p_celular: celular }), 'No se pudo guardar el celular.');
+  perfilCache = null;
+  return limpio;
 }
 
 export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {

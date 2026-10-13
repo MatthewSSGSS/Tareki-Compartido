@@ -9,6 +9,7 @@ import { MODO_DEMO } from '../config.js';
 import { esc, hoy, fechaLocal, fechaBonita, plural } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
 import { fechaLarga } from '../acceso.js';
+import { enviarEnSerie } from '../whatsapp.js';
 
 const PLANTILLAS = [
   { emoji: '📢', nombre: 'Aviso general', titulo: '📢 Aviso de Learnground', cuerpo: '' , url: '#/inicio' },
@@ -79,6 +80,7 @@ function nuevoMensaje(familias, ctx) {
         <div class="pestanas" role="radiogroup"><button type="button" role="radio" data-cuando="ya" aria-selected="true">⚡ Ahora</button><button type="button" role="radio" data-cuando="luego" aria-selected="false">⏰ Programar</button></div>
         <div class="fila envolver" id="mProg" hidden><input id="mDia" type="date" min="${hoy()}" value="${v.dia}" style="flex:1;min-width:150px"><input id="mHora" type="time" value="${v.hora}" style="flex:1;min-width:120px"></div>
         <small id="mCuandoTxt" class="suave">Sale apenas toques «Enviar».</small></div>
+      <label class="check-fam" id="mWaFila"><input type="checkbox" id="mWa"> 💬 Además enviarlo por WhatsApp a las familias (uno por uno)</label>
       <div class="vista-notif" aria-label="Vista previa"><span class="vn-ico"><img src="img/lulo-128.png" alt=""></span><div><b id="vnT">Título del mensaje</b><p id="vnC">Así se verá la notificación.</p></div></div>
       <p class="error" id="mErr" role="alert"></p>`,
     pie: '<button class="btn btn-verde" data-ok>📨 Enviar</button>',
@@ -99,6 +101,7 @@ function nuevoMensaje(familias, ctx) {
         v.destino = b.dataset.dest;
         el.querySelectorAll('[data-dest]').forEach((x) => x.setAttribute('aria-selected', x === b));
         $('#mFam').hidden = v.destino !== 'familias';
+        $('#mWaFila').hidden = v.destino === 'equipo';
       }));
       el.querySelectorAll('[data-cuando]').forEach((b) => b.addEventListener('click', () => {
         v.ahora = b.dataset.cuando === 'ya';
@@ -117,9 +120,18 @@ function nuevoMensaje(familias, ctx) {
           if (!(programado > new Date())) { $('#mErr').textContent = 'Esa hora ya pasó. Elige una más adelante.'; return; }
         }
         e.target.disabled = true;
+        // Se lee antes de cerrar la ventana (al cerrarla, su contenido desaparece)
+        const porWa = $('#mWa').checked && v.destino !== 'equipo';
+        const textoWa = `${titulo}\n\n${$('#mCuerpo').value}`.trim();
         try {
           const m = await datos.crearMensaje({ titulo, cuerpo: $('#mCuerpo').value, url: $('#mUrl').value, destino: v.destino, familias: elegidas, programado });
           cerrarHoja();
+          if (porWa) {
+            const para = v.destino === 'todas' ? familias : familias.filter((f) => elegidas.includes(f.id));
+            ctx.refrescar();
+            setTimeout(() => enviarEnSerie(para, textoWa), 400);
+            return;
+          }
           if (m.enviado || m.resultado) { confeti(); aviso(MODO_DEMO ? 'Mensaje enviado al buzón.' : `¡Enviado a ${plural(m.resultado?.personas || 0, 'persona', 'personas')}!`, { emoji: '📨', ms: 5000 }); }
           else aviso(`Programado: ${fechaLarga(fechaLocal(programado))}, ${hora(programado)}`, { emoji: '⏰', ms: 5000 });
           ctx.refrescar();
