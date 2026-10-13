@@ -13,7 +13,7 @@ import { fechaLarga } from '../acceso.js';
 const PLANTILLAS = [
   { emoji: '📢', nombre: 'Aviso general', titulo: '📢 Aviso de Tareki', cuerpo: '' , url: '#/inicio' },
   { emoji: '💳', nombre: 'Recordar pago', titulo: '💳 Recordatorio de mensualidad', cuerpo: 'Les recordamos pagar la mensualidad de Tareki para que el aprendizaje siga sin pausas. ¡Gracias!', url: '#/papas' },
-  { emoji: '🎉', nombre: 'Felicitar', titulo: '🎉 ¡Felicitaciones!', cuerpo: '¡Qué semana! Se nota el esfuerzo. Sigan así 🦉', url: '#/logros' },
+  { emoji: '🎉', nombre: 'Felicitar', titulo: '🎉 ¡Felicitaciones!', cuerpo: '¡Qué semana! Se nota el esfuerzo. Sigan así 🐬', url: '#/logros' },
   { emoji: '📚', nombre: 'Lecciones nuevas', titulo: '📚 Hay lecciones nuevas', cuerpo: 'Ya subimos lecciones nuevas. ¡Ábranlas hoy y ganen estrellas!', url: '#/inicio' },
   { emoji: '📝', nombre: 'Antes de evaluación', titulo: '📝 Se viene evaluación', cuerpo: 'Esta semana hay evaluación en el colegio: practiquen la ficha y el simulacro 15 minutos al día.', url: '#/inicio' },
 ];
@@ -79,7 +79,7 @@ function nuevoMensaje(familias, ctx) {
         <div class="pestanas" role="radiogroup"><button type="button" role="radio" data-cuando="ya" aria-selected="true">⚡ Ahora</button><button type="button" role="radio" data-cuando="luego" aria-selected="false">⏰ Programar</button></div>
         <div class="fila envolver" id="mProg" hidden><input id="mDia" type="date" min="${hoy()}" value="${v.dia}" style="flex:1;min-width:150px"><input id="mHora" type="time" value="${v.hora}" style="flex:1;min-width:120px"></div>
         <small id="mCuandoTxt" class="suave">Sale apenas toques «Enviar».</small></div>
-      <div class="vista-notif" aria-label="Vista previa"><span class="vn-ico">🦉</span><div><b id="vnT">Título del mensaje</b><p id="vnC">Así se verá la notificación.</p></div></div>
+      <div class="vista-notif" aria-label="Vista previa"><span class="vn-ico"><img src="img/lulo-128.png" alt=""></span><div><b id="vnT">Título del mensaje</b><p id="vnC">Así se verá la notificación.</p></div></div>
       <p class="error" id="mErr" role="alert"></p>`,
     pie: '<button class="btn btn-verde" data-ok>📨 Enviar</button>',
     montar: (el) => {

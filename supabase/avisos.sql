@@ -101,7 +101,7 @@ begin
     if racha > 0 then
       return query select n.familia_id,
         format('🔥 ¡%s, tu racha de %s %s está en peligro!', n.nombre, racha, case when racha = 1 then 'día' else 'días' end),
-        'Juega un ratico hoy para no perderla. ¡Lulo te espera! 🦉', '#/inicio', format('racha:%s:%s', n.id, p_dia);
+        'Juega un ratico hoy para no perderla. ¡Lulo te espera! 🐬', '#/inicio', format('racha:%s:%s', n.id, p_dia);
     elsif nuevas > 0 then
       return query select n.familia_id,
         format('🎁 ¡%s, tienes %s esperándote!', n.nombre, case when nuevas = 1 then 'una lección nueva' else nuevas || ' lecciones nuevas' end),

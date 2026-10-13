@@ -17,7 +17,7 @@ export function render(root, ctx) {
   root.innerHTML = `
     <div class="flotan" aria-hidden="true">${FLOTAN.map((e, i) => `<span style="left:${(i * 37) % 92}%;top:${(i * 53) % 88}%;animation-delay:-${i * 0.9}s">${e}</span>`).join('')}</div>
     <div class="ingreso"><div class="ingreso-caja">
-      <div class="marca"><span class="marca-logo" aria-hidden="true">🦉</span><span class="marca-nombre">Tare<b>ki</b></span></div>
+      <div class="marca"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></div>
       <p class="lema">Lecciones divertidas para aprender jugando</p>
       <div class="pestanas" role="tablist">
         <button role="tab" data-modo="entrar">Entrar</button>

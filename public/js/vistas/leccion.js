@@ -35,7 +35,7 @@ export async function render(root, ctx) {
         <span class="guardado" id="guardado" aria-live="polite"></span>
       </header>
       <div class="visor-cuerpo">
-        <div class="cargando" id="cargando"><div><div class="lulo-buho" aria-hidden="true">🦉</div><p><b>Abriendo tu lección…</b></p></div></div>
+        <div class="cargando" id="cargando"><div><img class="lulo-buho" src="img/lulo-256.png" alt="" aria-hidden="true"><p><b>Abriendo tu lección…</b></p></div></div>
         <iframe id="marco" title="${esc(l.titulo)}" hidden></iframe>
         <aside class="visor-lado" id="lado"></aside>
       </div>

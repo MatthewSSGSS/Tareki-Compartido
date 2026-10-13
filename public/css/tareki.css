@@ -647,3 +647,15 @@ textarea { width: 100%; background: var(--soft); border: 3px solid var(--line); 
 /* En oscuro, la opción activa con el azul suave del tema (el amarillo queda en el cuadrito) */
 @media (min-width: 900px) and (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .menu a.activo { background: var(--soft); } }
 @media (min-width: 900px) { :root[data-theme="dark"] .menu a.activo { background: var(--soft); } }
+
+/* =============================================================================
+   Lulo, el delfín rosado (imagen en img/lulo*.png)
+   ============================================================================= */
+img.marca-logo { background: none; border: 0; box-shadow: none; border-radius: 50%; object-fit: contain; filter: drop-shadow(2px 3px 0 rgba(31, 37, 68, .25)); }
+.ingreso img.marca-logo { width: 84px; height: 84px; }
+.menu .menu-marca img.marca-logo { width: 46px; height: 46px; }
+img.marca-logo:hover { transform: rotate(-8deg) scale(1.06); }
+img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; filter: drop-shadow(2px 3px 0 rgba(31, 37, 68, .2)); }
+.visor .cargando img.lulo-buho { width: 120px; height: 120px; animation: flotarSuave 1.6s ease-in-out infinite; }
+.vista-notif .vn-ico { background: none; overflow: hidden; }
+.vista-notif .vn-ico img { width: 38px; height: 38px; }

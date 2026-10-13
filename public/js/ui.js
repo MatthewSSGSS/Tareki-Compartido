@@ -120,13 +120,13 @@ export const barra = (pct, clase = '') =>
 
 export const estrellas = (n, de = 3) => `<span class="estrellas" aria-label="${n} de ${de} estrellas">${'⭐'.repeat(n)}<span class="apagadas">${'⭐'.repeat(Math.max(0, de - n))}</span></span>`;
 
-/** Lulo, el búho de Tareki, con un globo de diálogo. */
+/** Lulo, el delfín rosado de Tareki, con un globo de diálogo. */
 export const lulo = (texto, clase = '') =>
-  `<div class="lulo ${clase}"><span class="lulo-buho" aria-hidden="true">🦉</span><p class="lulo-globo">${texto}</p></div>`;
+  `<div class="lulo ${clase}"><img class="lulo-buho" src="img/lulo-128.png" alt="" aria-hidden="true"><p class="lulo-globo">${texto}</p></div>`;
 
-export const vacio = ({ emoji = '🦉', titulo, texto = '', accion = '' }) => `
+export const vacio = ({ emoji = 'lulo', titulo, texto = '', accion = '' }) => `
   <div class="vacio card">
-    <div class="vacio-emoji" aria-hidden="true">${emoji}</div>
+    <div class="vacio-emoji" aria-hidden="true">${emoji === 'lulo' ? '<img src="img/lulo-128.png" alt="" style="width:72px;height:72px">' : emoji}</div>
     <h3>${esc(titulo)}</h3>
     ${texto ? `<p class="suave">${texto}</p>` : ''}
     ${accion}

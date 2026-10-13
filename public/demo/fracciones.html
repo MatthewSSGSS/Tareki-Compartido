@@ -141,7 +141,7 @@ function play(g){
     box.innerHTML = `<div class="card"><h3>${g.emoji} ${g.name}</h3><div class="prog"><i style="width:${i * 20}%"></i></div>
       <div class="q">${esc(q.q)}</div>${q.img ? `<div class="pizzas">${q.img}</div>` : ""}
       <div class="opts">${q.opts.map(o => `<button class="opt" data-o="${o}">${o}</button>`).join("")}</div>
-      <div class="owl"><span>🦉</span><p id="fb">¡Tú puedes, ${esc(name)}!</p></div></div>`;
+      <div class="owl"><span>🐬</span><p id="fb">¡Tú puedes, ${esc(name)}!</p></div></div>`;
     box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
       if(b.dataset.o === q.ok){ b.classList.add("ok"); if(first) right++; $("fb").textContent = "¡Eso! 🎉"; i++; setTimeout(draw, 700); }
       else { b.classList.add("no"); first = false; $("fb").textContent = "¡Casi! Intenta otra vez."; }

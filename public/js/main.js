@@ -149,7 +149,7 @@ function pintarMenu(u, perfil, activo) {
     ? `<div class="menu-perfil"><span class="av" style="background:var(--purple-s)">🧑‍🏫</span><span><b>${esc(primerNombre(u.nombre))}</b><small>Equipo Tareki</small></span></div>`
     : perfil ? `<a class="menu-perfil" href="#/perfiles" title="Cambiar de perfil"><span class="av" style="background:${esc(perfil.color)}">${esc(perfil.avatar)}</span><span><b>${esc(perfil.nombre)}</b><small>Cambiar de perfil</small></span></a>` : '';
   $menu.innerHTML = `
-    <a class="menu-marca" href="#/"><span class="marca-logo" aria-hidden="true">🦉</span><span class="marca-nombre">Tare<b>ki</b></span></a>
+    <a class="menu-marca" href="#/"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></a>
     ${tarjeta}
     <div class="menu-items">${items}</div>
     <div class="menu-pie">

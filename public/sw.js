@@ -10,7 +10,7 @@
 // Si cambias este archivo, sube VERSION.
 // =============================================================================
 
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = `tareki-${VERSION}`;
 
 self.addEventListener('install', (e) => {
@@ -40,7 +40,7 @@ async function anotar(dato) {
 self.addEventListener('push', (e) => {
   let a = {};
   try { a = e.data ? e.data.json() : {}; } catch { a = { cuerpo: e.data?.text() || '' }; }
-  const titulo = a.titulo || 'Tareki 🦉';
+  const titulo = a.titulo || 'Tareki 🐬';
   e.waitUntil((async () => {
     try {
       await self.registration.showNotification(titulo, {

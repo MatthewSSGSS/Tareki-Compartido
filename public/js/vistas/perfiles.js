@@ -15,7 +15,7 @@ export async function render(root, ctx) {
 
   root.innerHTML = `
     <div class="cabecera">
-      <span class="fila"><span class="marca-logo" aria-hidden="true">🦉</span><span class="marca-nombre">Tare<b>ki</b></span></span>
+      <span class="fila"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Tare<b>ki</b></span></span>
       <span class="fila"><a class="btn btn-peq btn-blanco" href="#/papas">👨‍👩‍👧 Papás</a><button class="btn-redondo" data-salir title="Salir" aria-label="Salir">🚪</button></span>
     </div>
     ${bannerVence(ctx.usuario)}
@@ -24,7 +24,7 @@ export async function render(root, ctx) {
          <p class="centro suave" style="margin-bottom:22px">Toca tu foto para entrar</p>`
       : `<div class="pila" style="max-width:560px;margin:10px auto 22px">
            <h1 class="centro" style="font-size:2em">¡Bienvenida, familia${nombre ? ` de ${esc(nombre)}` : ''}! 🎉</h1>
-           ${lulo('Soy <b>Lulo</b> 🦉. Creen juntos el perfil de su hijo o hija: que escoja su animal y su color favorito.')}
+           ${lulo('Soy <b>Lulo</b>, el delfín rosado 🐬. Creen juntos el perfil de su hijo o hija: que escoja su animal y su color favorito.')}
          </div>`}
     <div class="perfiles" style="max-width:760px;margin:0 auto">
       ${lista.map((n) => `

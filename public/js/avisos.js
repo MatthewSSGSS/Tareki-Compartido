@@ -143,7 +143,7 @@ const PASOS_IOS = `<ol class="limpia pasos-ios">
   <li>Toca <b>Compartir</b> <span aria-hidden="true">⬆️</span>. Si no lo ves, toca primero los <b>tres puntos ⋯</b> y luego <b>Compartir</b>.</li>
   <li>Baja en la lista y elige <b>«Agregar a inicio»</b> (o «Agregar a pantalla de inicio»).</li>
   <li>Si aparece <b>«Abrir como app web»</b>, déjalo <b>activado</b>. Toca <b>Agregar</b>.</li>
-  <li>Cierra Safari y abre <b>Tareki desde el ícono</b> 🦉 de tu pantalla de inicio. Ahí te aparece el botón para activar los avisos.</li>
+  <li>Cierra Safari y abre <b>Tareki desde el ícono</b> de Lulo 🐬 de tu pantalla de inicio. Ahí te aparece el botón para activar los avisos.</li>
 </ol>`;
 
 const TEXTOS = {
