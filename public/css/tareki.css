@@ -416,3 +416,116 @@ ul.limpia { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 .filtros { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 10px; }
 .filtros button { flex: none; border: 3px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); padding: 4px 14px; font-weight: 800; cursor: pointer; }
 .filtros button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* =============================================================================
+   Pulido v2 — más orden y aire, conservando el estilo (bordes gruesos, sombras
+   sólidas, colores vivos). Regla general: lo que está DENTRO de una tarjeta va
+   liviano (fondo suave, borde fino, sin sombra) para que se lea la jerarquía.
+   ============================================================================= */
+:root { --sombra-sm: 2px 2px 0 var(--line); }
+
+/* Fondo con puntitos suaves, como en las lecciones */
+body { background-image: radial-gradient(color-mix(in srgb, var(--line) 9%, transparent) 1.2px, transparent 1.4px); background-size: 22px 22px; background-attachment: fixed; }
+
+/* Encabezados de página y de sección */
+.cabecera { margin-bottom: 20px; }
+.cabecera h1 { font-size: 1.8em; letter-spacing: -.01em; }
+@media (min-width: 900px) { .cabecera h1 { font-size: 2.2em; } }
+.titulo-seccion { margin: 28px 0 12px; }
+.titulo-seccion h2 { font-size: 1.3em; }
+.card > h2:first-child, .card > .pila > h2:first-child { display: flex; align-items: center; gap: 8px; font-size: 1.18em; margin-bottom: 14px; }
+.card h2 small { margin-left: 4px; }
+
+/* Cifras (KPI) parejas */
+.kpis { gap: 14px; }
+.kpi { gap: 4px; padding: 14px 16px 16px; }
+.kpi span { font-size: .8em; letter-spacing: .02em; }
+.kpi b { font-size: 1.85em; }
+.kpi small { line-height: 1.3; }
+
+/* Filas dentro de tarjetas: livianas */
+.card .tabla { gap: 8px; }
+.card .tabla-fila, .card .fila-leccion { border-width: 2px; box-shadow: none; background: var(--soft); border-radius: 16px; padding: 10px 12px; }
+.card .tabla-fila:hover, .card .fila-leccion:hover { background: var(--card); box-shadow: var(--sombra-sm); }
+.tabla-fila { box-shadow: var(--sombra-sm); transition: transform .12s, box-shadow .12s; }
+.tabla-fila:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--line); }
+.tabla-fila .av { width: 44px; height: 44px; font-size: 24px; border-width: 2px; }
+.tabla-fila b { font-family: var(--f-head); font-size: 1.08em; }
+.chip { min-height: 26px; }
+
+/* Consejos: color suave según el tipo, sin bordes pesados */
+.consejo, .consejo.alerta, .consejo.bien, .consejo.idea { border: 0; border-radius: 16px; padding: 12px 14px 12px 18px; }
+.consejo.alerta { background: color-mix(in srgb, var(--bad) 10%, var(--card)); box-shadow: inset 6px 0 0 var(--bad); }
+.consejo.bien { background: color-mix(in srgb, var(--green) 12%, var(--card)); box-shadow: inset 6px 0 0 var(--green); }
+.consejo.idea { background: color-mix(in srgb, var(--sun) 18%, var(--card)); box-shadow: inset 6px 0 0 var(--sun); }
+
+/* Temas y listas de juegos un poco más aireadas */
+.temas { gap: 12px; }
+.mini-juegos div { border-width: 1.5px; padding: 6px 10px; }
+
+/* Inicio del niño: racha compacta (solo celular) */
+.racha-cel { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 10px 14px; border: 3px solid var(--line); border-radius: 20px; box-shadow: var(--sombra); background: linear-gradient(120deg, #ffb347, #ff6b6b); color: #fff; }
+.racha-cel.fria { background: linear-gradient(120deg, #8a94c4, #5b6599); }
+.racha-cel .fuego { font-size: 34px; line-height: 1; }
+.racha-cel .rc-num { display: grid; line-height: 1; }
+.racha-cel .rc-num b { font-family: var(--f-head); font-size: 1.9em; }
+.racha-cel .rc-num small { font-weight: 800; font-size: .8em; }
+.racha-cel .rc-semana { margin-left: auto; display: flex; gap: 5px; }
+.racha-cel .rc-semana i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); background: rgba(255, 255, 255, .25); }
+.racha-cel .rc-semana i.si { background: #fff; }
+.racha-cel .rc-semana i.hoy { box-shadow: 0 0 0 2px rgba(31, 37, 68, .5); }
+@media (min-width: 900px) { .racha-cel { display: none; } }
+@media (max-width: 899px) { .solo-pc { display: none; } }
+
+/* Aviso de "vence pronto": más compacto */
+.banner-vence { margin-bottom: 0; padding: 12px 14px; gap: 6px 12px; box-shadow: var(--sombra-sm); }
+.banner-vence .em { font-size: 28px; }
+.banner-vence b { font-size: 1em; }
+.banner-vence p { margin-top: 2px; }
+.tablero .lado .banner-vence { grid-template-columns: auto minmax(0, 1fr); }
+.tablero .lado .banner-vence .btn { grid-column: 1 / -1; }
+
+/* Papás: zona "Tu cuenta" */
+.cuenta { display: grid; gap: 14px; align-items: start; }
+@media (min-width: 900px) { .cuenta { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); } }
+.cuenta-pago { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; }
+.cuenta-pago .em { font-size: 30px; }
+.cuenta-pago b { display: block; font-family: var(--f-head); font-size: 1.35em; line-height: 1.1; }
+.cuenta-pago small { display: block; }
+.cuenta-pago.pronto { background: var(--sun-s); color: #1f2544; }
+.cuenta-pago.pronto .suave { color: #4a5075; }
+.tarjeta-avisos { padding: 14px 16px; box-shadow: var(--sombra-sm); }
+.tarjeta-avisos .em { font-size: 28px; }
+
+/* Dinero */
+.campo-pesos { display: flex; align-items: center; gap: 0; background: var(--soft); border: 3px solid var(--line); border-radius: 16px; overflow: hidden; }
+.campo-pesos span { padding: 0 4px 0 14px; font-family: var(--f-head); font-weight: 800; font-size: 1.15em; color: var(--muted); }
+.campo-pesos input { border: 0 !important; background: transparent !important; box-shadow: none !important; font-family: var(--f-head); font-size: 1.15em !important; padding-left: 4px; }
+.campo-pesos:focus-within { background: var(--card); box-shadow: 0 0 0 4px var(--sun); }
+
+/* Menú: detalles */
+.menu { box-shadow: 0 -4px 0 rgba(31, 37, 68, .06); }
+@media (min-width: 900px) {
+  .menu { box-shadow: none; background: color-mix(in srgb, var(--card) 92%, var(--bg)); }
+  .menu-items::before { content: "Menú"; display: block; margin: 0 14px 4px; font-size: .72em; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+}
+
+/* Hojas (ventanas): pie fijo más claro */
+.hoja-pie { border-top: 2px dashed var(--soft); }
+
+/* Pulido v2 — celular */
+.card > h2:first-child { flex-wrap: wrap; row-gap: 2px; }
+.acciones-acceso { display: grid; gap: 10px; }
+@media (min-width: 560px) { .acciones-acceso { display: flex; flex-wrap: wrap; } }
+.acciones-acceso .btn { justify-content: center; }
+@media (max-width: 899px) {
+  .card > h2:first-child small { flex-basis: 100%; margin-left: 0; }
+  .kpi b { font-size: 1.45em; }
+  .kpi { padding: 12px 14px 14px; }
+  .cabecera h1 { font-size: 1.65em; }
+  .cuenta-pago { grid-template-columns: auto minmax(0, 1fr); }
+  .cuenta-pago .btn { grid-column: 1 / -1; justify-self: start; }
+}
+
+/* El botón activo del menú siempre con letra oscura (su fondo es amarillo claro) */
+.menu a.activo { color: #1f2544; }

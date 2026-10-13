@@ -29,13 +29,18 @@ export async function render(root, ctx) {
        <div class="lecciones ${rejilla ? 'rejilla' : ''}">${lista.map(tarjetaLeccion).join('')}</div>` : '';
 
   root.innerHTML = `
-    ${bannerVence(ctx.usuario)}
     <div class="tablero">
       <div class="principal">
         <section class="card saludo" style="background:${esc(nino.color)}">
           <div class="saludo-cab"><h1>¡Hola, ${esc(nino.nombre)}!</h1><span class="av av-grande" aria-hidden="true">${esc(nino.avatar)}</span></div>
           ${lulo(mensaje)}
         </section>
+
+        <div class="racha-cel ${racha.actual ? '' : 'fria'}" aria-label="Racha">
+          <span class="fuego" aria-hidden="true">${racha.actual ? '🔥' : '🪵'}</span>
+          <span class="rc-num"><b>${racha.actual}</b><small>${racha.actual === 1 ? 'día seguido' : 'días seguidos'}</small></span>
+          <span class="rc-semana">${racha.semana.map((d) => `<i class="${d.activo ? 'si' : ''} ${d.hoy ? 'hoy' : ''}" title="${d.dia}"></i>`).join('')}</span>
+        </div>
 
         ${siguiente ? (() => {
           const m = materia(siguiente.leccion.materia);
@@ -54,13 +59,14 @@ export async function render(root, ctx) {
       </div>
 
       <aside class="lado pila">
-        ${tarjetaRacha(racha)}
+        <div class="solo-pc">${tarjetaRacha(racha)}</div>
         <div id="avisos"></div>
         <div class="cifras">
           <div class="cifra"><b>⭐ ${resumen.estrellas}</b><span>estrellas</span></div>
           <div class="cifra"><b>🎓 ${resumen.terminadas}</b><span>terminadas</span></div>
           <div class="cifra"><b>${minutosTexto(d.minutosSemana)}</b><span>esta semana</span></div>
         </div>
+        ${bannerVence(ctx.usuario)}
         <a class="card fila entre" href="#/logros" style="text-decoration:none;color:inherit">
           <span><b style="font-family:var(--f-head);font-size:1.15em">🏅 Mis medallas</b><br><span class="suave peq">${ganadas.length ? `${ganadas.length} ganadas` : 'Juega para ganar la primera'}</span></span>
           <span style="font-size:30px;letter-spacing:-6px">${ganadas.slice(-4).map((m) => m.emoji).join('') || '🔒'}</span>

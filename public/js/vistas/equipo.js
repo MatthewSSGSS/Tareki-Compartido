@@ -81,7 +81,7 @@ async function resumen(root, ctx) {
           : '<p class="suave">Nadie por vencer en los próximos 3 días. 🎉</p>'}
         <a class="link peq" href="#/equipo/familias">Ver todas las familias →</a>
       </section>
-      <section class="card"><h2>📅 Actividad reciente</h2>
+      <section class="card ancho"><h2>📅 Actividad reciente</h2>
         ${recientes.length ? `<div class="tabla">${recientes.map((n) => filaNino(n, `<span class="chip ${n.d.racha.actual ? 'sol' : ''}">🔥 ${n.d.racha.actual}</span><span class="chip">${n.ultimoDia ? fechaBonita(n.ultimoDia) : 'nunca'}</span>`)).join('')}</div>` : '<p class="suave">Aún no hay niños registrados.</p>'}
       </section>
     </div>

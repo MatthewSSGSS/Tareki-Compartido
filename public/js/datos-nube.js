@@ -113,7 +113,12 @@ export async function invitaciones() {
 /** Quita un código: sin usar o de una cuenta borrada (equipo), o cualquiera (dueño). La regla la pone la base. */
 export async function anularInvitacion(codigo) {
   const borrados = ok(await cliente().from('invitaciones').delete().eq('codigo', codigo).select('codigo'));
-  if (!borrados?.length) throw new Error('No se pudo quitar ese código. Si es de una cuenta activa, solo el dueño puede quitarlo.');
+  if (!borrados?.length) {
+    const yo = await usuario();
+    throw new Error(yo?.dueno
+      ? 'Supabase todavía no deja quitar códigos de cuentas activas. Corre una vez el archivo privado/codigos-dueno.sql en el SQL Editor y vuelve a intentar.'
+      : 'Solo el dueño puede quitar códigos de cuentas activas.');
+  }
 }
 
 // --- Niños ------------------------------------------------------------------------------------

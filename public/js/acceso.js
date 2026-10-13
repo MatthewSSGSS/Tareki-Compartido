@@ -12,6 +12,15 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 /** "12 de noviembre" (siempre con la fecha, no "hace 3 días"). */
 export const fechaLarga = (dia) => { if (!dia) return '—'; const f = new Date(`${diaDe(dia)}T12:00:00`); return `${f.getDate()} de ${MESES[f.getMonth()]}`; };
 export const pesos = (n) => `$${Math.round(n || 0).toLocaleString('es-CO')}`;
+/** 60000 → "60.000" (para las casillas de dinero). */
+export const miles = (n) => (n ? Number(n).toLocaleString('es-CO') : '');
+/** Hace que una casilla de dinero ponga los puntos de mil mientras se escribe. */
+export function mascaraPesos(input) {
+  input.addEventListener('input', () => {
+    const digitos = input.value.replace(/\D/g, '').slice(0, 9);
+    input.value = miles(digitos);
+  });
+}
 
 /**
  * Estado del acceso de una familia (el equipo siempre tiene acceso).

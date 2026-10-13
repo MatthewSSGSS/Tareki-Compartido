@@ -53,8 +53,17 @@ export async function render(root, ctx) {
       <div class="card kpi"><span>Lecciones</span><b>🎓 ${resumen.terminadas}/${analisis.length}</b><small>${resumen.enCurso} en curso · ${resumen.nuevas} sin abrir</small></div>
     </div>
 
-    ${esEquipo ? '' : `${bannerVence(ctx.usuario) ? `<div style="margin-top:18px">${bannerVence(ctx.usuario)}</div>` : ''}<div id="avisos" style="margin-top:18px"></div>
-      <p class="suave peq" style="margin-top:10px">💳 Acceso hasta el <b>${fechaLarga(estadoAcceso(ctx.usuario).hasta)}</b> · <button class="link peq" data-pagar>Cómo pagar la mensualidad</button></p>`}
+    ${esEquipo ? '' : `
+      <div class="titulo-seccion"><h2>👤 Tu cuenta</h2></div>
+      <div class="cuenta">
+        <div class="card cuenta-pago ${estadoAcceso(ctx.usuario).dias <= 3 ? 'pronto' : ''}">
+          <span class="em" aria-hidden="true">💳</span>
+          <div><span class="suave peq">Acceso hasta el</span><b>${fechaLarga(estadoAcceso(ctx.usuario).hasta)}</b>
+            <small class="suave">${estadoAcceso(ctx.usuario).dias === 0 ? 'Hoy es el último día' : estadoAcceso(ctx.usuario).dias <= 3 ? `Vence en ${estadoAcceso(ctx.usuario).dias === 1 ? '1 día' : `${estadoAcceso(ctx.usuario).dias} días`}` : 'Mensualidad al día ✓'}</small></div>
+          <button class="btn btn-peq ${estadoAcceso(ctx.usuario).dias <= 3 ? 'btn-sol' : 'btn-blanco'}" data-pagar>Cómo pagar</button>
+        </div>
+        <div id="avisos"></div>
+      </div>`}
     <div class="sep"></div>
     <div class="columnas">
       <section class="card ancho"><h2>💡 Qué hacer esta semana</h2>
@@ -90,7 +99,6 @@ export async function render(root, ctx) {
 
   if (!esEquipo) {
     tarjetaAvisos(root.querySelector('#avisos'));
-    conectarBanner(root, ctx.usuario);
     root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
   }
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
