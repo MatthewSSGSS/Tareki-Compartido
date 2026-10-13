@@ -25,6 +25,7 @@ import * as chatVista from './vistas/chat.js';
 import { estadoAcceso } from './acceso.js';
 import { registrarServiceWorker, revisarAvisos, desactivarAvisos } from './avisos.js';
 import { abrirMiNombre } from './cuenta.js';
+import { aplicarTema, abrirApariencia } from './apariencia.js';
 
 const RUTAS = {
   entrar:   { vista: ingreso, publica: true },
@@ -40,7 +41,6 @@ const RUTAS = {
 };
 
 const CLAVE_PERFIL = 'tareki:perfil';
-const CLAVE_TEMA = 'tareki:tema';
 const $vista = document.getElementById('vista');
 const $menu = document.getElementById('menu');
 let rutaAnterior = '';
@@ -167,7 +167,7 @@ function pintarMenu(u, perfil, activo) {
     ${tarjeta}
     <div class="menu-items">${items}</div>
     <div class="menu-pie">
-      <button class="menu-item" type="button" data-tema><span class="mi-emoji" aria-hidden="true">${oscuro() ? '☀️' : '🌙'}</span><span>${oscuro() ? 'Modo claro' : 'Modo oscuro'}</span></button>
+      <button class="menu-item" type="button" data-apariencia><span class="mi-emoji" aria-hidden="true">🎨</span><span>Apariencia</span></button>
       <button class="menu-item" type="button" data-salir><span class="mi-emoji" aria-hidden="true">🚪</span><span>Salir</span></button>
     </div>`;
 }
@@ -177,7 +177,7 @@ estiloCel.textContent = '@media (min-width: 900px) { .menu .solo-cel { display: 
 document.head.appendChild(estiloCel);
 
 $menu.addEventListener('click', async (e) => {
-  if (e.target.closest('[data-tema]')) { cambiarTema(); render(); }
+  if (e.target.closest('[data-apariencia]')) abrirApariencia();
   if (e.target.closest('[data-salir]')) salir();
   if (e.target.closest('[data-mi-nombre]')) abrirMiNombre(await datos.usuario(), () => render());
 });
@@ -192,16 +192,7 @@ export async function salir() {
 }
 
 // --- Tema claro / oscuro ----------------------------------------------------------------
-function oscuro() {
-  const t = document.documentElement.dataset.theme;
-  return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-}
-function aplicarTema() {
-  const t = leerLocal(CLAVE_TEMA, '');
-  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
-  document.querySelector('meta[name="theme-color"]').setAttribute('content', oscuro() ? '#121a33' : '#eaf6ff');
-}
-function cambiarTema() { guardarLocal(CLAVE_TEMA, oscuro() ? 'light' : 'dark'); aplicarTema(); }
+// (tema y brillo: js/apariencia.js)
 
 // --- Arranque -----------------------------------------------------------------------------
 window.addEventListener('hashchange', render);

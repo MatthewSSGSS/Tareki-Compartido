@@ -20,6 +20,7 @@ import * as chat from './chat.js';
 import * as pedidos from './pedidos.js';
 import { estadoAcceso, chipAcceso } from '../acceso.js';
 import { abrirMiNombre } from '../cuenta.js';
+import { abrirApariencia } from '../apariencia.js';
 
 export function render(root, ctx) {
   const sec = ctx.params[0] || 'resumen';
@@ -71,7 +72,7 @@ async function resumen(root, ctx) {
 
   root.innerHTML = `
     ${MODO_DEMO ? `<div class="banda-demo"><span>🧪 <b>Modo demostración:</b> datos de prueba guardados solo en este navegador.</span><button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button></div>` : ''}
-    <div class="cabecera"><div><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1><button class="link peq" data-mi-nombre-res>✏️ Cambiar mi nombre</button></div>
+    <div class="cabecera"><div><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1><span class="fila envolver" style="gap:14px"><button class="link peq" data-mi-nombre-res>✏️ Cambiar mi nombre</button><button class="link peq" data-apariencia-res>🎨 Apariencia</button></span></div>
       <span class="fila"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a></span></div>
     <div class="kpis">
       <div class="card kpi"><span>Familias</span><b>👨‍👩‍👧 ${fams.length}</b></div>
@@ -98,6 +99,7 @@ async function resumen(root, ctx) {
   // Para probar los avisos en el celular del equipo
   tarjetaAvisos(root.querySelector('#avisos'));
   root.querySelector('[data-mi-nombre-res]')?.addEventListener('click', () => abrirMiNombre(ctx.usuario, () => location.reload()));
+  root.querySelector('[data-apariencia-res]')?.addEventListener('click', () => abrirApariencia());
   root.querySelector('[data-reiniciar]')?.addEventListener('click', async () => {
     if (!(await confirmar({ titulo: '¿Reiniciar los datos de prueba?', texto: 'Se borra todo lo que hayas creado en este navegador y vuelven los datos de ejemplo.', si: 'Reiniciar', peligro: true }))) return;
     await datos.reiniciarDemo();

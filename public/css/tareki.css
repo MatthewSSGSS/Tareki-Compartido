@@ -21,6 +21,29 @@
 }
 :root[data-theme="dark"] { --bg: #121a33; --ink: #f2f4ff; --card: #1f2a4d; --muted: #b9c0e6; --line: #0a0f22; --soft: #26335c; color-scheme: dark; }
 
+/* Brillo del modo claro (🎨 Apariencia): --atenuar va de 0% a 40% y oscurece fondos y tarjetas.
+   La pone js/apariencia.js solo en modo claro; el modo oscuro (más arriba) gana por especificidad. */
+@supports (color: color-mix(in srgb, red, blue)) {
+  :root {
+    --atenuar: 0%; --hacia: #2b3150;
+    --bg: color-mix(in srgb, #eaf6ff, var(--hacia) var(--atenuar));
+    --card: color-mix(in srgb, #ffffff, var(--hacia) var(--atenuar));
+    --soft: color-mix(in srgb, #f3f8ff, var(--hacia) var(--atenuar));
+    --sun-s: color-mix(in srgb, #fff1a8, var(--hacia) var(--atenuar));
+    --pink-s: color-mix(in srgb, #ffd1e0, var(--hacia) var(--atenuar));
+    --green-s: color-mix(in srgb, #c9f7d6, var(--hacia) var(--atenuar));
+    --blue-s: color-mix(in srgb, #d6f0ff, var(--hacia) var(--atenuar));
+    --purple-s: color-mix(in srgb, #e3d4ff, var(--hacia) var(--atenuar));
+    --orange-s: color-mix(in srgb, #ffe0b8, var(--hacia) var(--atenuar));
+    --sun: color-mix(in srgb, #ffcf3f, var(--hacia) calc(var(--atenuar) / 2));
+    --pink: color-mix(in srgb, #ff6b9a, var(--hacia) calc(var(--atenuar) / 2));
+    --green: color-mix(in srgb, #35b862, var(--hacia) calc(var(--atenuar) / 2));
+    --blue: color-mix(in srgb, #59c3ff, var(--hacia) calc(var(--atenuar) / 2));
+    --purple: color-mix(in srgb, #a77bff, var(--hacia) calc(var(--atenuar) / 2));
+    --orange: color-mix(in srgb, #ff9a4d, var(--hacia) calc(var(--atenuar) / 2));
+  }
+}
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-weight: 700; font-size: 17px; line-height: 1.45; min-height: 100dvh; }
@@ -773,3 +796,10 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 button.menu-perfil { width: calc(100% - 4px); text-align: left; cursor: pointer; font: inherit; color: inherit; }
 button.menu-perfil b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 button.menu-perfil > span:last-child { min-width: 0; }
+
+/* Apariencia: brillo del modo claro */
+.visor iframe { filter: brightness(var(--brillo-leccion)); }
+.brillo-fila { display: flex; align-items: center; gap: 10px; font-size: 1.3em; }
+.brillo-fila input[type="range"] { flex: 1; accent-color: var(--ink); height: 28px; padding: 0; border: 0; box-shadow: none; background: transparent; }
+#campoBrillo.apagado { opacity: .55; }
+.filtros.envolver { flex-wrap: wrap; overflow: visible; }

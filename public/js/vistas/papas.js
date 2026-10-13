@@ -17,6 +17,7 @@ import { pintarBuzon } from '../buzon.js';
 import { numeroBonito, numeroWa, linkWa } from '../whatsapp.js';
 import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
 import { abrirPedir, pintarMisPedidos } from './pedidos.js';
+import { abrirApariencia } from '../apariencia.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -68,6 +69,7 @@ export async function render(root, ctx) {
         <div id="avisos"></div>
       </div>
       <div class="card cuenta-cel"><span class="em" aria-hidden="true">📱</span><div><span class="suave peq">Tu WhatsApp</span><b>${ctx.usuario.celular ? esc(numeroBonito(ctx.usuario.celular)) : 'Sin registrar'}</b><small class="suave">Aquí te escribimos sobre pagos y novedades.</small></div><button class="btn btn-peq btn-blanco" data-cel>${ctx.usuario.celular ? 'Cambiar' : 'Agregar'}</button></div>
+      <div class="card cuenta-cel"><span class="em" aria-hidden="true">🎨</span><div><span class="suave peq">Apariencia</span><b>Brillo y modo oscuro</b><small class="suave">Baja el brillo si la pantalla cansa la vista.</small></div><button class="btn btn-peq btn-blanco" data-apariencia-p>Ajustar</button></div>
       <div class="card escribenos" id="escribenos"><span class="em" aria-hidden="true">💬</span><div><b>¿Dudas? Escríbenos</b><small class="suave">Le llega a todo el equipo de Learnground.</small></div>
         <div class="fila envolver"><a class="btn btn-peq" href="#/chat">💬 Chat con el equipo <span class="chip" id="chatN" hidden></span></a><a class="btn btn-peq btn-wa" id="waEquipo" target="_blank" rel="noopener" hidden>WhatsApp</a></div></div>
       <div class="card escribenos pedir"><span class="em" aria-hidden="true">📚</span><div><b>¿Necesitan una lección?</b><small class="suave">Cuéntanos los temas y súbenos fotos del cuaderno o la guía: nosotros la armamos.</small></div>
@@ -115,6 +117,7 @@ export async function render(root, ctx) {
     root.querySelector('[data-cel]')?.addEventListener('click', () => editarCelular(ctx.usuario.id, ctx.usuario.celular, () => ctx.refrescar()));
     root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
     pintarMisPedidos(root.querySelector('#misPedidos'), ctx);
+    root.querySelector('[data-apariencia-p]')?.addEventListener('click', () => abrirApariencia());
     root.querySelector('[data-pedir]')?.addEventListener('click', () => abrirPedir(ctx, { alEnviar: () => pintarMisPedidos(root.querySelector('#misPedidos'), ctx) }));
   }
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
