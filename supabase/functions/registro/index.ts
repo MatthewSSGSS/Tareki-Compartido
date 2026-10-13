@@ -87,14 +87,14 @@ Deno.serve(async (req) => {
   await admin.from("invitaciones").update({ usada_por: id }).eq("codigo", codigo);
   if (rol === "familia") {
     await admin.from("historial_acceso").insert({ familia_id: id, accion: "registro", hasta: accesoHasta, nota: `Código ${codigo} (${inv.dias_acceso || 30} días)` });
-    // Avisar a todo el equipo (si falla, la cuenta igual queda creada)
-    const cron = Deno.env.get("CRON_SECRET");
-    if (cron) {
-      await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/avisos`, {
-        method: "POST", headers: { "Content-Type": "application/json", "x-cron-secret": cron },
-        body: JSON.stringify({ tipo: "familia-nueva", familia_id: id }),
-      }).catch(() => {});
-    }
+  }
+  // Avisar al equipo: familia nueva o compañero nuevo (si falla, la cuenta igual queda creada)
+  const cron = Deno.env.get("CRON_SECRET");
+  if (cron) {
+    await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/avisos`, {
+      method: "POST", headers: { "Content-Type": "application/json", "x-cron-secret": cron },
+      body: JSON.stringify(rol === "familia" ? { tipo: "familia-nueva", familia_id: id } : { tipo: "miembro-nuevo", usuario_id: id }),
+    }).catch(() => {});
   }
 
   return responder({ ok: true, rol });

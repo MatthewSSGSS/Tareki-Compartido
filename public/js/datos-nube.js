@@ -78,6 +78,16 @@ export async function cambiarClave(clave) {
   recuperando = false;
 }
 
+/** Cambia el nombre de la cuenta actual (el equipo lo ve en el chat). */
+export async function cambiarMiNombre(nombre) {
+  const n = String(nombre || '').trim().replace(/\s+/g, ' ');
+  if (n.length < 2) throw new Error('Escribe tu nombre.');
+  const yo = await usuario();
+  ok(await cliente().from('perfiles').update({ nombre: n.slice(0, 60) }).eq('id', yo.id), 'No se pudo cambiar el nombre.');
+  if (perfilCache) perfilCache.nombre = n.slice(0, 60);
+  return n;
+}
+
 // --- Invitaciones ---------------------------------------------------------------------------
 export async function revisarCodigo(codigo) {
   const filas = ok(await cliente().rpc('revisar_codigo', { p_codigo: String(codigo || '') }));

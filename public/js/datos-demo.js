@@ -57,6 +57,14 @@ export async function salir() { db.sesion = null; guardar(); }
 export async function recuperarClave() { /* en la demo no se envían correos */ }
 export const estaRecuperando = () => false;
 export async function cambiarClave() { /* nada */ }
+export async function cambiarMiNombre(nombre) {
+  const n = String(nombre || '').trim().replace(/\s+/g, ' ');
+  if (n.length < 2) falla('Escribe tu nombre.');
+  const u = yo();
+  if (!u) falla('Inicia sesión.');
+  u.nombre = n.slice(0, 60); guardar();
+  return u.nombre;
+}
 
 // --- Invitaciones ---------------------------------------------------------------------
 const normalizarCodigo = (c) => String(c || '').trim().toUpperCase().replace(/\s+/g, '');

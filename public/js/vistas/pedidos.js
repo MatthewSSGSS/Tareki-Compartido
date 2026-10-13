@@ -9,7 +9,7 @@
 
 import * as datos from '../datos.js';
 import { MATERIAS } from '../config.js';
-import { esc, fechaBonita, hoy, diasEntre, primerNombre, plural } from '../util.js';
+import { esc, fechaBonita, hoy, diasEntre, plural } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, vacio, confeti } from '../ui.js';
 import { comprimirFoto } from '../fotos.js';
 import { fechaLarga } from '../acceso.js';
@@ -257,7 +257,7 @@ function tarjeta(p) {
     <div class="fila envolver"><span class="chip" style="background:${m.color};color:#1f2544">${m.emoji} ${esc(m.nombre)}</span>${chipPara(p.para, p.estado)}</div>
     ${p.temas ? `<p class="pedido-temas">${esc(p.temas).replace(/\n/g, '<br>')}</p>` : ''}
     ${miniaturas(p.fotos)}
-    ${p.estado !== 'nuevo' && p.atendidoNombre ? `<p class="suave peq">${p.estado === 'listo' ? '✅ La armó' : '🛠️ La está armando'} ${esc(primerNombre(p.atendidoNombre))} · ${fechaBonita(p.actualizado)}</p>` : ''}
+    ${p.estado !== 'nuevo' && p.atendidoNombre ? `<p class="suave peq">${p.estado === 'listo' ? '✅ La armó' : '🛠️ La está armando'} ${esc(p.atendidoNombre)} · ${fechaBonita(p.actualizado)}</p>` : ''}
     <footer class="fila envolver pedido-acciones">
       ${p.estado === 'nuevo' ? '<button class="btn btn-peq btn-sol" data-estado="en_proceso">🛠️ Yo la armo</button>' : ''}
       ${p.estado !== 'listo' ? '<button class="btn btn-peq btn-verde" data-estado="listo">✅ Marcar lista</button>' : '<button class="btn btn-peq btn-blanco" data-estado="en_proceso">↩️ Reabrir</button>'}

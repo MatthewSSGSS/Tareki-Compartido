@@ -11,6 +11,7 @@
 //     y al equipo un resumen de mensualidades (vencen hoy, mañana, en 3 días o vencieron ayer).
 //   • { tipo: "programados" } + x-cron-secret (cada 10 min)    → mensajes programados que ya tocan.
 //   • { tipo: "familia-nueva", familia_id } + x-cron-secret (función registro) → avisa al equipo.
+//   • { tipo: "miembro-nuevo", usuario_id } + x-cron-secret (función registro) → avisa a los demás del equipo.
 //
 // El texto va CIFRADO dentro del push (RFC 8291, aes128gcm), como lo exigen Apple,
 // Google, Mozilla y Microsoft. Así funciona en Android, iPhone/iPad (app instalada),
@@ -228,6 +229,16 @@ Deno.serve(async (req) => {
     }));
   }
 
+  if (entrada?.tipo === "miembro-nuevo" && entrada.usuario_id) {
+    if (!esCron(req)) return responder({ error: "no autorizado" }, 401);
+    const { data: p } = await admin.from("perfiles").select("nombre, dueno").eq("id", entrada.usuario_id).maybeSingle();
+    if (!p) return responder({ error: "persona no encontrada" }, 404);
+    const otros = (await equipo(admin)).filter((id) => id !== entrada.usuario_id);
+    return responder(await enviarAVarios(admin, otros, {
+      titulo: "👥 ¡Alguien nuevo en el equipo!", cuerpo: `${p.nombre} se acaba de unir al equipo de Learnground${p.dueno ? " (como dueño)" : ""}. ¡Salúdalo en el chat del equipo!`, url: "#/equipo/interno", tag: `miembro-${entrada.usuario_id}`,
+    }));
+  }
+
   // Lo demás necesita una sesión
   const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   const { data: sesion } = await admin.auth.getUser(token);
@@ -279,11 +290,11 @@ Deno.serve(async (req) => {
     const { data: m } = await admin.from("chat_equipo").select("id, autor, texto, quien:perfiles!chat_equipo_autor_fkey(nombre)").eq("id", entrada.id).maybeSingle();
     if (!m || m.autor !== usuario.id) return responder({ error: "no autorizado" }, 403);
     const corto = m.texto.length > 140 ? `${m.texto.slice(0, 137)}…` : m.texto;
-    const nombre = String(m.quien?.nombre || "Alguien").split(/\s+/)[0];
+    const nombre = String(m.quien?.nombre || "Alguien");
     // Uno por uno, para contarle a quien escribió a quién le llegó y a quién no
     const otros = (await equipo(admin)).filter((id) => id !== usuario.id);
     const { data: perfiles } = await admin.from("perfiles").select("id, nombre").in("id", otros.length ? otros : ["00000000-0000-0000-0000-000000000000"]);
-    const nombreDe = (id: string) => String(perfiles?.find((p: { id: string }) => p.id === id)?.nombre || "Alguien").split(/\s+/)[0];
+    const nombreDe = (id: string) => String(perfiles?.find((p: { id: string }) => p.id === id)?.nombre || "Alguien");
     const llego: string[] = [], noLlego: string[] = [];
     let enviados = 0;
     for (const id of otros) {

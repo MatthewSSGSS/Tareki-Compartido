@@ -24,6 +24,7 @@ import * as accesoVista from './vistas/acceso.js';
 import * as chatVista from './vistas/chat.js';
 import { estadoAcceso } from './acceso.js';
 import { registrarServiceWorker, revisarAvisos, desactivarAvisos } from './avisos.js';
+import { abrirMiNombre } from './cuenta.js';
 
 const RUTAS = {
   entrar:   { vista: ingreso, publica: true },
@@ -159,7 +160,7 @@ function pintarMenu(u, perfil, activo) {
     : item('inicio', '#/inicio', '🏠', 'Inicio') + item('logros', '#/logros', '🏅', 'Logros')
       + item('papas', '#/papas', '👨‍👩‍👧', 'Papás') + `<a href="#/perfiles" class="solo-cel"><span class="mi-emoji" aria-hidden="true">${perfil ? esc(perfil.avatar) : '🔄'}</span><span>Cambiar</span></a>`;
   const tarjeta = u.rol === 'equipo'
-    ? `<div class="menu-perfil"><span class="av" style="background:var(--purple-s)">🧑‍🏫</span><span><b>${esc(primerNombre(u.nombre))}</b><small>Equipo Learnground</small></span></div>`
+    ? `<button type="button" class="menu-perfil" data-mi-nombre title="Cambiar mi nombre"><span class="av" style="background:var(--purple-s)">🧑‍🏫</span><span><b>${esc(u.nombre)}</b><small>✏️ Cambiar nombre</small></span></button>`
     : perfil ? `<a class="menu-perfil" href="#/perfiles" title="Cambiar de perfil"><span class="av" style="background:${esc(perfil.color)}">${esc(perfil.avatar)}</span><span><b>${esc(perfil.nombre)}</b><small>Cambiar de perfil</small></span></a>` : '';
   $menu.innerHTML = `
     <a class="menu-marca" href="#/"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></a>
@@ -178,6 +179,7 @@ document.head.appendChild(estiloCel);
 $menu.addEventListener('click', async (e) => {
   if (e.target.closest('[data-tema]')) { cambiarTema(); render(); }
   if (e.target.closest('[data-salir]')) salir();
+  if (e.target.closest('[data-mi-nombre]')) abrirMiNombre(await datos.usuario(), () => render());
 });
 
 export async function salir() {

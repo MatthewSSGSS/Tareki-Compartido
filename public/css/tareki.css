@@ -768,3 +768,8 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 @media (min-width: 900px) { .pantalla-equipo .pestanas-pagina + .avisos-equipo + .chat { height: calc(100dvh - 230px); } }
 .pedido-cab .av { width: 44px; height: 44px; font-size: 24px; flex: none; }
 @media (max-width: 520px) { .chat-acciones small { display: none; } .chat-acciones { padding: 6px 10px 0; } }
+
+/* Tarjeta del equipo en el menú: botón para cambiar el nombre */
+button.menu-perfil { width: calc(100% - 4px); text-align: left; cursor: pointer; font: inherit; color: inherit; }
+button.menu-perfil b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button.menu-perfil > span:last-child { min-width: 0; }

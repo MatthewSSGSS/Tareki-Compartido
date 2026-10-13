@@ -140,8 +140,8 @@ async function hilo(root, ctx, { cargar, enviar: enviarMensaje, marcar, titulo, 
       const sep = d !== dia ? `<div class="chat-dia"><span>${d}</span></div>` : '';
       dia = d;
       const quien = interno
-        ? (esMio(m) ? '' : `<span class="chat-autor">${esc(primerNombre(m.autorNombre) || 'Equipo')}</span>`)
-        : !esMio(m) && m.deEquipo ? `<span class="chat-autor">${esc(primerNombre(m.autorNombre) || 'Equipo')} · equipo</span>` : (esMio(m) && yo.rol === 'equipo' && m.autor !== yo.id ? `<span class="chat-autor">${esc(primerNombre(m.autorNombre))}</span>` : '');
+        ? (esMio(m) ? '' : `<span class="chat-autor">${esc(m.autorNombre || 'Equipo')}</span>`)
+        : !esMio(m) && m.deEquipo ? `<span class="chat-autor">${esc(primerNombre(m.autorNombre) || 'Equipo')} · equipo</span>` : (esMio(m) && yo.rol === 'equipo' && m.autor !== yo.id ? `<span class="chat-autor">${esc(m.autorNombre)}</span>` : '');
       // El mensaje con que la familia pidió una lección lleva el estado y las fotos
       const pedido = m.pedido && !m.deEquipo
         ? `<div class="pedido-chat" data-pedido-fotos="${esc(m.pedido.id)}">${chipEstado(m.pedido.estado)}${yo.rol === 'equipo' ? ' <a href="#/equipo/pedidos" class="peq">Ver en Pedidos →</a>' : ''}${miniaturas(m.pedido.fotos)}</div>` : '';
@@ -239,7 +239,7 @@ export async function interno(root, ctx) {
       if (!el) return;
       const sabe = miembros.filter((m) => m.dispositivos !== null);
       if (!sabe.length) { el.remove(); return; }
-      el.innerHTML = sabe.map((m) => `<span class="chip ${m.dispositivos.length ? 'verde' : 'rojo'}" title="${m.dispositivos.length ? 'Le llegan las notificaciones' : 'No ha activado los avisos'}">${m.dispositivos.length ? '🔔' : '🔕'} ${m.id === ctx.usuario?.id ? 'Tú' : esc(primerNombre(m.nombre))}</span>`).join('');
+      el.innerHTML = sabe.map((m) => `<span class="chip ${m.dispositivos.length ? 'verde' : 'rojo'}" title="${m.dispositivos.length ? 'Le llegan las notificaciones' : 'No ha activado los avisos'}">${m.dispositivos.length ? '🔔' : '🔕'} ${m.id === ctx.usuario?.id ? 'Tú' : esc(m.nombre)}</span>`).join('');
     }).catch(() => {});
     return fin;
   });

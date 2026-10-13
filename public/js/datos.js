@@ -13,7 +13,7 @@ import * as nube from './datos-nube.js';
 const d = MODO_DEMO ? demo : nube;
 
 export const {
-  usuario, ingresar, salir, recuperarClave, estaRecuperando, cambiarClave,
+  usuario, ingresar, salir, recuperarClave, estaRecuperando, cambiarClave, cambiarMiNombre,
   revisarCodigo, registrarFamilia, crearInvitacion, invitaciones, anularInvitacion,
   ninos, nino, guardarNino,
   lecciones, todasLasLecciones, leccion, htmlLeccion, subirLeccion, reemplazarArchivo, cambiarLeccion, borrarLeccion,
