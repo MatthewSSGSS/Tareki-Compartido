@@ -28,7 +28,7 @@ export async function render(root, ctx) {
       ${lulo(nombres
         ? `¡Tranquilos! <b>Todo lo de ${esc(nombres)} está guardado</b>: lecciones, estrellas, notas y racha. Apenas paguen la mensualidad, ${hijos.length > 1 ? 'siguen' : 'sigue'} justo donde ${hijos.length > 1 ? 'iban' : 'iba'} 🐬`
         : '¡Tranquilos! Todo queda guardado. Apenas paguen la mensualidad, siguen justo donde iban 🐬')}
-      <section class="card pila chica"><h2 style="margin:0">💳 Cómo pagar</h2>${datosDePago(cobro, u)}</section>
+      <section class="card pila chica"><h2 style="margin:0">💳 Cómo pagar</h2>${datosDePago(cobro, u, ninos)}</section>
       <a class="btn btn-blanco bloque" href="#/chat">💬 Escribirle al equipo</a>
       <p class="centro suave peq">¿Ya pagaste? En cuanto el equipo lo confirme, toca <button class="link" data-revisar>revisar de nuevo</button>.</p>
     </div>`;

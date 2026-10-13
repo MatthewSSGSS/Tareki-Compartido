@@ -270,12 +270,13 @@ export async function marcarIngreso() { await cliente().rpc('marcar_ingreso'); }
 /** Lo que el perfil necesita para volver a pedir los datos (después de pagar o cambiar algo). */
 export function olvidarPerfil() { perfilCache = null; }
 
-const aAjustes = (r) => ({ precio: r?.precio || 0, llave: r?.llave || '', banco: r?.banco || '', titular: r?.titular || '', whatsapp: r?.whatsapp || '', nota: r?.nota || '' });
+const aAjustes = (r) => ({ precio: r?.precio || 0, precioPrimaria: r?.precio_primaria || 0, precioBachillerato: r?.precio_bachillerato || 0, llave: r?.llave || '', banco: r?.banco || '', titular: r?.titular || '', whatsapp: r?.whatsapp || '', nota: r?.nota || '' });
 export async function ajustesCobro() {
   return aAjustes(ok(await cliente().from('ajustes_cobro').select('*').eq('id', 1).maybeSingle()));
 }
 export async function guardarAjustesCobro(a) {
-  const campos = { precio: Math.max(0, Math.round(Number(a.precio) || 0)), llave: String(a.llave || '').trim(), banco: String(a.banco || '').trim(), titular: String(a.titular || '').trim(), whatsapp: String(a.whatsapp || '').replace(/\D/g, ''), nota: String(a.nota || '').trim() };
+  const plata = (v) => Math.max(0, Math.round(Number(String(v ?? '').replace(/\D/g, '')) || 0));
+  const campos = { precio_primaria: plata(a.precioPrimaria), precio_bachillerato: plata(a.precioBachillerato), llave: String(a.llave || '').trim(), banco: String(a.banco || '').trim(), titular: String(a.titular || '').trim(), whatsapp: String(a.whatsapp || '').replace(/\D/g, ''), nota: String(a.nota || '').trim() };
   return aAjustes(ok(await cliente().from('ajustes_cobro').update(campos).eq('id', 1).select().single(), 'Solo el dueño puede cambiar los datos de cobro.'));
 }
 

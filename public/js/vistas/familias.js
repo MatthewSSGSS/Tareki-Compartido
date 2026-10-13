@@ -9,7 +9,7 @@
 import * as datos from '../datos.js';
 import { esc, hoy, sumarDias, diasEntre, fechaBonita, minutosTexto, plano, plural, primerNombre, DIAS_CORTOS } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
-import { estadoAcceso, chipAcceso, fechaLarga, pesos, miles, mascaraPesos } from '../acceso.js';
+import { estadoAcceso, chipAcceso, fechaLarga, pesos, miles, mascaraPesos, mensualidadDe } from '../acceso.js';
 import { abrirWhatsApp, numeroBonito } from '../whatsapp.js';
 import { editarCelular } from './papas.js';
 
@@ -129,7 +129,7 @@ export async function detalle(root, ctx) {
       </section>
     </div>`;
 
-  root.querySelector('[data-pago]').addEventListener('click', () => registrarPago(f, ctx));
+  root.querySelector('[data-pago]').addEventListener('click', () => registrarPago(f, hijos, ctx));
   datos.dispositivosDe(f.id).then((lista) => {
     const el = root.querySelector('#estadoAvisos');
     if (!el) return;
@@ -139,7 +139,7 @@ export async function detalle(root, ctx) {
     el.textContent = `🔔 Avisos activos en ${lista.length === 1 ? '1 dispositivo' : `${lista.length} dispositivos`}${nombres ? ` (${nombres})` : ''}`;
     el.classList.add('verde');
   });
-  root.querySelector('[data-wa]').addEventListener('click', async () => abrirWhatsApp(f, hijos.map((n) => n.nombre), await datos.ajustesCobro().catch(() => ({}))));
+  root.querySelector('[data-wa]').addEventListener('click', async () => abrirWhatsApp(f, hijos, await datos.ajustesCobro().catch(() => ({}))));
   root.querySelector('[data-cel]').addEventListener('click', () => editarCelular(f.id, f.celular, () => ctx.refrescar()));
   root.querySelector('[data-suspender]')?.addEventListener('click', async () => {
     if (!(await confirmar({ titulo: `¿Suspender a ${esc(f.nombre)}?`, texto: 'No podrán entrar a las lecciones hasta que la reactives. <b>No se borra nada</b>: niños, lecciones y progreso quedan guardados.', si: 'Suspender', peligro: true }))) return;
@@ -186,8 +186,9 @@ async function accion(fn, mensaje, ctx) {
   catch (x) { aviso(x.message, { emoji: '⚠️', ms: 6000 }); }
 }
 
-async function registrarPago(f, ctx) {
+async function registrarPago(f, hijos, ctx) {
   const cobro = await datos.ajustesCobro().catch(() => ({ precio: 0 }));
+  const { total: porMes, detalle } = mensualidadDe(cobro, hijos); // un valor por cada niño según su grado
   let meses = 1;
   const METODOS = ['Llave Bre-B', 'Nequi', 'Daviplata', 'Transferencia', 'Efectivo', 'Otro'];
   const vista = () => {
@@ -200,7 +201,8 @@ async function registrarPago(f, ctx) {
     cuerpo: `
       <div class="campo"><span class="etiqueta">¿Cuántos meses pagó?</span>
         <div class="grados" id="pMeses">${[1, 2, 3, 6, 12].map((m) => `<button type="button" data-m="${m}" aria-pressed="${m === meses}">${m}</button>`).join('')}</div></div>
-      <div class="campo"><label for="pMonto">Valor recibido (pesos)</label><div class="campo-pesos"><span>$</span><input id="pMonto" inputmode="numeric" value="${miles(cobro.precio * meses)}" placeholder="60.000"></div></div>
+      <div class="campo"><label for="pMonto">Valor recibido (pesos)</label><div class="campo-pesos"><span>$</span><input id="pMonto" inputmode="numeric" value="${miles(porMes * meses)}" placeholder="80.000"></div>
+        ${detalle.length ? `<small>Por mes: ${detalle.map((d) => `${esc(d.nombre)} (${esc(d.grado)}.º) ${pesos(d.valor)}`).join(' + ')}${detalle.length > 1 ? ` = ${pesos(porMes)}` : ''}</small>` : '<small>Esta familia aún no tiene perfiles de niños.</small>'}</div>
       <div class="campo"><label for="pMetodo">¿Cómo pagó?</label><select id="pMetodo">${METODOS.map((x) => `<option>${x}</option>`).join('')}</select></div>
       <div class="campo"><label for="pNota">Nota (opcional)</label><input id="pNota" maxlength="200" placeholder="Ej.: comprobante por WhatsApp del 12/10"></div>
       <div class="ok-caja" id="pVista">Queda con acceso hasta el <b>${vista()}</b>.</div>
@@ -211,7 +213,7 @@ async function registrarPago(f, ctx) {
       el.querySelectorAll('[data-m]').forEach((b) => b.addEventListener('click', () => {
         meses = Number(b.dataset.m);
         el.querySelectorAll('[data-m]').forEach((x) => x.setAttribute('aria-pressed', x === b));
-        if (cobro.precio) el.querySelector('#pMonto').value = miles(cobro.precio * meses);
+        if (porMes) el.querySelector('#pMonto').value = miles(porMes * meses);
         el.querySelector('#pVista').innerHTML = `Queda con acceso hasta el <b>${vista()}</b>.`;
       }));
       el.querySelector('[data-ok]').addEventListener('click', async (ev) => {
@@ -249,8 +251,12 @@ async function editarCobro() {
   const c = await datos.ajustesCobro();
   abrirHoja({
     titulo: 'Datos de cobro',
-    cuerpo: `<p class="suave peq">Esto es lo que ven las familias en «Cómo pagar». No se cobra nada automático: la familia paga y ustedes registran el pago.</p>
-      <div class="campo"><label for="cPrecio">Mensualidad (pesos)</label><div class="campo-pesos"><span>$</span><input id="cPrecio" inputmode="numeric" value="${miles(c.precio)}" placeholder="60.000"></div></div>
+    cuerpo: `<p class="suave peq">Esto lo ven las familias en «Cómo pagar» y quien quiera inscribirse en la pantalla de entrada (sin cuenta). No se cobra nada automático: la familia paga y ustedes registran el pago.</p>
+      <div class="campo"><span class="etiqueta">Mensualidad por niño</span>
+        <div class="dos-precios">
+          <label>1.º a 5.º<div class="campo-pesos"><span>$</span><input id="cPrimaria" inputmode="numeric" value="${miles(c.precioPrimaria || c.precio)}" placeholder="80.000"></div></label>
+          <label>6.º a 11.º<div class="campo-pesos"><span>$</span><input id="cBachillerato" inputmode="numeric" value="${miles(c.precioBachillerato || c.precio)}" placeholder="120.000"></div></label>
+        </div><small>Cada familia paga un valor por cada hijo, según su grado. También se ve en la pantalla de entrada.</small></div>
       <div class="campo"><label for="cLlave">Llave Bre-B</label><input id="cLlave" value="${esc(c.llave)}" placeholder="Tu llave: celular, cédula, correo o @alias"><small>La que creaste en tu banco para recibir pagos.</small></div>
       <div class="campo"><label for="cBanco">Banco</label><input id="cBanco" value="${esc(c.banco || 'Davivienda')}"></div>
       <div class="campo"><label for="cTitular">A nombre de</label><input id="cTitular" value="${esc(c.titular)}" placeholder="Como aparece al enviar con la llave"></div>
@@ -258,9 +264,9 @@ async function editarCobro() {
       <div class="campo"><label for="cNota">Nota para las familias (opcional)</label><input id="cNota" maxlength="200" value="${esc(c.nota)}" placeholder="Ej.: Pagos del 1 al 5 de cada mes."></div>
       <p class="error" id="cErr" role="alert"></p>`,
     pie: '<button class="btn" data-ok>Guardar</button>',
-    montar: (el) => { mascaraPesos(el.querySelector('#cPrecio')); el.querySelector('[data-ok]').addEventListener('click', async () => {
+    montar: (el) => { mascaraPesos(el.querySelector('#cPrimaria')); mascaraPesos(el.querySelector('#cBachillerato')); el.querySelector('[data-ok]').addEventListener('click', async () => {
       try {
-        await datos.guardarAjustesCobro({ precio: String(el.querySelector('#cPrecio').value).replace(/\D/g, ''), llave: el.querySelector('#cLlave').value, banco: el.querySelector('#cBanco').value, titular: el.querySelector('#cTitular').value, whatsapp: el.querySelector('#cWa').value, nota: el.querySelector('#cNota').value });
+        await datos.guardarAjustesCobro({ precioPrimaria: el.querySelector('#cPrimaria').value, precioBachillerato: el.querySelector('#cBachillerato').value, llave: el.querySelector('#cLlave').value, banco: el.querySelector('#cBanco').value, titular: el.querySelector('#cTitular').value, whatsapp: el.querySelector('#cWa').value, nota: el.querySelector('#cNota').value });
         cerrarHoja(); aviso('Datos de cobro guardados.', { emoji: '💳' });
       } catch (x) { el.querySelector('#cErr').textContent = x.message; }
     }); },

@@ -7,6 +7,8 @@ import * as datos from '../datos.js';
 import { MODO_DEMO, NUBE } from '../config.js';
 import { esc } from '../util.js';
 import { aviso, confeti, abrirHoja, cerrarHoja } from '../ui.js';
+import { seccionInscripcion } from '../inscripcion.js';
+import { conectarPago } from '../acceso.js';
 
 const FLOTAN = ['📚', '⭐', '🎈', '✏️', '🔢', '🌎', '🧠', '🎨', '🚀', '🔬'];
 
@@ -52,9 +54,26 @@ export async function render(root, ctx) {
         <span><b>¿Quieres ver cómo funciona?</b><small>Entra a la versión de prueba: una lección de muestra y datos inventados. Sin cuenta.</small></span>
         <span class="btn btn-peq btn-sol">Probar</span>
       </a>`}
-    </div></div>`;
+    </div>${PRUEBA ? '' : '<section class="inscribirse" id="inscribirse" hidden aria-label="Cómo inscribirse"></section>'}</div>`;
 
   const caja = root.querySelector('#caja');
+
+  // Precios, qué incluye y cómo pagar para inscribirse (se paga antes de recibir el código)
+  if (!PRUEBA) {
+    datos.ajustesCobro().then((cobro) => {
+      const html = seccionInscripcion(cobro);
+      const el = root.querySelector('#inscribirse');
+      if (!html || !el) return;
+      el.innerHTML = html;
+      el.hidden = false;
+      root.querySelector('.ingreso').classList.add('con-info');
+      // En el celular la sección queda abajo: un atajo para llegar
+      root.querySelector('.lema')?.insertAdjacentHTML('afterend', '<a class="ir-precios" href="#inscribirse">🎟️ ¿Aún no tienes cuenta? <b>Precios e inscripción ↓</b></a>');
+      root.querySelector('.ir-precios')?.addEventListener('click', (e) => { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      conectarPago(el);
+      el.querySelector('[data-ir-codigo]')?.addEventListener('click', () => { modo = 'codigo'; pintar(); root.querySelector('.ingreso-caja').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    }).catch(() => {});
+  }
 
   function pintar() {
     root.querySelectorAll('[data-modo]').forEach((b) => b.setAttribute('aria-selected', b.dataset.modo === modo));

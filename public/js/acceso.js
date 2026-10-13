@@ -45,25 +45,49 @@ export function chipAcceso(f) {
   return `<span class="chip verde">✓ Hasta el ${fechaLarga(e.hasta)}</span>`;
 }
 
-/** Bloque con los datos para pagar (llave, valor, a nombre de quién y botón de WhatsApp). */
-export function datosDePago(cobro, usuario) {
-  const mensaje = `Hola 👋 Soy ${usuario?.nombre || ''}. Acabo de pagar la mensualidad de Learnground${cobro.precio ? ` (${pesos(cobro.precio)})` : ''}. Te envío el comprobante.`;
-  const wa = cobro.whatsapp ? `https://wa.me/${cobro.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}` : '';
+// --- Precios: mensualidad POR NIÑO según el grado ------------------------------------------
+/** 1.º a 5.º (primaria) o 6.º a 11.º (bachillerato). Si no hay precios por grado, el precio único de antes. */
+export const precioDeGrado = (cobro, grado) => (Number(grado) <= 5 ? cobro.precioPrimaria : cobro.precioBachillerato) || cobro.precio || 0;
+export const tienePrecios = (c) => !!(c?.precioPrimaria || c?.precioBachillerato || c?.precio);
+/** Total del mes de una familia: un valor por cada niño. */
+export function mensualidadDe(cobro, ninos = []) {
+  const detalle = ninos.map((n) => ({ nombre: n.nombre, grado: n.grado, valor: precioDeGrado(cobro, n.grado) }));
+  return { detalle, total: detalle.reduce((s, d) => s + d.valor, 0) };
+}
+/** Tabla de precios (pantalla de entrada y familias sin perfiles). */
+export const tablaPrecios = (c) => (c.precioPrimaria || c.precioBachillerato ? `
+  <div class="precios">
+    <div><span>1.º a 5.º</span><b>${pesos(c.precioPrimaria || c.precio)}</b></div>
+    <div><span>6.º a 11.º</span><b>${pesos(c.precioBachillerato || c.precio)}</b></div>
+  </div><p class="suave peq precios-nota">Por cada niño, cada mes.</p>` : c.precio ? `<div class="pago-valor"><span>Mensualidad por niño</span><b>${pesos(c.precio)}</b></div>` : '');
+
+/** La llave Bre-B con su botón de copiar y a nombre de quién. */
+export const bloqueLlave = (cobro) => `${cobro.llave ? `<div class="pago-llave"><span>Llave ${esc(cobro.banco || '')} (Bre-B)</span><b data-llave>${esc(cobro.llave)}</b>
+      <button class="btn btn-peq btn-blanco" type="button" data-copiar-llave>📋 Copiar llave</button></div>` : ''}
+    ${cobro.titular ? `<p class="suave peq">A nombre de: <b>${esc(cobro.titular)}</b></p>` : ''}`;
+
+/** Enlace de WhatsApp al número de cobro del equipo ('' si no hay). */
+export const waCobro = (cobro, texto) => (cobro.whatsapp ? `https://wa.me/${cobro.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(texto)}` : '');
+
+/** Bloque con los datos para pagar la mensualidad (familias con cuenta). ninos: sus perfiles, para el total. */
+export function datosDePago(cobro, usuario, ninos = []) {
   // En la versión de prueba no se muestran datos de pago (nadie debe pagarle a una llave de ejemplo)
   if (VERSION_PRUEBA && usuario?.rol !== 'equipo') {
     return `<div class="pago"><div class="ok-caja">🧪 <b>Esto es la versión de prueba: aquí no se paga nada.</b></div>
       <p class="suave">En tu cuenta real, aquí aparecen el valor de la mensualidad, la llave Bre-B para pagar desde la app de tu banco (Davivienda, Bancolombia, Nequi, Daviplata…), los pasos y un botón para enviarnos el comprobante por WhatsApp.</p></div>`;
   }
-  if (!cobro.llave && !cobro.precio) return '<p class="suave">El equipo de Learnground te dirá cómo pagar.</p>';
+  if (!cobro.llave && !tienePrecios(cobro)) return '<p class="suave">El equipo de Learnground te dirá cómo pagar.</p>';
+  const { detalle, total } = mensualidadDe(cobro, ninos);
+  const mensaje = `Hola 👋 Soy ${usuario?.nombre || ''}. Acabo de pagar la mensualidad de Learnground${total ? ` (${pesos(total)})` : ''}. Te envío el comprobante.`;
+  const wa = waCobro(cobro, mensaje);
   return `<div class="pago">
-    ${cobro.precio ? `<div class="pago-valor"><span>Mensualidad</span><b>${pesos(cobro.precio)}</b></div>` : ''}
-    ${cobro.llave ? `<div class="pago-llave"><span>Llave ${esc(cobro.banco || '')} (Bre-B)</span><b data-llave>${esc(cobro.llave)}</b>
-      <button class="btn btn-peq btn-blanco" type="button" data-copiar-llave>📋 Copiar llave</button></div>` : ''}
-    ${cobro.titular ? `<p class="suave peq">A nombre de: <b>${esc(cobro.titular)}</b></p>` : ''}
+    ${total ? `<div class="pago-valor"><span>Mensualidad de este mes</span><b>${pesos(total)}</b>
+      <ul class="limpia pago-detalle">${detalle.map((d) => `<li><span>${esc(d.nombre)} · ${esc(d.grado)}.º</span><b>${pesos(d.valor)}</b></li>`).join('')}</ul></div>` : tablaPrecios(cobro)}
+    ${bloqueLlave(cobro)}
     <ol class="limpia peq">
       <li>Abre la app de tu banco (Davivienda, Bancolombia, Nequi, Daviplata…) y elige <b>enviar con llave</b>.</li>
-      <li>Pega la llave, revisa que salga el nombre de arriba y envía ${cobro.precio ? pesos(cobro.precio) : 'la mensualidad'}.</li>
-      <li>Mándanos el comprobante por WhatsApp. Apenas lo veamos, reactivamos el acceso.</li>
+      <li>Pega la llave, revisa que salga el nombre de arriba y envía ${total ? pesos(total) : 'la mensualidad'}.</li>
+      <li>Mándanos el comprobante por WhatsApp. Apenas lo veamos, ${usuario?.accesoHasta ? 'extendemos tu acceso' : 'activamos tu acceso'}.</li>
     </ol>
     ${cobro.nota ? `<p class="suave peq">${esc(cobro.nota)}</p>` : ''}
     ${wa ? `<a class="btn btn-wa bloque" href="${esc(wa)}" target="_blank" rel="noopener">💬 Avisar que ya pagué</a>` : ''}
@@ -79,8 +103,8 @@ export function conectarPago(el) {
 }
 
 export async function abrirComoPagar(usuario) {
-  const cobro = await datos.ajustesCobro().catch(() => ({}));
-  abrirHoja({ titulo: 'Cómo pagar la mensualidad', cuerpo: datosDePago(cobro, usuario), montar: conectarPago });
+  const [cobro, ninos] = await Promise.all([datos.ajustesCobro().catch(() => ({})), datos.ninos().catch(() => [])]);
+  abrirHoja({ titulo: 'Cómo pagar la mensualidad', cuerpo: datosDePago(cobro, usuario, ninos), montar: conectarPago });
 }
 
 /** Aviso amarillo cuando faltan 3 días o menos (familias). Devuelve '' si no aplica. */

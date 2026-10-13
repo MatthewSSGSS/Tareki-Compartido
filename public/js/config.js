@@ -26,7 +26,7 @@ export const AVATARES = ['🦊', '🐯', '🐼', '🐸', '🦁', '🐨', '🐙',
 
 export const COLORES = ['#59c3ff', '#ff6b9a', '#35b862', '#ffcf3f', '#a77bff', '#ff9a4d'];
 
-export const GRADOS = ['1', '2', '3', '4', '5', '6'];
+export const GRADOS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
 
 export const MATERIAS = [
   { id: 'mate', nombre: 'Matemáticas', emoji: '🔢', color: '#ffcf3f', pistas: /matem|fracci|suma|resta|multipl|divis|n[uú]mero|geometr|[aá]ngulo|romano|ecuaci/i },

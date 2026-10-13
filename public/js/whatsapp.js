@@ -6,7 +6,7 @@
 
 import { esc } from './util.js';
 import { abrirHoja, cerrarHoja, aviso } from './ui.js';
-import { fechaLarga, pesos } from './acceso.js';
+import { fechaLarga, pesos, mensualidadDe } from './acceso.js';
 
 /** Deja solo dígitos y, si es un celular colombiano sin indicativo, le pone 57. */
 export function numeroWa(celular) {
@@ -24,11 +24,14 @@ export const linkWa = (numero, texto) => `https://wa.me/${numeroWa(numero)}?text
 
 const lista = (nombres) => (nombres.length > 1 ? `${nombres.slice(0, -1).join(', ')} y ${nombres.at(-1)}` : nombres[0] || 'tu hijo o hija');
 
-/** Plantillas para una familia. f: {nombre, accesoHasta}; hijos: [nombre]; cobro: {precio, llave, banco, titular} */
+/** Plantillas para una familia. f: {nombre, accesoHasta}; hijos: [{nombre, grado}] (o nombres); cobro: ajustes de cobro */
 export function plantillas(f, hijos, cobro = {}) {
   const papa = String(f.nombre || '').split(/\s+/)[0];
+  const conGrado = hijos.filter((h) => typeof h === 'object');
+  hijos = hijos.map((h) => (typeof h === 'object' ? h.nombre : h));
   const ninos = lista(hijos);
-  const pago = `${cobro.precio ? `La mensualidad es de ${pesos(cobro.precio)}` : 'Puedes pagar la mensualidad'}${cobro.llave ? ` con la llave ${cobro.llave}${cobro.banco ? ` (${cobro.banco})` : ''}${cobro.titular ? ` a nombre de ${cobro.titular}` : ''}` : ''}.`;
+  const { total } = mensualidadDe(cobro, conGrado);
+  const pago = `${total ? `La mensualidad es de ${pesos(total)}` : 'Puedes pagar la mensualidad'}${cobro.llave ? ` con la llave ${cobro.llave}${cobro.banco ? ` (${cobro.banco})` : ''}${cobro.titular ? ` a nombre de ${cobro.titular}` : ''}` : ''}.`;
   return [
     { emoji: '💳', nombre: 'Recordar pago', texto: `Hola ${papa} 👋 Te recordamos que el acceso de ${ninos} a Learnground vence el ${fechaLarga(f.accesoHasta)}. ${pago} Cuando pagues, mándanos el comprobante por aquí. ¡Gracias! 🐬` },
     { emoji: '⏰', nombre: 'Acceso vencido', texto: `Hola ${papa} 👋 El acceso de ${ninos} a Learnground venció el ${fechaLarga(f.accesoHasta)}, pero tranquilos: todo su progreso está guardado. ${pago} Apenas pagues, lo reactivamos. 🐬` },

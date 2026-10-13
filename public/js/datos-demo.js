@@ -27,7 +27,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 10) return d;
+    if (d && d.version === 11) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -308,7 +308,8 @@ export function olvidarPerfil() { /* nada */ }
 export async function ajustesCobro() { return { ...db.cobro }; }
 export async function guardarAjustesCobro(a) {
   if (!yo()?.dueno) falla('Solo el dueño puede cambiar los datos de cobro.');
-  db.cobro = { precio: Math.max(0, Math.round(Number(a.precio) || 0)), llave: String(a.llave || '').trim(), banco: String(a.banco || '').trim(), titular: String(a.titular || '').trim(), whatsapp: String(a.whatsapp || '').replace(/\D/g, ''), nota: String(a.nota || '').trim() };
+  const plata = (v) => Math.max(0, Math.round(Number(String(v ?? '').replace(/\D/g, '')) || 0));
+  db.cobro = { precio: 0, precioPrimaria: plata(a.precioPrimaria), precioBachillerato: plata(a.precioBachillerato), llave: String(a.llave || '').trim(), banco: String(a.banco || '').trim(), titular: String(a.titular || '').trim(), whatsapp: String(a.whatsapp || '').replace(/\D/g, ''), nota: String(a.nota || '').trim() };
   guardar(); return { ...db.cobro };
 }
 
