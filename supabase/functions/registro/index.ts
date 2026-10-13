@@ -68,15 +68,22 @@ Deno.serve(async (req) => {
   }
   const id = creado.user.id;
 
-  // 3. Perfil con el rol del código
+  // 3. Perfil con el rol del código. Las familias arrancan con los días de acceso del código.
   const rol = inv.rol === "familia" ? "familia" : "equipo";
-  const { error: e3 } = await admin.from("perfiles").insert({ id, rol, dueno: inv.rol === "dueno", nombre, correo });
+  const hoyCo = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date()); // AAAA-MM-DD
+  const hasta = new Date(`${hoyCo}T12:00:00Z`);
+  hasta.setUTCDate(hasta.getUTCDate() + (inv.dias_acceso || 30));
+  const accesoHasta = rol === "familia" ? hasta.toISOString().slice(0, 10) : null;
+  const { error: e3 } = await admin.from("perfiles").insert({ id, rol, dueno: inv.rol === "dueno", nombre, correo, acceso_hasta: accesoHasta });
   if (e3) {
     await admin.auth.admin.deleteUser(id);
     await liberar();
     return error("No pudimos crear la cuenta. Intenta de nuevo.");
   }
   await admin.from("invitaciones").update({ usada_por: id }).eq("codigo", codigo);
+  if (rol === "familia") {
+    await admin.from("historial_acceso").insert({ familia_id: id, accion: "registro", hasta: accesoHasta, nota: `Código ${codigo} (${inv.dias_acceso || 30} días)` });
+  }
 
   return responder({ ok: true, rol });
 });

@@ -10,6 +10,8 @@
 --   • Lección nueva: la pide el equipo al asignarla (función "avisos").
 --   • Todos los días a las 6:00 p. m. (hora de Colombia): racha en peligro o
 --     lecciones nuevas sin abrir, a las familias de niños que no han estudiado hoy.
+--   • El acceso vence en 3 días, mañana u hoy (necesita accesos.sql).
+-- Orden para instalar desde cero: esquema.sql → accesos.sql → avisos.sql
 -- =============================================================================
 
 -- 1) Dispositivos de cada cuenta (celular, tablet o computador) -------------------------
@@ -62,12 +64,30 @@ language plpgsql security definer set search_path = public as $$
 #variable_conflict use_column
 declare
   n record;
+  f record;
   d date;
   racha int;
   nuevas int;
 begin
+  -- El acceso vence pronto (3 días antes, 1 día antes y el último día)
+  for f in
+    select p.id, p.acceso_hasta, (p.acceso_hasta - p_dia) as faltan,
+      (select string_agg(ni.nombre, ', ' order by ni.nombre) from public.ninos ni where ni.familia_id = p.id) as hijos
+    from public.perfiles p
+    where p.rol = 'familia' and not p.suspendido and (p.acceso_hasta - p_dia) in (3, 1, 0)
+      and exists (select 1 from public.suscripciones s where s.user_id = p.id)
+  loop
+    return query select f.id,
+      case f.faltan when 0 then '⏰ Hoy es el último día de acceso a Tareki' when 1 then '⏰ Tu acceso a Tareki vence mañana' else '⏰ Tu acceso a Tareki vence en 3 días' end,
+      case when f.hijos is null then 'Paga la mensualidad para seguir aprendiendo sin pausas. Toca para ver cómo pagar.'
+           else format('Paga la mensualidad para que %s no se pierda%s ni un día de Tareki. Toca para ver cómo pagar.', f.hijos, case when f.hijos like '%%,%%' then 'n' else '' end) end,
+      '#/papas', format('vence:%s:%s:%s', f.id, f.acceso_hasta, f.faltan);
+  end loop;
+
+  -- Racha y lecciones nuevas (solo familias con acceso vigente)
   for n in
     select ni.id, ni.nombre, ni.familia_id from public.ninos ni
+    join public.perfiles pf on pf.id = ni.familia_id and not pf.suspendido and pf.acceso_hasta >= p_dia
     where exists (select 1 from public.suscripciones s where s.user_id = ni.familia_id)
       and not exists (select 1 from public.actividad a where a.nino_id = ni.id and a.dia = p_dia and (a.minutos >= 5 or a.logros > 0))
   loop

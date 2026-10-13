@@ -391,3 +391,28 @@ ul.limpia { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 .tarjeta-avisos.bloqueados { background: #ffe3e6; color: #4a0d16; }
 .pasos-ios { margin-top: 8px; }
 .pasos-ios li { margin-bottom: 4px; }
+
+/* Mensualidad: aviso de vencimiento y datos de pago */
+.banner-vence { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; align-items: center; background: var(--sun-s); color: #1f2544; margin-bottom: 18px; }
+.banner-vence .em { font-size: 34px; }
+.banner-vence b { font-family: var(--f-head); font-size: 1.1em; }
+.banner-vence .btn { grid-column: 1 / -1; justify-self: start; }
+@media (min-width: 700px) { .banner-vence { grid-template-columns: auto minmax(0, 1fr) auto; } .banner-vence .btn { grid-column: auto; } }
+.pago { display: grid; gap: 10px; }
+.pago-valor, .pago-llave { display: grid; gap: 2px; background: var(--soft); border: 2px solid var(--line); border-radius: 16px; padding: 10px 14px; }
+.pago-valor span, .pago-llave span { font-size: .85em; color: var(--muted); font-weight: 800; }
+.pago-valor b { font-family: var(--f-head); font-size: 1.8em; }
+.pago-llave b { font-family: var(--f-head); font-size: 1.4em; letter-spacing: .02em; overflow-wrap: anywhere; user-select: all; }
+.pago-llave .btn { justify-self: start; margin-top: 4px; }
+.dias30 { display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 4px; }
+@media (min-width: 700px) { .dias30 { grid-template-columns: repeat(30, minmax(0, 1fr)); } }
+.dias30 i { aspect-ratio: 1; border-radius: 5px; border: 1.5px solid var(--line); background: var(--soft); }
+.dias30 i.n1 { background: #bff0cf; } .dias30 i.n2 { background: #6fd394; } .dias30 i.n3 { background: var(--green); }
+.dias30 i.hoy { outline: 3px solid var(--sun); outline-offset: 1px; }
+.historial { display: grid; gap: 8px; }
+.historial div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; background: var(--soft); border: 2px solid var(--line); border-radius: 14px; padding: 8px 12px; font-size: .92em; }
+.historial .em { font-size: 22px; }
+.historial small { display: block; color: var(--muted); }
+.filtros { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 10px; }
+.filtros button { flex: none; border: 3px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); padding: 4px 14px; font-weight: 800; cursor: pointer; }
+.filtros button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }

@@ -21,10 +21,14 @@ export const diasEntre = (a, b) => Math.round((new Date(`${b}T12:00:00`) - new D
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 export const DIAS_CORTOS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 
+/** Día local (AAAA-MM-DD) de una fecha o de un momento guardado en UTC ("2026-10-13T02:10:00Z").
+ *  Sin esto, lo que pasa en la noche de Colombia aparecería como del día siguiente. */
+export const diaDe = (x) => (String(x).length > 10 ? fechaLocal(new Date(x)) : String(x).slice(0, 10));
+
 /** "hoy", "ayer", "hace 3 días" o "12 de octubre". */
 export function fechaBonita(dia) {
   if (!dia) return '';
-  const d = String(dia).slice(0, 10);
+  const d = diaDe(dia);
   const n = diasEntre(d, hoy());
   if (n === 0) return 'hoy';
   if (n === 1) return 'ayer';
@@ -32,7 +36,7 @@ export function fechaBonita(dia) {
   const f = new Date(`${d}T12:00:00`);
   return `${f.getDate()} de ${MESES[f.getMonth()]}`;
 }
-export const fechaCorta = (dia) => { const f = new Date(`${String(dia).slice(0, 10)}T12:00:00`); return `${f.getDate()}/${f.getMonth() + 1}`; };
+export const fechaCorta = (dia) => { const f = new Date(`${diaDe(dia)}T12:00:00`); return `${f.getDate()}/${f.getMonth() + 1}`; };
 
 export const primerNombre = (n) => String(n || '').trim().split(/\s+/)[0] || '';
 export const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;

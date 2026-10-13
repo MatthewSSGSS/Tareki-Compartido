@@ -23,6 +23,13 @@
 - `supabase/functions/registro`: única forma de crear cuentas (registro público apagado, "Verify JWT" apagado). Reserva el código, crea el usuario y el perfil con el rol del código (`familia`, `equipo`, `dueno`). Solo el dueño crea códigos de equipo.
 - Reemplazar el archivo de una lección sube `version` y conserva `estados` (el progreso).
 
+## Mensualidad y acceso de familias
+- `supabase/accesos.sql` (orden: esquema → accesos → avisos): `perfiles.acceso_hasta` (último día incluido, hora Colombia), `suspendido`, `ultimo_ingreso`; `historial_acceso`; `ajustes_cobro` (llave Bre-B, precio, WhatsApp; solo el dueño los cambia); funciones `registrar_pago`, `cambiar_acceso`, `marcar_ingreso`, `familias_resumen`.
+- El bloqueo lo hace la base: `es_mi_nino()` exige `acceso_ok()`. Nunca se borran datos al vencer.
+- Cobro 100 % manual (el usuario no quiere cobros automáticos): la familia ve "Cómo pagar" (`js/acceso.js`) y el equipo registra el pago en `#/equipo/familia/<id>` (`js/vistas/familias.js`). Familia bloqueada → `#/acceso`.
+- Los códigos de familia traen `dias_acceso` (la función `registro` pone `acceso_hasta`). Avisos push 3 días antes, 1 día antes y el último día.
+- Fechas: los momentos se guardan en UTC; para mostrarlos usar `diaDe()`/`fechaBonita()` (día local), nunca `slice(0, 10)`.
+
 ## Notificaciones (deben servir en todo dispositivo)
 - Web Push con el texto cifrado (RFC 8291 aes128gcm) en `supabase/functions/avisos` ("Verify JWT" apagado; secretos VAPID_* y CRON_SECRET en Supabase, copia en `privado/secretos-avisos.txt`). La llave pública VAPID está en `config.js`.
 - `supabase/avisos.sql`: tabla `suscripciones`, `registrar_push`/`quitar_push`, `avisos_diarios(dia)` y la tarea de las 6 p. m. Colombia (23:00 UTC). `privado/avisos-listo.sql` trae el CRON_SECRET puesto.

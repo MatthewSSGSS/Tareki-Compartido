@@ -31,7 +31,7 @@ function falla(e, porDefecto = 'Algo salió mal. Revisa tu conexión e intenta d
   if (/invalid login credentials/i.test(m)) throw new Error('El correo o la contraseña no coinciden.');
   if (/failed to fetch|network/i.test(m)) throw new Error('No hay conexión a internet. Intenta de nuevo.');
   if (/row-level security|permission denied|sin permiso/i.test(m)) throw new Error('No tienes permiso para hacer esto.');
-  if (/^(Ese|Escribe|La contraseña|Ya hay)/.test(m)) throw new Error(m); // mensajes nuestros
+  if (/^(Ese|Escribe|La contraseña|Ya hay|Solo|Los meses|Elige|Acción)/.test(m)) throw new Error(m); // mensajes nuestros
   console.error(e);
   throw new Error(porDefecto);
 }
@@ -47,9 +47,9 @@ export async function usuario() {
   const u = data.session?.user;
   if (!u) { perfilCache = null; return null; }
   if (perfilCache?.id !== u.id) {
-    const { data: p } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo').eq('id', u.id).maybeSingle();
+    const { data: p } = await cliente().from('perfiles').select('id, rol, dueno, nombre, correo, acceso_hasta, suspendido').eq('id', u.id).maybeSingle();
     if (!p) return null; // cuenta sin perfil (no debería pasar)
-    perfilCache = p;
+    perfilCache = { id: p.id, rol: p.rol, dueno: p.dueno, nombre: p.nombre, correo: p.correo, accesoHasta: p.acceso_hasta, suspendido: p.suspendido };
   }
   return { ...perfilCache };
 }
@@ -86,13 +86,13 @@ export async function registrarFamilia({ codigo, nombre, correo, clave }) {
   return ingresar(correo, clave);
 }
 
-export async function crearInvitacion({ nota, rol = 'familia' }) {
+export async function crearInvitacion({ nota, rol = 'familia', diasAcceso = 30 }) {
   const yo = await usuario();
   const letras = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   for (let intento = 0; intento < 5; intento++) {
     const codigo = 'TAREKI-' + Array.from(crypto.getRandomValues(new Uint32Array(6)), (n) => letras[n % letras.length]).join('');
     const { data, error } = await cliente().from('invitaciones')
-      .insert({ codigo, rol, nota: String(nota || '').trim(), creada_por: yo.id, expira: sumarDias(hoy(), INVITACION_DIAS) })
+      .insert({ codigo, rol, nota: String(nota || '').trim(), creada_por: yo.id, expira: sumarDias(hoy(), INVITACION_DIAS), dias_acceso: diasAcceso })
       .select().single();
     if (!error) return data;
     if (!/duplicate/i.test(error.message)) falla(error, 'No se pudo crear el código.');
@@ -102,7 +102,7 @@ export async function crearInvitacion({ nota, rol = 'familia' }) {
 
 export async function invitaciones() {
   const filas = ok(await cliente().from('invitaciones').select('*, familia:perfiles!invitaciones_usada_por_fkey(id, nombre, correo, rol)').order('creada', { ascending: false }));
-  return filas.map((i) => ({ codigo: i.codigo, rol: i.rol, nota: i.nota, creada: i.creada, expira: i.expira, usadaPor: i.usada_por, usada: i.usada, familia: i.familia }));
+  return filas.map((i) => ({ codigo: i.codigo, rol: i.rol, nota: i.nota, creada: i.creada, expira: i.expira, diasAcceso: i.dias_acceso, usadaPor: i.usada_por, usada: i.usada, familia: i.familia }));
 }
 
 /** Quita un código: sin usar o de una cuenta borrada (equipo), o cualquiera (dueño). La regla la pone la base. */
@@ -241,6 +241,42 @@ export async function familias() {
 }
 
 export async function reiniciarDemo() { /* solo existe en modo demostración */ }
+
+// --- Acceso, pagos y actividad de familias ---------------------------------------------------------
+/** Se llama una vez al abrir la app: guarda el "último ingreso". */
+export async function marcarIngreso() { await cliente().rpc('marcar_ingreso'); }
+
+/** Lo que el perfil necesita para volver a pedir los datos (después de pagar o cambiar algo). */
+export function olvidarPerfil() { perfilCache = null; }
+
+const aAjustes = (r) => ({ precio: r?.precio || 0, llave: r?.llave || '', banco: r?.banco || '', titular: r?.titular || '', whatsapp: r?.whatsapp || '', nota: r?.nota || '' });
+export async function ajustesCobro() {
+  return aAjustes(ok(await cliente().from('ajustes_cobro').select('*').eq('id', 1).maybeSingle()));
+}
+export async function guardarAjustesCobro(a) {
+  const campos = { precio: Math.max(0, Math.round(Number(a.precio) || 0)), llave: String(a.llave || '').trim(), banco: String(a.banco || '').trim(), titular: String(a.titular || '').trim(), whatsapp: String(a.whatsapp || '').replace(/\D/g, ''), nota: String(a.nota || '').trim() };
+  return aAjustes(ok(await cliente().from('ajustes_cobro').update(campos).eq('id', 1).select().single(), 'Solo el dueño puede cambiar los datos de cobro.'));
+}
+
+export async function familiasResumen() {
+  return ok(await cliente().rpc('familias_resumen')).map((f) => ({
+    id: f.id, nombre: f.nombre, correo: f.correo, creado: f.creado, accesoHasta: f.acceso_hasta, suspendido: f.suspendido,
+    ultimoIngreso: f.ultimo_ingreso, ultimoEstudio: f.ultimo_estudio, minutos7: f.minutos_7, ninos: f.ninos, lecciones: f.lecciones,
+  }));
+}
+
+export async function historialAcceso(familiaId) {
+  const filas = ok(await cliente().from('historial_acceso').select('*, quien:perfiles!historial_acceso_por_fkey(nombre)').eq('familia_id', familiaId).order('creado', { ascending: false }));
+  return filas.map((h) => ({ id: h.id, accion: h.accion, meses: h.meses, monto: h.monto, metodo: h.metodo, nota: h.nota, hasta: h.hasta, por: h.quien?.nombre || '', creado: h.creado }));
+}
+
+export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {
+  return ok(await cliente().rpc('registrar_pago', { p_familia: familiaId, p_meses: meses, p_monto: monto, p_metodo: metodo, p_nota: nota }));
+}
+
+export async function cambiarAcceso({ familiaId, accion, hasta = null, nota = '' }) {
+  ok(await cliente().rpc('cambiar_acceso', { p_familia: familiaId, p_accion: accion, p_hasta: hasta, p_nota: nota }));
+}
 
 // --- Avisos (notificaciones push) ------------------------------------------------------------------
 export async function registrarPush({ endpoint, p256dh, auth, dispositivo }) {

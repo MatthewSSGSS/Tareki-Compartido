@@ -15,7 +15,7 @@
 // =============================================================================
 
 import { semilla } from './demo.js';
-import { uid, hoy, sumarDias, plano } from './util.js';
+import { uid, hoy, sumarDias, plano, fechaLocal } from './util.js';
 import { INVITACION_DIAS } from './config.js';
 
 const CLAVE = 'tareki:demo';
@@ -26,7 +26,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 2) return d;
+    if (d && d.version === 3) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -40,7 +40,7 @@ const falla = (msg) => { throw new Error(msg); };
 
 // --- Sesión -------------------------------------------------------------------------
 const yo = () => db.usuarios.find((u) => u.id === db.sesion) || null;
-const sinClave = (u) => (u ? { id: u.id, correo: u.correo, rol: u.rol, nombre: u.nombre, dueno: !!u.dueno } : null);
+const sinClave = (u) => (u ? { id: u.id, correo: u.correo, rol: u.rol, nombre: u.nombre, dueno: !!u.dueno, accesoHasta: u.accesoHasta || null, suspendido: !!u.suspendido } : null);
 
 export async function usuario() { return sinClave(yo()); }
 
@@ -79,21 +79,24 @@ export async function registrarFamilia({ codigo, nombre, correo, clave }) {
   if (String(clave).length < 8) falla('La contraseña debe tener al menos 8 caracteres.');
   if (db.usuarios.some((u) => u.correo === correo)) falla('Ya hay una cuenta con ese correo. Inicia sesión.');
   const inv = db.invitaciones.find((i) => i.codigo === normalizarCodigo(codigo));
-  const u = { id: uid(), correo, clave, rol: inv.rol === 'familia' || !inv.rol ? 'familia' : 'equipo', dueno: inv.rol === 'dueno', nombre: nombre.trim(), creado: ahora() };
+  const rolNuevo = inv.rol === 'familia' || !inv.rol ? 'familia' : 'equipo';
+  const u = { id: uid(), correo, clave, rol: rolNuevo, dueno: inv.rol === 'dueno', nombre: nombre.trim(), creado: ahora(),
+    accesoHasta: rolNuevo === 'familia' ? sumarDias(hoy(), inv.diasAcceso || 30) : null, suspendido: false };
   db.usuarios.push(u);
+  if (rolNuevo === 'familia') db.historial.unshift({ id: uid(), familiaId: u.id, accion: 'registro', hasta: u.accesoHasta, nota: `Código ${inv.codigo}`, por: '', creado: ahora() });
   inv.usadaPor = u.id; inv.usada = ahora();
   db.sesion = u.id; guardar();
   return sinClave(u);
 }
 
-export async function crearInvitacion({ nota, rol = 'familia' }) {
+export async function crearInvitacion({ nota, rol = 'familia', diasAcceso = 30 }) {
   soloEquipo();
   if (rol === 'equipo' && !yo().dueno) falla('Solo el dueño puede invitar al equipo.');
   const letras = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   let codigo;
   do { codigo = 'TAREKI-' + Array.from({ length: 6 }, () => letras[Math.random() * letras.length | 0]).join(''); }
   while (db.invitaciones.some((i) => i.codigo === codigo));
-  const inv = { codigo, rol, nota: String(nota || '').trim(), creadaPor: db.sesion, creada: ahora(), expira: sumarDias(hoy(), INVITACION_DIAS), usadaPor: null, usada: null };
+  const inv = { codigo, rol, diasAcceso, nota: String(nota || '').trim(), creadaPor: db.sesion, creada: ahora(), expira: sumarDias(hoy(), INVITACION_DIAS), usadaPor: null, usada: null };
   db.invitaciones.unshift(inv); guardar();
   return inv;
 }
@@ -115,11 +118,12 @@ export async function anularInvitacion(codigo) {
 
 // --- Permisos (en Supabase serán reglas RLS) -------------------------------------------
 function soloEquipo() { if (yo()?.rol !== 'equipo') falla('Solo el equipo puede hacer esto.'); }
+const accesoOk = (u) => u.rol === 'equipo' || (!u.suspendido && !!u.accesoHasta && u.accesoHasta >= hoy());
 function puedeVerNino(ninoId) {
   const u = yo();
   if (!u) return false;
   if (u.rol === 'equipo') return true;
-  return db.ninos.some((n) => n.id === ninoId && n.familiaId === u.id);
+  return accesoOk(u) && db.ninos.some((n) => n.id === ninoId && n.familiaId === u.id);
 }
 function exigirNino(ninoId) { if (!puedeVerNino(ninoId)) falla('No tienes permiso para ver esto.'); }
 function exigirLeccion(id) {
@@ -288,6 +292,64 @@ export async function buscarNinos(texto) {
 }
 
 /** Solo en modo demo: vuelve a los datos de prueba. */
+// --- Acceso, pagos y actividad de familias ---------------------------------------------------------
+export async function marcarIngreso() { const u = yo(); if (u) { u.ultimoIngreso = ahora(); guardar(); } }
+export function olvidarPerfil() { /* nada */ }
+
+export async function ajustesCobro() { return { ...db.cobro }; }
+export async function guardarAjustesCobro(a) {
+  if (!yo()?.dueno) falla('Solo el dueño puede cambiar los datos de cobro.');
+  db.cobro = { precio: Math.max(0, Math.round(Number(a.precio) || 0)), llave: String(a.llave || '').trim(), banco: String(a.banco || '').trim(), titular: String(a.titular || '').trim(), whatsapp: String(a.whatsapp || '').replace(/\D/g, ''), nota: String(a.nota || '').trim() };
+  guardar(); return { ...db.cobro };
+}
+
+export async function familiasResumen() {
+  soloEquipo();
+  const desde = sumarDias(hoy(), -6);
+  return db.usuarios.filter((u) => u.rol === 'familia').map((u) => {
+    const hijos = db.ninos.filter((n) => n.familiaId === u.id).map((n) => n.id);
+    const act = db.actividad.filter((a) => hijos.includes(a.ninoId) && (a.minutos || a.logros));
+    return {
+      id: u.id, nombre: u.nombre, correo: u.correo, creado: u.creado, accesoHasta: u.accesoHasta || null, suspendido: !!u.suspendido,
+      ultimoIngreso: u.ultimoIngreso || null, ultimoEstudio: act.map((a) => a.dia).sort().at(-1) || null,
+      minutos7: act.filter((a) => a.dia >= desde).reduce((s, a) => s + a.minutos, 0),
+      ninos: hijos.length, lecciones: db.lecciones.filter((l) => hijos.includes(l.ninoId)).length,
+    };
+  });
+}
+
+export async function historialAcceso(familiaId) {
+  soloEquipo();
+  return db.historial.filter((h) => h.familiaId === familiaId).map((h) => ({ ...h, por: db.usuarios.find((u) => u.id === h.por)?.nombre || '' }));
+}
+
+function familia(familiaId) {
+  soloEquipo();
+  const f = db.usuarios.find((u) => u.id === familiaId && u.rol === 'familia');
+  if (!f) falla('Esa familia no existe.');
+  return f;
+}
+
+export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {
+  const f = familia(familiaId);
+  if (!(meses >= 1 && meses <= 24)) falla('Los meses deben ser entre 1 y 24.');
+  const base = f.accesoHasta && f.accesoHasta >= hoy() ? f.accesoHasta : sumarDias(hoy(), -1);
+  const d = new Date(`${base}T12:00:00`); d.setMonth(d.getMonth() + Number(meses));
+  f.accesoHasta = fechaLocal(d); f.suspendido = false;
+  db.historial.unshift({ id: uid(), familiaId, accion: 'pago', meses, monto, metodo, nota, hasta: f.accesoHasta, por: db.sesion, creado: ahora() });
+  guardar(); return f.accesoHasta;
+}
+
+export async function cambiarAcceso({ familiaId, accion, hasta = null, nota = '' }) {
+  const f = familia(familiaId);
+  if (accion === 'suspender') f.suspendido = true;
+  else if (accion === 'reactivar') f.suspendido = false;
+  else if (accion === 'fecha') { if (!hasta) falla('Elige la fecha.'); f.accesoHasta = hasta; }
+  else falla('Acción no válida.');
+  db.historial.unshift({ id: uid(), familiaId, accion, hasta: f.accesoHasta, nota, por: db.sesion, creado: ahora() });
+  guardar();
+}
+
 // En la demostración no hay avisos reales
 export async function registrarPush() { /* nada */ }
 export async function quitarPush() { /* nada */ }

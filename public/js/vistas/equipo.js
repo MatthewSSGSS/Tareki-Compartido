@@ -14,12 +14,16 @@ import { coincidencias } from '../revision.js';
 import { esc, plano, primerNombre, fechaBonita, diasEntre, hoy, plural } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
 import { tarjetaAvisos } from '../avisos.js';
+import * as familias from './familias.js';
+import { estadoAcceso, chipAcceso } from '../acceso.js';
 
 export function render(root, ctx) {
   const sec = ctx.params[0] || 'resumen';
   if (sec === 'subir') return subir(root, ctx);
   if (sec === 'ninos') return ninos(root, ctx);
   if (sec === 'codigos') return codigos(root, ctx);
+  if (sec === 'familias') return familias.lista(root, ctx);
+  if (sec === 'familia') return familias.detalle(root, ctx);
   return resumen(root, ctx);
 }
 
@@ -41,7 +45,10 @@ async function infoNinos() {
 
 // --- Resumen ----------------------------------------------------------------------------
 async function resumen(root, ctx) {
-  const [lista, fams, lecciones] = await Promise.all([infoNinos(), datos.familias(), datos.todasLasLecciones()]);
+  const [lista, fams, lecciones, cuentas] = await Promise.all([infoNinos(), datos.familias(), datos.todasLasLecciones(), datos.familiasResumen()]);
+  // Mensualidades: vencidas y por vencer (3 días o menos)
+  const cobrar = cuentas.filter((f) => { const e = estadoAcceso({ ...f, rol: 'familia' }); return !f.suspendido && (!e.activo || e.dias <= 3); })
+    .sort((a, b) => (a.accesoHasta || '').localeCompare(b.accesoHasta || ''));
   const activosHoy = lista.filter((n) => n.ultimoDia === hoy()).length;
   const atencion = [];
   for (const n of lista) {
@@ -68,6 +75,11 @@ async function resumen(root, ctx) {
     <div class="columnas">
       <section class="card"><h2>🚨 Necesitan atención</h2>
         ${atencion.length ? `<div class="tabla">${atencion.map(({ n, por, clase }) => filaNino(n, `<span class="chip ${clase}">${esc(por)}</span>`)).join('')}</div>` : '<p class="suave">¡Todo en orden! 🎉</p>'}
+      </section>
+      <section class="card"><h2>💳 Mensualidades</h2>
+        ${cobrar.length ? `<div class="tabla">${cobrar.map((f) => `<a class="tabla-fila" href="#/equipo/familia/${esc(f.id)}"><span class="av" style="background:var(--sun-s)">👨‍👩‍👧</span><span><b>${esc(f.nombre)}</b><small>${plural(f.ninos, 'niño', 'niños')}</small></span><span class="lado-der">${chipAcceso(f)}</span></a>`).join('')}</div>`
+          : '<p class="suave">Nadie por vencer en los próximos 3 días. 🎉</p>'}
+        <a class="link peq" href="#/equipo/familias">Ver todas las familias →</a>
       </section>
       <section class="card"><h2>📅 Actividad reciente</h2>
         ${recientes.length ? `<div class="tabla">${recientes.map((n) => filaNino(n, `<span class="chip ${n.d.racha.actual ? 'sol' : ''}">🔥 ${n.d.racha.actual}</span><span class="chip">${n.ultimoDia ? fechaBonita(n.ultimoDia) : 'nunca'}</span>`)).join('')}</div>` : '<p class="suave">Aún no hay niños registrados.</p>'}
@@ -251,6 +263,9 @@ async function codigos(root, ctx) {
           <div class="pestanas" role="radiogroup"><button type="button" role="radio" data-rol="familia" aria-selected="true">👨‍👩‍👧 Una familia</button><button type="button" role="radio" data-rol="equipo" aria-selected="false">🧑‍🏫 Mi equipo</button></div>
           <small id="rolAyuda">La familia verá solo las lecciones de sus hijos.</small></div>` : ''}
         <div class="campo"><label for="nota" id="notaEtiqueta">¿Para qué familia es?</label><input id="nota" maxlength="60" placeholder="Ej.: Familia Gómez (mamá de Sara)" autofocus><small>Solo lo ve el equipo, para saber de quién es cada código.</small></div>
+        <div class="campo" id="campoDias"><label for="dias">Acceso al crear la cuenta</label>
+          <select id="dias"><option value="30">1 mes (ya pagó)</option><option value="7">7 días de prueba</option><option value="60">2 meses (ya pagó)</option><option value="90">3 meses (ya pagó)</option></select>
+          <small>Después se renueva con «Registrar pago» en Familias.</small></div>
         <p class="error" id="nErr" role="alert"></p>`,
       pie: '<button class="btn" data-ok>Crear código</button>',
       montar: (el) => {
@@ -261,10 +276,11 @@ async function codigos(root, ctx) {
           el.querySelector('#notaEtiqueta').textContent = rol === 'familia' ? '¿Para qué familia es?' : '¿Para quién del equipo es?';
           el.querySelector('#nota').placeholder = rol === 'familia' ? 'Ej.: Familia Gómez (mamá de Sara)' : 'Ej.: Laura, profe de matemáticas';
           el.querySelector('#rolAyuda').textContent = rol === 'familia' ? 'La familia verá solo las lecciones de sus hijos.' : 'Podrá subir lecciones y ver el progreso de todos los niños. Solo dáselo a gente de confianza.';
+          el.querySelector('#campoDias').hidden = rol !== 'familia';
         }));
         el.querySelector('[data-ok]').addEventListener('click', async () => {
           try {
-            const inv = await datos.crearInvitacion({ nota: el.querySelector('#nota').value, rol });
+            const inv = await datos.crearInvitacion({ nota: el.querySelector('#nota').value, rol, diasAcceso: Number(el.querySelector('#dias').value) });
             compartir(inv, () => ctx.refrescar());
           } catch (x) { el.querySelector('#nErr').textContent = x.message; }
         });

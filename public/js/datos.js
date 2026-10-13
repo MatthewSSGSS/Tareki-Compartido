@@ -21,4 +21,5 @@ export const {
   sumarActividad, actividad,
   familias, reiniciarDemo,
   registrarPush, quitarPush, probarAvisos, avisarLeccion,
+  marcarIngreso, olvidarPerfil, ajustesCobro, guardarAjustesCobro, familiasResumen, historialAcceso, registrarPago, cambiarAcceso,
 } = d;

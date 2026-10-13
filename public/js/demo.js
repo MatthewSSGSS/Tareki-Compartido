@@ -45,10 +45,10 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 2,
+    version: 3,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
-      { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20) },
+      { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1) },
     ],
     ninos: [
       { id: 'n-sofia', familiaId: 'u-familia', nombre: 'Sofía', avatar: '🦊', color: '#ff9a4d', grado: '4', creado: ts(20) },
@@ -83,6 +83,11 @@ export function semilla() {
       { codigo: 'TAREKI-P3RZQ7', rol: 'familia', nota: 'Familia Pérez', creadaPor: 'u-equipo', creada: ts(21), expira: d(-14), usadaPor: 'u-familia', usada: ts(20) },
       { codigo: 'TAREKI-DEMO', rol: 'familia', nota: 'Familia de prueba', creadaPor: 'u-equipo', creada: ts(0), expira: sumarDias(h, 7), usadaPor: null, usada: null },
     ],
+    historial: [
+      { id: 'h1', familiaId: 'u-familia', accion: 'registro', hasta: d(-10), nota: 'Código TAREKI-P3RZQ7', por: '', creado: ts(20) },
+      { id: 'h2', familiaId: 'u-familia', accion: 'pago', meses: 1, monto: 60000, metodo: 'Llave Bre-B', nota: '', hasta: sumarDias(h, 2), por: 'u-equipo', creado: ts(3) },
+    ],
+    cobro: { precio: 60000, llave: '@tareki', banco: 'Davivienda', titular: 'Tareki', whatsapp: '', nota: 'Envía el comprobante por WhatsApp.' },
     sesion: null,
   };
 }

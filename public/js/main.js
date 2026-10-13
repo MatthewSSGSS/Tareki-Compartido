@@ -20,6 +20,8 @@ import * as logros from './vistas/logros.js';
 import * as papas from './vistas/papas.js';
 import * as leccion from './vistas/leccion.js';
 import * as equipo from './vistas/equipo.js';
+import * as accesoVista from './vistas/acceso.js';
+import { estadoAcceso } from './acceso.js';
 import { registrarServiceWorker, revisarAvisos, desactivarAvisos } from './avisos.js';
 
 const RUTAS = {
@@ -31,6 +33,7 @@ const RUTAS = {
   papas:    { vista: papas, nav: 'papas' },
   leccion:  { vista: leccion, pantallaCompleta: true },
   equipo:   { vista: equipo, rol: 'equipo' },
+  acceso:   { vista: accesoVista, rol: 'familia', sinMenu: true },
 };
 
 const CLAVE_PERFIL = 'tareki:perfil';
@@ -58,6 +61,7 @@ export function navegar(hash) {
 async function inicioDe(u) {
   if (!u) return '#/entrar';
   if (u.rol === 'equipo') return '#/equipo';
+  if (!estadoAcceso(u).activo) return '#/acceso';
   const id = perfilActivo();
   const lista = await datos.ninos();
   return lista.some((n) => n.id === id) ? '#/inicio' : '#/perfiles';
@@ -73,6 +77,12 @@ async function render() {
   if (!u && !def.publica) return navegar('#/entrar');
   if (u && def.publica) return navegar(await inicioDe(u));
   if (def.rol && u.rol !== def.rol) return navegar(await inicioDe(u));
+  // Familia con el acceso vencido o suspendido: solo la pantalla de pago (sus datos siguen guardados)
+  if (u?.rol === 'familia') {
+    const activo = estadoAcceso(u).activo;
+    if (!activo && ruta.nombre !== 'acceso') return navegar('#/acceso');
+    if (activo && ruta.nombre === 'acceso') return navegar(await inicioDe(u));
+  }
 
   let perfil = null;
   if (u?.rol === 'familia') {
@@ -98,12 +108,13 @@ async function render() {
 
   document.body.classList.toggle('sin-menu', !!def.publica || !!def.sinMenu);
   document.body.classList.toggle('en-leccion', !!def.pantallaCompleta);
-  pintarMenu(u, perfil, def.nav || (ruta.nombre === 'equipo' ? `equipo-${ruta.params[0] || 'resumen'}` : ''));
+  const subEquipo = ruta.params[0] === 'familia' ? 'familias' : ruta.params[0] || 'resumen';
+  pintarMenu(u, perfil, def.nav || (ruta.nombre === 'equipo' ? `equipo-${subEquipo}` : ''));
   $vista.replaceChildren(root);
   limpiar = typeof fin === 'function' ? fin : null;
   if (ruta.clave !== rutaAnterior) { window.scrollTo(0, 0); rutaAnterior = ruta.clave; }
   if (u && datos.estaRecuperando()) pedirClaveNueva();
-  if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); }
+  if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); datos.marcarIngreso().catch(() => {}); }
 }
 
 /** Llegó del correo "Olvidé mi contraseña": ya entró, falta escoger la clave nueva. */
@@ -130,7 +141,7 @@ function pintarMenu(u, perfil, activo) {
     `<a href="${href}" class="${id === activo ? 'activo' : ''}" ${id === activo ? 'aria-current="page"' : ''}><span class="mi-emoji" aria-hidden="true">${emoji}</span><span>${texto}</span></a>`;
   const items = u.rol === 'equipo'
     ? item('equipo-resumen', '#/equipo', '📊', 'Resumen') + item('equipo-subir', '#/equipo/subir', '⬆️', 'Subir')
-      + item('equipo-ninos', '#/equipo/ninos', '🧒', 'Niños') + item('equipo-codigos', '#/equipo/codigos', '🎟️', 'Códigos')
+      + item('equipo-familias', '#/equipo/familias', '👨‍👩‍👧', 'Familias') + item('equipo-ninos', '#/equipo/ninos', '🧒', 'Niños') + item('equipo-codigos', '#/equipo/codigos', '🎟️', 'Códigos')
     : item('inicio', '#/inicio', '🏠', 'Inicio') + item('logros', '#/logros', '🏅', 'Logros')
       + item('papas', '#/papas', '👨‍👩‍👧', 'Papás') + `<a href="#/perfiles" class="solo-cel"><span class="mi-emoji" aria-hidden="true">${perfil ? esc(perfil.avatar) : '🔄'}</span><span>Cambiar</span></a>`;
   const tarjeta = u.rol === 'equipo'
@@ -178,6 +189,7 @@ function cambiarTema() { guardarLocal(CLAVE_TEMA, oscuro() ? 'light' : 'dark'); 
 
 // --- Arranque -----------------------------------------------------------------------------
 window.addEventListener('hashchange', render);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') datos.olvidarPerfil(); });
 registrarServiceWorker();
 aplicarTema();
 render();

@@ -13,6 +13,7 @@ import { abrirHoja, cerrarHoja, confirmar, aviso, barra, estrellas, graficoBarra
 import { coincidencias } from '../revision.js';
 import { MATERIAS } from '../config.js';
 import { tarjetaAvisos } from '../avisos.js';
+import { bannerVence, conectarBanner, abrirComoPagar, estadoAcceso, fechaLarga } from '../acceso.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -52,7 +53,8 @@ export async function render(root, ctx) {
       <div class="card kpi"><span>Lecciones</span><b>🎓 ${resumen.terminadas}/${analisis.length}</b><small>${resumen.enCurso} en curso · ${resumen.nuevas} sin abrir</small></div>
     </div>
 
-    ${esEquipo ? '' : '<div id="avisos" style="margin-top:18px"></div>'}
+    ${esEquipo ? '' : `${bannerVence(ctx.usuario) ? `<div style="margin-top:18px">${bannerVence(ctx.usuario)}</div>` : ''}<div id="avisos" style="margin-top:18px"></div>
+      <p class="suave peq" style="margin-top:10px">💳 Acceso hasta el <b>${fechaLarga(estadoAcceso(ctx.usuario).hasta)}</b> · <button class="link peq" data-pagar>Cómo pagar la mensualidad</button></p>`}
     <div class="sep"></div>
     <div class="columnas">
       <section class="card ancho"><h2>💡 Qué hacer esta semana</h2>
@@ -86,7 +88,11 @@ export async function render(root, ctx) {
       </section>
     </div>`;
 
-  if (!esEquipo) tarjetaAvisos(root.querySelector('#avisos'));
+  if (!esEquipo) {
+    tarjetaAvisos(root.querySelector('#avisos'));
+    conectarBanner(root, ctx.usuario);
+    root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
+  }
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
     if (ctx.perfil) ctx.elegirPerfil(b.dataset.nino);
     ctx.refrescar();

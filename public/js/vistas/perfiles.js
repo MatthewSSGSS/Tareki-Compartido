@@ -7,6 +7,7 @@ import * as datos from '../datos.js';
 import { AVATARES, COLORES, GRADOS } from '../config.js';
 import { esc, primerNombre } from '../util.js';
 import { abrirHoja, cerrarHoja, aviso, confeti, lulo } from '../ui.js';
+import { bannerVence, conectarBanner } from '../acceso.js';
 
 export async function render(root, ctx) {
   const lista = await datos.ninos();
@@ -17,6 +18,7 @@ export async function render(root, ctx) {
       <span class="fila"><span class="marca-logo" aria-hidden="true">🦉</span><span class="marca-nombre">Tare<b>ki</b></span></span>
       <span class="fila"><a class="btn btn-peq btn-blanco" href="#/papas">👨‍👩‍👧 Papás</a><button class="btn-redondo" data-salir title="Salir" aria-label="Salir">🚪</button></span>
     </div>
+    ${bannerVence(ctx.usuario)}
     ${lista.length
       ? `<h1 class="centro" style="font-size:2.1em;margin:18px 0 6px">¿Quién va a estudiar hoy?</h1>
          <p class="centro suave" style="margin-bottom:22px">Toca tu foto para entrar</p>`
@@ -50,6 +52,7 @@ export async function render(root, ctx) {
     entrar(n.id);
   }));
   root.querySelector('[data-salir]').addEventListener('click', () => ctx.salir());
+  conectarBanner(root, ctx.usuario);
   if (!lista.length) setTimeout(() => root.querySelector('[data-nuevo]')?.click(), 400);
 }
 
