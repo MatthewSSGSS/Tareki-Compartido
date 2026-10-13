@@ -7,7 +7,8 @@
 //   • { tipo: "leccion", leccion_id }  (cuenta de equipo)   → "¡Tienes una lección nueva!" a la familia.
 //   • { tipo: "mensaje", id }          (cuenta de equipo)   → envía ya un mensaje del equipo.
 //   • { tipo: "nino-nuevo", nino_id }  (familia)            → avisa al equipo que hay un perfil nuevo.
-//   • { tipo: "diario" } + x-cron-secret (tarea de las 6 p. m.) → racha en peligro / lecciones sin abrir / acceso por vencer.
+//   • { tipo: "diario" } + x-cron-secret (tarea de las 6 p. m.) → racha en peligro / lecciones sin abrir / acceso por vencer,
+//     y al equipo un resumen de mensualidades (vencen hoy, mañana, en 3 días o vencieron ayer).
 //   • { tipo: "programados" } + x-cron-secret (cada 10 min)    → mensajes programados que ya tocan.
 //   • { tipo: "familia-nueva", familia_id } + x-cron-secret (función registro) → avisa al equipo.
 //
@@ -183,6 +184,27 @@ Deno.serve(async (req) => {
       if (repetido) continue; // ya se envió hoy
       const r = await enviarAUsuario(admin, f.user_id, { titulo: f.titulo, cuerpo: f.cuerpo, url: f.url, tag: f.clave.split(":")[0] });
       enviados += r.enviados;
+    }
+
+    // Resumen de mensualidades para el equipo: vencen hoy, mañana o en 3 días, o vencieron ayer
+    const sumar = (n: number) => { const d = new Date(`${dia}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+    const { data: cuentas } = await admin.from("perfiles").select("nombre, acceso_hasta")
+      .eq("rol", "familia").eq("suspendido", false).gte("acceso_hasta", sumar(-1)).lte("acceso_hasta", sumar(3));
+    const grupos: Record<string, string[]> = {};
+    for (const c of cuentas ?? []) {
+      const etiqueta = c.acceso_hasta === sumar(-1) ? "Venció ayer" : c.acceso_hasta === dia ? "Vence hoy" : c.acceso_hasta === sumar(1) ? "Vence mañana" : c.acceso_hasta === sumar(3) ? "Vence en 3 días" : "";
+      if (etiqueta) (grupos[etiqueta] ||= []).push(c.nombre);
+    }
+    const vencidas = grupos["Venció ayer"]?.length || 0;
+    const porVencer = Object.entries(grupos).filter(([k]) => k !== "Venció ayer").reduce((s, [, v]) => s + v.length, 0);
+    if (vencidas || porVencer) {
+      const partes = [porVencer ? `${porVencer} por vencer` : "", vencidas ? `${vencidas} vencida${vencidas > 1 ? "s" : ""}` : ""].filter(Boolean).join(", ");
+      const detalle = ["Vence hoy", "Vence mañana", "Vence en 3 días", "Venció ayer"].filter((k) => grupos[k]).map((k) => `${k}: ${grupos[k].join(", ")}`).join(" · ");
+      for (const id of await equipo(admin)) {
+        const { error: repetido } = await admin.from("avisos_enviados").insert({ user_id: id, clave: `equipo-cobros:${dia}` });
+        if (repetido) continue;
+        enviados += (await enviarAUsuario(admin, id, { titulo: `💳 Mensualidades: ${partes}`, cuerpo: detalle, url: "#/equipo/familias", tag: "equipo-cobros" })).enviados;
+      }
     }
     return responder({ ok: true, avisos: filas?.length ?? 0, enviados });
   }
