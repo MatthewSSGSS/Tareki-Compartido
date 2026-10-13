@@ -1,3 +1,4 @@
+// @ts-nocheck — Este archivo corre en Supabase (Deno). VS Code no conoce Deno y lo marcaría en rojo.
 // =============================================================================
 // Función "registro" — crea una cuenta SOLO con un código de invitación válido.
 //
