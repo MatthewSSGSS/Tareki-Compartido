@@ -26,7 +26,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 6) return d;
+    if (d && d.version === 7) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -395,6 +395,42 @@ export async function quitarFamilia(familiaId) {
   db.usuarios = db.usuarios.filter((u) => u.id !== familiaId);
   db.invitaciones.forEach((i) => { if (i.usadaPor === familiaId) i.usadaPor = null; });
   guardar();
+}
+
+// --- Chat familia ↔ equipo -------------------------------------------------------------------------
+export async function chat(familiaId) {
+  const u = yo();
+  if (!u || !(u.rol === 'equipo' || u.id === familiaId)) falla('No tienes permiso para ver esto.');
+  return (db.chat || []).filter((c) => c.familiaId === familiaId).map((c) => ({ ...c, autorNombre: db.usuarios.find((x) => x.id === c.autor)?.nombre || '' }));
+}
+export async function chatResumen() {
+  soloEquipo();
+  const por = new Map();
+  for (const c of [...(db.chat || [])].reverse()) {
+    const r = por.get(c.familiaId) || { familiaId: c.familiaId, ultimo: c.texto, deEquipo: c.deEquipo, creado: c.creado, sinLeer: 0 };
+    if (!c.deEquipo && !c.leido) r.sinLeer++;
+    por.set(c.familiaId, r);
+  }
+  return [...por.values()];
+}
+export async function enviarChat({ familiaId, texto }) {
+  const u = yo();
+  const t = String(texto || '').trim();
+  if (!t) falla('Escribe un mensaje.');
+  if (!(u.rol === 'equipo' || u.id === familiaId)) falla('No tienes permiso.');
+  const c = { id: uid(), familiaId, autor: u.id, deEquipo: u.rol === 'equipo', texto: t.slice(0, 1000), leido: false, creado: ahora() };
+  (db.chat ||= []).push(c); guardar();
+  return { ...c, autorNombre: u.nombre };
+}
+export async function marcarChatLeido(familiaId) {
+  const u = yo();
+  (db.chat || []).forEach((c) => { if (c.familiaId === familiaId && (u.rol === 'equipo' ? !c.deEquipo : c.deEquipo)) c.leido = true; });
+  guardar();
+}
+export async function chatSinLeer() {
+  const u = yo();
+  if (!u) return 0;
+  return (db.chat || []).filter((c) => !c.leido && (u.rol === 'equipo' ? !c.deEquipo : c.deEquipo && c.familiaId === u.id)).length;
 }
 
 // En la demostración no hay avisos reales

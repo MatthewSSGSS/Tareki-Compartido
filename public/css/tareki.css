@@ -682,3 +682,40 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 /* Historial: botón para borrar (solo el dueño) */
 .historial div:has(.hist-borrar) { grid-template-columns: auto minmax(0, 1fr) auto; }
 .hist-borrar { width: 34px; height: 34px; font-size: .9em; border-width: 2px; align-self: center; }
+
+/* =============================================================================
+   Chat familia ↔ equipo
+   ============================================================================= */
+.pestanas-pagina { display: flex; gap: 8px; overflow-x: auto; margin: -4px 0 16px; padding: 2px; }
+.pestanas-pagina a { flex: none; text-decoration: none; color: var(--muted); font-family: var(--f-head); font-weight: 800; padding: 8px 16px; border-radius: 999px; border: 3px solid transparent; display: inline-flex; gap: 6px; align-items: center; }
+.pestanas-pagina a[aria-selected="true"] { background: var(--card); color: var(--ink); border-color: var(--line); box-shadow: var(--sombra-sm); }
+.chat-fila small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.chat-fila.sin-leer { background: var(--pink-s); color: #1f2544; }
+.chat-fila.sin-leer small { color: #4a5075; }
+.chat { display: flex; flex-direction: column; height: calc(100dvh - var(--menu-alto) - 60px - env(safe-area-inset-bottom, 0px)); min-height: 420px; background: var(--card); border: 3px solid var(--line); border-radius: var(--r); box-shadow: var(--sombra); overflow: hidden; }
+@media (min-width: 900px) { .chat { height: calc(100dvh - 60px); max-width: 860px; } }
+.chat-cab { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 3px solid var(--line); background: var(--soft); }
+.chat-titulo { flex: 1; min-width: 0; display: grid; }
+.chat-titulo b { font-family: var(--f-head); font-size: 1.15em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-titulo small { color: var(--muted); font-size: .8em; }
+.chat-mensajes { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; background: radial-gradient(color-mix(in srgb, var(--line) 6%, transparent) 1.2px, transparent 1.4px) 0 0 / 18px 18px; }
+.chat-vacio { margin: auto; max-width: 320px; text-align: center; color: var(--muted); font-weight: 800; }
+.chat-dia { text-align: center; margin: 6px 0; }
+.chat-dia span { background: var(--soft); color: var(--muted); border-radius: 999px; padding: 2px 12px; font-size: .78em; font-weight: 800; }
+.burbuja { max-width: min(80%, 520px); padding: 8px 12px 6px; border-radius: 18px; border: 2px solid var(--line); box-shadow: 2px 2px 0 var(--line); animation: entraArriba .25s ease-out; }
+.burbuja p { margin: 0; overflow-wrap: anywhere; }
+.burbuja small { display: block; text-align: right; font-size: .72em; opacity: .7; margin-top: 2px; }
+.burbuja.mia { align-self: flex-end; background: var(--green-s); color: #0d2a17; border-bottom-right-radius: 6px; }
+.burbuja.suya { align-self: flex-start; background: var(--card); color: var(--ink); border-bottom-left-radius: 6px; }
+.chat-autor { display: block; font-size: .74em; font-weight: 800; color: var(--pink); margin-bottom: 1px; }
+.chat-escribir { display: flex; gap: 8px; align-items: flex-end; padding: 10px; border-top: 3px solid var(--line); background: var(--soft); }
+.chat-escribir textarea { flex: 1; min-height: 46px; max-height: 140px; resize: none; background: var(--card); }
+.chat-escribir .btn { width: 52px; height: 48px; padding: 0; font-size: 1.3em; flex: none; }
+.escribenos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: center; padding: 14px 16px; margin-top: 14px; box-shadow: var(--sombra-sm); }
+.escribenos .em { font-size: 28px; }
+.escribenos b { display: block; font-family: var(--f-head); font-size: 1.1em; }
+.escribenos .fila { grid-column: 1 / -1; }
+@media (min-width: 700px) { .escribenos { grid-template-columns: auto minmax(0, 1fr) auto; } .escribenos .fila { grid-column: auto; } }
+.punto-menu { position: absolute; top: 2px; right: 50%; transform: translateX(22px); min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--pink); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; border: 2px solid var(--card); }
+.menu a { position: relative; }
+@media (min-width: 900px) { .punto-menu { position: static; transform: none; margin-left: auto; } }

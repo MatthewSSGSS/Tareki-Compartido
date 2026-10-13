@@ -45,7 +45,7 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 6,
+    version: 7,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
       { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1), celular: '573001234567' },
@@ -91,6 +91,11 @@ export function semilla() {
     mensajes: [
       { id: 'm1', titulo: '🎉 ¡Bienvenidos a Learnground!', cuerpo: 'Desde hoy las lecciones llegan aquí. Si tienen dudas, escríbannos por WhatsApp.', url: '#/inicio', destino: 'todas', familias: [], programado: ts(5, 9), enviado: ts(5, 9), creadoPor: 'u-equipo', creado: ts(5, 9) },
       { id: 'm2', titulo: '📚 Semana de evaluaciones', cuerpo: 'Esta semana hay quices en el colegio: practiquen 15 minutos al día con las fichas.', url: '#/inicio', destino: 'todas', familias: [], programado: `${sumarDias(h, 2)}T07:00:00`, enviado: null, creadoPor: 'u-equipo', creado: ts(0, 8) },
+    ],
+    chat: [
+      { id: 'c1', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: 'Hola, ¿la lección de fracciones también sirve para el quiz del viernes?', leido: true, creado: ts(2, 19) },
+      { id: 'c2', familiaId: 'u-familia', autor: 'u-equipo', deEquipo: true, texto: '¡Hola Laura! Sí, cubre los mismos temas. Que Sofía haga la ficha dos veces antes del viernes 🐬', leido: true, creado: ts(2, 20) },
+      { id: 'c3', familiaId: 'u-familia', autor: 'u-familia', deEquipo: false, texto: 'Perfecto, gracias. Ya pagué la mensualidad, les mando el comprobante por WhatsApp.', leido: false, creado: ts(0, 9) },
     ],
     sesion: null,
   };

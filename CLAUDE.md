@@ -40,6 +40,10 @@
 - `supabase/whatsapp.sql`: `perfiles.celular` (se pide al registrarse; la familia lo cambia en Papás y el equipo en la ficha), `cambiar_celular()`, y `familias_resumen()` devuelve el celular. Correr ANTES de desplegar la función `registro` (que guarda el celular).
 - `js/whatsapp.js`: solo enlaces `wa.me` (nada de APIs no oficiales). Plantillas por familia (recordar pago, vencido, bienvenida, lección nueva, felicitar, libre) y envío uno por uno desde Mensajes.
 
+## Chat familia ↔ equipo
+- `supabase/chat.sql`: tabla `chat` (una conversación por familia; `de_equipo`, `leido` = leído por el otro lado), `marcar_chat_leido()`. Funciona aunque la familia esté vencida (el router deja pasar `#/chat`).
+- `js/vistas/chat.js`: familia `#/chat`; equipo `#/equipo/chat` y `#/equipo/chat/<id>` (pestañas junto a los avisos programados). Revisa mensajes nuevos cada 8 s; la función `avisos` (`tipo: 'chat'`) notifica al otro lado.
+
 ## Notificaciones (deben servir en todo dispositivo)
 - Web Push con el texto cifrado (RFC 8291 aes128gcm) en `supabase/functions/avisos` ("Verify JWT" apagado; secretos VAPID_* y CRON_SECRET en Supabase, copia en `privado/secretos-avisos.txt`). La llave pública VAPID está en `config.js`.
 - `supabase/avisos.sql`: tabla `suscripciones`, `registrar_push`/`quitar_push`, `avisos_diarios(dia)` y la tarea de las 6 p. m. Colombia (23:00 UTC). `privado/avisos-listo.sql` trae el CRON_SECRET puesto.

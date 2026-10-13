@@ -87,7 +87,8 @@ export async function detalle(root, ctx) {
     <div class="cabecera"><h1>👨‍👩‍👧 ${esc(f.nombre)}</h1></div>
     <p class="suave" style="margin:-10px 0 12px">${esc(f.correo)} · se unió ${fechaBonita(f.creado)}</p>
     <div class="fila envolver" style="margin-bottom:18px">
-      <button class="btn btn-wa" data-wa>💬 WhatsApp</button>
+      <a class="btn btn-azul" href="#/equipo/chat/${esc(f.id)}">💬 Chat</a>
+      <button class="btn btn-wa" data-wa>WhatsApp</button>
       <span class="chip">📱 ${f.celular ? esc(numeroBonito(f.celular)) : 'Sin celular'}</span>
       <button class="link peq" data-cel>${f.celular ? 'Cambiar número' : 'Agregar número'}</button>
     </div>

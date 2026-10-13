@@ -21,6 +21,7 @@ import * as papas from './vistas/papas.js';
 import * as leccion from './vistas/leccion.js';
 import * as equipo from './vistas/equipo.js';
 import * as accesoVista from './vistas/acceso.js';
+import * as chatVista from './vistas/chat.js';
 import { estadoAcceso } from './acceso.js';
 import { registrarServiceWorker, revisarAvisos, desactivarAvisos } from './avisos.js';
 
@@ -34,6 +35,7 @@ const RUTAS = {
   leccion:  { vista: leccion, pantallaCompleta: true },
   equipo:   { vista: equipo, rol: 'equipo' },
   acceso:   { vista: accesoVista, rol: 'familia', sinMenu: true },
+  chat:     { vista: chatVista, rol: 'familia', nav: 'papas' },
 };
 
 const CLAVE_PERFIL = 'tareki:perfil';
@@ -80,7 +82,8 @@ async function render() {
   // Familia con el acceso vencido o suspendido: solo la pantalla de pago (sus datos siguen guardados)
   if (u?.rol === 'familia') {
     const activo = estadoAcceso(u).activo;
-    if (!activo && ruta.nombre !== 'acceso') return navegar('#/acceso');
+    // (el chat sigue abierto: así pueden hablar con el equipo sobre el pago)
+    if (!activo && ruta.nombre !== 'acceso' && ruta.nombre !== 'chat') return navegar('#/acceso');
     if (activo && ruta.nombre === 'acceso') return navegar(await inicioDe(u));
   }
 
@@ -108,7 +111,7 @@ async function render() {
 
   document.body.classList.toggle('sin-menu', !!def.publica || !!def.sinMenu);
   document.body.classList.toggle('en-leccion', !!def.pantallaCompleta);
-  const subEquipo = ruta.params[0] === 'familia' ? 'familias' : ruta.params[0] || 'resumen';
+  const subEquipo = ruta.params[0] === 'familia' ? 'familias' : ruta.params[0] === 'chat' ? 'mensajes' : ruta.params[0] || 'resumen';
   pintarMenu(u, perfil, def.nav || (ruta.nombre === 'equipo' ? `equipo-${subEquipo}` : ''));
   $vista.replaceChildren(root);
   if (ruta.clave !== rutaAnterior) animarPantalla(root); // solo al cambiar de pantalla, no al refrescar
@@ -116,6 +119,16 @@ async function render() {
   if (ruta.clave !== rutaAnterior) { window.scrollTo(0, 0); rutaAnterior = ruta.clave; }
   if (u && datos.estaRecuperando()) pedirClaveNueva();
   if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); datos.marcarIngreso().catch(() => {}); }
+  if (u) contarSinLeer(u);
+}
+
+/** Puntico con los mensajes de chat sin leer en el menú (Mensajes para el equipo, Papás para la familia). */
+async function contarSinLeer(u) {
+  const n = await datos.chatSinLeer().catch(() => 0);
+  const a = $menu.querySelector(u.rol === 'equipo' ? 'a[href="#/equipo/chat"]' : 'a[href="#/papas"]');
+  if (!a) return;
+  a.querySelector('.punto-menu')?.remove();
+  if (n) a.insertAdjacentHTML('beforeend', `<span class="punto-menu" aria-label="${n} sin leer">${n > 9 ? '9+' : n}</span>`);
 }
 
 /** Llegó del correo "Olvidé mi contraseña": ya entró, falta escoger la clave nueva. */
@@ -142,7 +155,7 @@ function pintarMenu(u, perfil, activo) {
     `<a href="${href}" class="${id === activo ? 'activo' : ''}" ${id === activo ? 'aria-current="page"' : ''}><span class="mi-emoji" aria-hidden="true">${emoji}</span><span>${texto}</span></a>`;
   const items = u.rol === 'equipo'
     ? item('equipo-resumen', '#/equipo', '📊', 'Resumen') + item('equipo-subir', '#/equipo/subir', '⬆️', 'Subir')
-      + item('equipo-familias', '#/equipo/familias', '👨‍👩‍👧', 'Familias') + item('equipo-mensajes', '#/equipo/mensajes', '✉️', 'Mensajes') + item('equipo-ninos', '#/equipo/ninos', '🧒', 'Niños') + item('equipo-codigos', '#/equipo/codigos', '🎟️', 'Códigos')
+      + item('equipo-familias', '#/equipo/familias', '👨‍👩‍👧', 'Familias') + item('equipo-mensajes', '#/equipo/chat', '✉️', 'Mensajes') + item('equipo-ninos', '#/equipo/ninos', '🧒', 'Niños') + item('equipo-codigos', '#/equipo/codigos', '🎟️', 'Códigos')
     : item('inicio', '#/inicio', '🏠', 'Inicio') + item('logros', '#/logros', '🏅', 'Logros')
       + item('papas', '#/papas', '👨‍👩‍👧', 'Papás') + `<a href="#/perfiles" class="solo-cel"><span class="mi-emoji" aria-hidden="true">${perfil ? esc(perfil.avatar) : '🔄'}</span><span>Cambiar</span></a>`;
   const tarjeta = u.rol === 'equipo'

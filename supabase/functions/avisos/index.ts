@@ -241,6 +241,17 @@ Deno.serve(async (req) => {
     }));
   }
 
+  // Mensaje de chat nuevo: si lo escribe la familia, avisa al equipo; si responde el equipo, avisa a la familia
+  if (entrada?.tipo === "chat" && entrada.id) {
+    const { data: m } = await admin.from("chat").select("id, familia_id, autor, de_equipo, texto, familia:perfiles!chat_familia_id_fkey(nombre)").eq("id", entrada.id).maybeSingle();
+    if (!m || m.autor !== usuario.id) return responder({ error: "no autorizado" }, 403);
+    const corto = m.texto.length > 140 ? `${m.texto.slice(0, 137)}…` : m.texto;
+    if (m.de_equipo) {
+      return responder(await enviarAUsuario(admin, m.familia_id, { titulo: "💬 Te respondió el equipo de Learnground", cuerpo: corto, url: "#/chat", tag: `chat-${m.familia_id}` }));
+    }
+    return responder(await enviarAVarios(admin, await equipo(admin), { titulo: `💬 ${m.familia?.nombre || "Una familia"} escribió`, cuerpo: corto, url: `#/equipo/chat/${m.familia_id}`, tag: `chat-${m.familia_id}` }));
+  }
+
   // El equipo envía ya un mensaje
   if (entrada?.tipo === "mensaje" && entrada.id) {
     const { data: perfil } = await admin.from("perfiles").select("rol").eq("id", usuario.id).maybeSingle();

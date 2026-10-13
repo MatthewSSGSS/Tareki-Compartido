@@ -16,6 +16,7 @@ import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.j
 import { tarjetaAvisos } from '../avisos.js';
 import * as familias from './familias.js';
 import * as mensajes from './mensajes.js';
+import * as chat from './chat.js';
 import { estadoAcceso, chipAcceso } from '../acceso.js';
 
 export function render(root, ctx) {
@@ -26,6 +27,7 @@ export function render(root, ctx) {
   if (sec === 'familias') return familias.lista(root, ctx);
   if (sec === 'familia') return familias.detalle(root, ctx);
   if (sec === 'mensajes') return mensajes.render(root, ctx);
+  if (sec === 'chat') return ctx.params[1] ? chat.hiloEquipo(root, ctx) : chat.lista(root, ctx);
   return resumen(root, ctx);
 }
 

@@ -10,6 +10,7 @@ import { esc, hoy, fechaLocal, fechaBonita, plural } from '../util.js';
 import { abrirHoja, cerrarHoja, confirmar, aviso, confeti, vacio } from '../ui.js';
 import { fechaLarga } from '../acceso.js';
 import { enviarEnSerie } from '../whatsapp.js';
+import { pestanasMensajes } from './chat.js';
 
 const PLANTILLAS = [
   { emoji: '📢', nombre: 'Aviso general', titulo: '📢 Aviso de Learnground', cuerpo: '' , url: '#/inicio' },
@@ -41,7 +42,8 @@ export async function render(root, ctx) {
 
   root.innerHTML = `
     <div class="cabecera"><div><h1>✉️ Mensajes</h1><p class="bajada">Llegan como notificación y quedan en el buzón de cada familia.</p></div>
-      <button class="btn" data-nuevo>✏️ Nuevo mensaje</button></div>
+      <button class="btn" data-nuevo>✏️ Nuevo aviso</button></div>
+    ${pestanasMensajes('avisos')}
     ${MODO_DEMO ? '<div class="banda-demo"><span>🧪 En la demostración los mensajes quedan en el buzón pero no salen notificaciones.</span></div>' : ''}
     <div class="titulo-seccion"><h2>⏰ Programados</h2><span class="suave">${pendientes.length}</span></div>
     <div class="pila chica">${pendientes.length ? pendientes.map(fila).join('') : '<p class="suave">No hay mensajes esperando. Programa uno para un día y hora.</p>'}</div>

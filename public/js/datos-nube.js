@@ -346,6 +346,47 @@ export async function quitarFamilia(familiaId) {
   ok(await cliente().rpc('quitar_familia', { p_familia: familiaId }), 'No se pudo quitar la familia.');
 }
 
+// --- Chat familia ↔ equipo -------------------------------------------------------------------------
+const aChat = (c) => ({ id: c.id, familiaId: c.familia_id, autor: c.autor, autorNombre: c.quien?.nombre || '', deEquipo: c.de_equipo, texto: c.texto, leido: c.leido, creado: c.creado });
+
+/** La conversación de una familia (la familia: la suya; el equipo: la que pida). */
+export async function chat(familiaId) {
+  return ok(await cliente().from('chat').select('*, quien:perfiles!chat_autor_fkey(nombre)').eq('familia_id', familiaId).order('creado').limit(500)).map(aChat);
+}
+
+/** Equipo: el último mensaje y los sin leer de cada familia. */
+export async function chatResumen() {
+  const filas = ok(await cliente().from('chat').select('familia_id, de_equipo, texto, leido, creado').order('creado', { ascending: false }).limit(2000));
+  const por = new Map();
+  for (const c of filas) {
+    const r = por.get(c.familia_id) || { familiaId: c.familia_id, ultimo: c.texto, deEquipo: c.de_equipo, creado: c.creado, sinLeer: 0 };
+    if (!c.de_equipo && !c.leido) r.sinLeer++;
+    por.set(c.familia_id, r);
+  }
+  return [...por.values()];
+}
+
+export async function enviarChat({ familiaId, texto }) {
+  const yo = await usuario();
+  const t = String(texto || '').trim();
+  if (!t) throw new Error('Escribe un mensaje.');
+  const c = ok(await cliente().from('chat').insert({ familia_id: familiaId, autor: yo.id, de_equipo: yo.rol === 'equipo', texto: t.slice(0, 1000) }).select().single(), 'No se pudo enviar el mensaje.');
+  cliente().functions.invoke('avisos', { body: { tipo: 'chat', id: c.id } }).catch(() => {}); // notificación al otro lado
+  return aChat({ ...c, quien: { nombre: yo.nombre } });
+}
+
+export async function marcarChatLeido(familiaId) { await cliente().rpc('marcar_chat_leido', { p_familia: familiaId }); }
+
+/** Cuántos mensajes del otro lado faltan por leer (para los avisos de la app). */
+export async function chatSinLeer() {
+  const yo = await usuario();
+  if (!yo) return 0;
+  let q = cliente().from('chat').select('id', { count: 'exact', head: true }).eq('leido', false);
+  q = yo.rol === 'equipo' ? q.eq('de_equipo', false) : q.eq('de_equipo', true).eq('familia_id', yo.id);
+  const { count } = await q;
+  return count || 0;
+}
+
 // --- Avisos (notificaciones push) ------------------------------------------------------------------
 export async function registrarPush({ endpoint, p256dh, auth, dispositivo }) {
   ok(await cliente().rpc('registrar_push', { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth, p_dispositivo: dispositivo }));
