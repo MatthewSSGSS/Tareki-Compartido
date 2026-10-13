@@ -644,3 +644,6 @@ textarea { width: 100%; background: var(--soft); border: 3px solid var(--line); 
   .menu a.activo { background: transparent; color: var(--ink); }
   .menu a.activo .mi-emoji { box-shadow: 0 0 0 2px var(--line); transform: none; }
 }
+/* En oscuro, la opción activa con el azul suave del tema (el amarillo queda en el cuadrito) */
+@media (min-width: 900px) and (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .menu a.activo { background: var(--soft); } }
+@media (min-width: 900px) { :root[data-theme="dark"] .menu a.activo { background: var(--soft); } }
