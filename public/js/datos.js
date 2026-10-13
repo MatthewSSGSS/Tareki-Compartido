@@ -22,5 +22,5 @@ export const {
   familias, reiniciarDemo,
   registrarPush, quitarPush, probarAvisos, avisarLeccion,
   marcarIngreso, olvidarPerfil, ajustesCobro, guardarAjustesCobro, familiasResumen, historialAcceso, registrarPago, cambiarAcceso,
-  mensajes, crearMensaje, enviarMensajeYa, borrarMensaje, avisarNinoNuevo, quitarFamilia, cambiarCelular,
+  mensajes, crearMensaje, enviarMensajeYa, borrarMensaje, avisarNinoNuevo, quitarFamilia, cambiarCelular, borrarHistorial,
 } = d;

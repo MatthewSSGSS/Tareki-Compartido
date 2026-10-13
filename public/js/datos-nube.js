@@ -288,6 +288,12 @@ export async function cambiarCelular(familiaId, celular) {
   return limpio;
 }
 
+/** Borra un registro del historial (solo el dueño). La fecha de acceso no cambia. */
+export async function borrarHistorial(id) {
+  const borrados = ok(await cliente().from('historial_acceso').delete().eq('id', id).select('id'));
+  if (!borrados?.length) throw new Error('No se pudo borrar. Si eres el dueño, corre una vez privado/historial.sql en el SQL Editor de Supabase.');
+}
+
 export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {
   return ok(await cliente().rpc('registrar_pago', { p_familia: familiaId, p_meses: meses, p_monto: monto, p_metodo: metodo, p_nota: nota }));
 }

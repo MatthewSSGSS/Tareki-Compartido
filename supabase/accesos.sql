@@ -160,3 +160,9 @@ revoke all on function public.registrar_pago(uuid, int, int, text, text), public
   public.marcar_ingreso(), public.familias_resumen() from public, anon;
 grant execute on function public.registrar_pago(uuid, int, int, text, text), public.cambiar_acceso(uuid, text, date, text),
   public.marcar_ingreso(), public.familias_resumen() to authenticated;
+
+-- 6) El dueño puede borrar registros del historial (no cambia la fecha de acceso) -------------
+drop policy if exists "historial: dueño borra" on public.historial_acceso;
+create policy "historial: dueño borra" on public.historial_acceso for delete to authenticated
+  using ((select public.es_dueno()));
+grant delete on public.historial_acceso to authenticated;

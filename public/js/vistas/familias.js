@@ -122,7 +122,7 @@ export async function detalle(root, ctx) {
       </section>
 
       <section class="card ancho"><h2>🧾 Historial</h2>
-        ${historial.length ? `<div class="historial">${historial.map((h) => `<div><span class="em" aria-hidden="true">${ICONO[h.accion] || '•'}</span><span>${textoHist(h)}${h.nota ? ` <span class="suave">· ${esc(h.nota)}</span>` : ''}<small>${fechaBonita(h.creado)}${h.por ? ` · por ${esc(primerNombre(h.por))}` : ''}</small></span></div>`).join('')}</div>`
+        ${historial.length ? `<div class="historial">${historial.map((h) => `<div><span class="em" aria-hidden="true">${ICONO[h.accion] || '•'}</span><span>${textoHist(h)}${h.nota ? ` <span class="suave">· ${esc(h.nota)}</span>` : ''}<small>${fechaBonita(h.creado)}${h.por ? ` · por ${esc(primerNombre(h.por))}` : ''}</small></span>${ctx.usuario.dueno ? `<button class="btn-redondo hist-borrar" data-hist="${esc(h.id)}" aria-label="Borrar este registro" title="Borrar este registro">✕</button>` : ''}</div>`).join('')}</div>`
           : '<p class="suave">Sin movimientos todavía.</p>'}
       </section>
     </div>`;
@@ -140,6 +140,10 @@ export async function detalle(root, ctx) {
   });
   root.querySelector('[data-fecha]').addEventListener('click', () => cambiarFecha(f, ctx));
   root.querySelector('[data-quitar-fam]')?.addEventListener('click', () => quitarFamilia(f, hijos, ctx));
+  root.querySelectorAll('[data-hist]').forEach((b) => b.addEventListener('click', async () => {
+    if (!(await confirmar({ titulo: '¿Borrar este registro del historial?', texto: 'Solo desaparece de la lista. <b>La fecha de acceso de la familia no cambia</b>; si necesitas corregirla, usa «Cambiar fecha».', si: 'Borrar', peligro: true }))) return;
+    await accion(() => datos.borrarHistorial(b.dataset.hist), 'Registro borrado del historial.', ctx);
+  }));
 }
 
 /** Borra la familia para siempre (solo el dueño). Hay que escribir su nombre para confirmar. */

@@ -678,3 +678,7 @@ img.lulo-buho { width: 60px; height: 60px; object-fit: contain; font-size: 0; fi
 .serie-fila small { color: var(--muted); }
 .serie-fila.enviado { opacity: .6; }
 .serie-fila.enviado .serie-estado { background: var(--soft); color: var(--muted); }
+
+/* Historial: botón para borrar (solo el dueño) */
+.historial div:has(.hist-borrar) { grid-template-columns: auto minmax(0, 1fr) auto; }
+.hist-borrar { width: 34px; height: 34px; font-size: .9em; border-width: 2px; align-self: center; }

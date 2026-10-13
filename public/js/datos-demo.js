@@ -338,6 +338,11 @@ export async function cambiarCelular(familiaId, celular) {
   f.celular = limpiarCel(celular); guardar(); return f.celular;
 }
 
+export async function borrarHistorial(id) {
+  if (!yo()?.dueno) falla('Solo el dueño puede borrar registros del historial.');
+  db.historial = db.historial.filter((h) => h.id !== id); guardar();
+}
+
 export async function registrarPago({ familiaId, meses, monto, metodo, nota }) {
   const f = familia(familiaId);
   if (!(meses >= 1 && meses <= 24)) falla('Los meses deben ser entre 1 y 24.');
