@@ -303,6 +303,11 @@ export async function buscarNinos(texto) {
 /** Solo en modo demo: vuelve a los datos de prueba. */
 // --- Acceso, pagos y actividad de familias ---------------------------------------------------------
 export async function marcarIngreso() { const u = yo(); if (u) { u.ultimoIngreso = ahora(); guardar(); } }
+export async function registrarDispositivo() { return null; } // en la demo todo pasa en este navegador
+export async function dispositivosDeCuenta() {
+  const hace = (dias) => new Date(Date.now() - dias * 864e5).toISOString();
+  return [{ descripcion: 'Android · app instalada', primero: hace(20), ultimo: hace(0) }, { descripcion: 'Windows · Chrome', primero: hace(6), ultimo: hace(2) }];
+}
 export function olvidarPerfil() { /* nada */ }
 
 export async function ajustesCobro() { return { ...db.cobro }; }

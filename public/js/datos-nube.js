@@ -267,6 +267,21 @@ export async function reiniciarDemo() { /* solo existe en modo demostración */ 
 /** Se llama una vez al abrir la app: guarda el "último ingreso". */
 export async function marcarIngreso() { await cliente().rpc('marcar_ingreso'); }
 
+/** Anota el dispositivo con el que se abrió la app. Si es nuevo y la cuenta ya tenía otro, el servidor avisa al equipo (solo familias). */
+export async function registrarDispositivo({ clave, descripcion }) {
+  const { data, error } = await cliente().rpc('registrar_dispositivo', { p_clave: clave, p_descripcion: descripcion });
+  if (error || !data) return null; // falta correr dispositivos.sql
+  if (data.nuevo && data.total > 1) cliente().functions.invoke('avisos', { body: { tipo: 'dispositivo-nuevo', id: data.id } }).catch(() => {});
+  return data;
+}
+
+/** Dispositivos con los que ha entrado una cuenta, el más reciente primero (ficha de la familia). */
+export async function dispositivosDeCuenta(usuarioId) {
+  const { data, error } = await cliente().from('dispositivos').select('descripcion, primero, ultimo').eq('usuario_id', usuarioId).order('ultimo', { ascending: false });
+  if (error) return null; // falta correr el SQL: no se sabe
+  return data || [];
+}
+
 /** Lo que el perfil necesita para volver a pedir los datos (después de pagar o cambiar algo). */
 export function olvidarPerfil() { perfilCache = null; }
 

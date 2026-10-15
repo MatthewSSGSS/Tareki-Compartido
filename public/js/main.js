@@ -23,7 +23,7 @@ import * as equipo from './vistas/equipo.js';
 import * as accesoVista from './vistas/acceso.js';
 import * as chatVista from './vistas/chat.js';
 import { estadoAcceso } from './acceso.js';
-import { registrarServiceWorker, revisarAvisos, desactivarAvisos } from './avisos.js';
+import { registrarServiceWorker, revisarAvisos, desactivarAvisos, registrarEsteDispositivo } from './avisos.js';
 import { abrirMiNombre } from './cuenta.js';
 import { aplicarTema, abrirApariencia } from './apariencia.js';
 
@@ -119,7 +119,7 @@ async function render() {
   limpiar = typeof fin === 'function' ? fin : null;
   if (ruta.clave !== rutaAnterior) { window.scrollTo(0, 0); rutaAnterior = ruta.clave; }
   if (u && datos.estaRecuperando()) pedirClaveNueva();
-  if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); datos.marcarIngreso().catch(() => {}); }
+  if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); datos.marcarIngreso().catch(() => {}); registrarEsteDispositivo().catch(() => {}); }
   if (u) contarSinLeer(u);
 }
 

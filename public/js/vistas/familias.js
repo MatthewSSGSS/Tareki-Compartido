@@ -123,6 +123,10 @@ export async function detalle(root, ctx) {
           : '<p class="suave">Aún no ha creado el perfil de su hijo o hija.</p>'}
       </section>
 
+      <section class="card" id="tarjetaDispositivos"><h2>📱 Dispositivos <small>desde donde ha entrado</small></h2>
+        <div id="listaDispositivos"><p class="suave peq">Cargando…</p></div>
+      </section>
+
       <section class="card ancho"><h2>🧾 Historial</h2>
         ${historial.length ? `<div class="historial">${historial.map((h) => `<div><span class="em" aria-hidden="true">${ICONO[h.accion] || '•'}</span><span>${textoHist(h)}${h.nota ? ` <span class="suave">· ${esc(h.nota)}</span>` : ''}<small>${fechaBonita(h.creado)}${h.por ? ` · por ${esc(primerNombre(h.por))}` : ''}</small></span>${ctx.usuario.dueno ? `<button class="btn-redondo hist-borrar" data-hist="${esc(h.id)}" aria-label="Borrar este registro" title="Borrar este registro">✕</button>` : ''}</div>`).join('')}</div>`
           : '<p class="suave">Sin movimientos todavía.</p>'}
@@ -138,6 +142,14 @@ export async function detalle(root, ctx) {
     const nombres = [...new Set(lista.map((d) => d.dispositivo).filter(Boolean))].join(', ');
     el.textContent = `🔔 Avisos activos en ${lista.length === 1 ? '1 dispositivo' : `${lista.length} dispositivos`}${nombres ? ` (${nombres})` : ''}`;
     el.classList.add('verde');
+  });
+  datos.dispositivosDeCuenta(f.id).then((lista) => {
+    const el = root.querySelector('#listaDispositivos');
+    if (!el) return;
+    if (lista === null) { root.querySelector('#tarjetaDispositivos')?.remove(); return; }
+    if (!lista.length) { el.innerHTML = '<p class="suave">Aún no hay registro. Se anota cada vez que abre la app.</p>'; return; }
+    el.innerHTML = `<div class="historial">${lista.map((d) => `<div><span class="em" aria-hidden="true">${/Windows|Mac/.test(d.descripcion) ? '💻' : '📱'}</span><span>${esc(d.descripcion || 'Sin nombre')}<small>Desde ${fechaBonita(d.primero)} · último uso ${fechaBonita(d.ultimo)}</small></span></div>`).join('')}</div>
+      ${lista.length > 2 ? `<p class="suave peq" style="margin-top:8px">⚠️ ${lista.length} dispositivos: revisa si están compartiendo la cuenta. En iPhone, Safari y la app instalada cuentan como dos.</p>` : ''}`;
   });
   root.querySelector('[data-wa]').addEventListener('click', async () => abrirWhatsApp(f, hijos, await datos.ajustesCobro().catch(() => ({}))));
   root.querySelector('[data-cel]').addEventListener('click', () => editarCelular(f.id, f.celular, () => ctx.refrescar()));

@@ -12,7 +12,7 @@
 
 import * as datos from './datos.js';
 import { VAPID_PUBLICA, MODO_DEMO } from './config.js';
-import { esc } from './util.js';
+import { esc, leerLocal, guardarLocal } from './util.js';
 import { aviso } from './ui.js';
 
 const ua = navigator.userAgent;
@@ -51,6 +51,22 @@ const b64aBytes = (b64) => {
   return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 };
 const nombreDispositivo = () => (esIOS ? (/iPad/.test(ua) ? 'iPad' : 'iPhone') : esAndroid ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Navegador');
+const navegador = () => (esNavegadorDeApp ? 'dentro de WhatsApp/Instagram' : /Edg\//.test(ua) ? 'Edge' : /SamsungBrowser/.test(ua) ? 'Samsung Internet' : /OPR\//.test(ua) ? 'Opera'
+  : /FxiOS|Firefox/.test(ua) ? 'Firefox' : /CriOS|Chrome/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : '');
+
+// --- Dispositivos de la cuenta ------------------------------------------------------------------
+// Cada navegador guarda una clave al azar; con ella la base sabe si la cuenta entra desde uno nuevo.
+const CLAVE_DISPOSITIVO = 'tareki:dispositivo';
+export async function registrarEsteDispositivo() {
+  let clave = leerLocal(CLAVE_DISPOSITIVO, '');
+  if (!clave) {
+    clave = crypto.randomUUID();
+    guardarLocal(CLAVE_DISPOSITIVO, clave);
+    if (leerLocal(CLAVE_DISPOSITIVO, '') !== clave) return; // no guarda nada (modo privado): no se puede reconocer
+  }
+  const forma = esInstalada() ? 'app instalada' : navegador();
+  await datos.registrarDispositivo({ clave, descripcion: [nombreDispositivo(), forma].filter(Boolean).join(' · ') });
+}
 
 /**
  * ¿En qué punto está este dispositivo?

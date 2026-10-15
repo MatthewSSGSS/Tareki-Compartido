@@ -274,15 +274,38 @@ Deno.serve(async (req) => {
     }));
   }
 
+  // Una cuenta de familia entró desde un dispositivo nuevo (y ya tenía otro) → avisa al equipo
+  if (entrada?.tipo === "dispositivo-nuevo" && entrada.id) {
+    const { data: d } = await admin.from("dispositivos").select("id, usuario_id, descripcion, perfil:perfiles!dispositivos_usuario_id_fkey(nombre, rol)").eq("id", entrada.id).maybeSingle();
+    if (!d || d.usuario_id !== usuario.id) return responder({ error: "no autorizado" }, 403);
+    if (d.perfil?.rol !== "familia") return responder({ ok: true, omitido: "no es familia" });
+    const { count } = await admin.from("dispositivos").select("id", { count: "exact", head: true }).eq("usuario_id", usuario.id);
+    if ((count ?? 0) < 2) return responder({ ok: true, omitido: "primer dispositivo" });
+    const { error: repetido } = await admin.from("avisos_enviados").insert({ user_id: usuario.id, clave: `dispositivo:${d.id}` });
+    if (repetido) return responder({ ok: true, repetido: true });
+    return responder(await enviarAVarios(admin, await equipo(admin), {
+      titulo: `📱 ${d.perfil?.nombre || "Una familia"} entró desde otro dispositivo`,
+      cuerpo: `Nuevo: ${d.descripcion || "sin nombre"}. Esa cuenta ya se ha abierto en ${count} dispositivos.`,
+      url: `#/equipo/familia/${usuario.id}`, tag: `dispositivo-${d.id}`,
+    }));
+  }
+
   // Mensaje de chat nuevo: si lo escribe la familia, avisa al equipo; si responde el equipo, avisa a la familia
   if (entrada?.tipo === "chat" && entrada.id) {
-    const { data: m } = await admin.from("chat").select("id, familia_id, autor, de_equipo, texto, familia:perfiles!chat_familia_id_fkey(nombre)").eq("id", entrada.id).maybeSingle();
+    const { data: m } = await admin.from("chat").select("id, familia_id, autor, de_equipo, texto, pedido_id, familia:perfiles!chat_familia_id_fkey(nombre)").eq("id", entrada.id).maybeSingle();
     if (!m || m.autor !== usuario.id) return responder({ error: "no autorizado" }, 403);
-    const corto = m.texto.length > 140 ? `${m.texto.slice(0, 137)}…` : m.texto;
+    const acortar = (t: string) => t.length > 140 ? `${t.slice(0, 137)}…` : t;
+    const corto = acortar(m.texto);
     if (m.de_equipo) {
       return responder(await enviarAUsuario(admin, m.familia_id, { titulo: "💬 Te respondió el equipo de Learnground", cuerpo: corto, url: "#/chat", tag: `chat-${m.familia_id}` }));
     }
-    return responder(await enviarAVarios(admin, await equipo(admin), { titulo: `💬 ${m.familia?.nombre || "Una familia"} escribió`, cuerpo: corto, url: `#/equipo/chat/${m.familia_id}`, tag: `chat-${m.familia_id}` }));
+    const familia = m.familia?.nombre || "Una familia";
+    // Pedido de lección (el mensaje automático que se escribe al pedir): aviso propio que abre la pestaña de pedidos
+    if (m.pedido_id) {
+      const detalle = m.texto.replace(/^📚 Pedido de lección ?/, "").replace(/^para /, "Para ").trim();
+      return responder(await enviarAVarios(admin, await equipo(admin), { titulo: `📚 Pedido nuevo de ${familia}`, cuerpo: acortar(detalle), url: "#/equipo/pedidos", tag: `pedido-${m.pedido_id}` }));
+    }
+    return responder(await enviarAVarios(admin, await equipo(admin), { titulo: `💬 ${familia} escribió`, cuerpo: corto, url: `#/equipo/chat/${m.familia_id}`, tag: `chat-${m.familia_id}` }));
   }
 
   // Chat interno del equipo: avisa a los demás del equipo

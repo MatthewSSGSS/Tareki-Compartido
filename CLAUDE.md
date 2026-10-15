@@ -48,13 +48,14 @@
 
 ## Pedidos de lecciones
 - `supabase/pedidos.sql` (después de chat.sql): tabla `pedidos` (niño, materia, temas, `para`, `fotos[]`, estado `nuevo`/`en_proceso`/`listo`, `atendido_por`), `chat.pedido_id` y el almacén privado `adjuntos` (`<familia_id>/<pedido_id>/<n>.jpg`, máx. 5 MB, solo imágenes).
-- `js/vistas/pedidos.js`: la familia pide desde el chat o Papás (`abrirPedir`); el equipo los gestiona en `#/equipo/pedidos` (pestaña de Mensajes). Al pedir se escribe un mensaje en el chat con `pedido_id` (así llega la notificación por `avisos` tipo `chat`); al tomarlo o marcarlo listo, el equipo puede escribirle a la familia por el chat.
+- `js/vistas/pedidos.js`: la familia pide desde el chat o Papás (`abrirPedir`); el equipo los gestiona en `#/equipo/pedidos` (pestaña de Mensajes). Al pedir se escribe un mensaje en el chat con `pedido_id` (así llega la notificación por `avisos` tipo `chat`, que con `pedido_id` dice "📚 Pedido nuevo de…" y abre `#/equipo/pedidos`); al tomarlo o marcarlo listo, el equipo puede escribirle a la familia por el chat.
 - `js/fotos.js` achica las fotos a JPEG de 1600 px antes de subirlas (la demo las guarda como data:URL de 700 px). Las fotos se ven con enlaces firmados de 1 hora (`urlsFotos`).
 
 ## Notificaciones (deben servir en todo dispositivo)
 - Web Push con el texto cifrado (RFC 8291 aes128gcm) en `supabase/functions/avisos` ("Verify JWT" apagado; secretos VAPID_* y CRON_SECRET en Supabase, copia en `privado/secretos-avisos.txt`). La llave pública VAPID está en `config.js`.
 - `supabase/avisos.sql`: tabla `suscripciones`, `registrar_push`/`quitar_push`, `avisos_diarios(dia)` y la tarea de las 6 p. m. Colombia (23:00 UTC). `privado/avisos-listo.sql` trae el CRON_SECRET puesto.
 - Avisos: lección nueva (el equipo llama `avisarLeccion` al asignar), racha en peligro o lecciones sin abrir (diario), prueba.
+- Dispositivos (`supabase/dispositivos.sql`, después de avisos.sql): cada navegador guarda `tareki:dispositivo` (clave al azar) y al abrir la app llama `registrar_dispositivo`. Si una cuenta de **familia** entra desde uno nuevo y ya tenía otro, `avisos` (`tipo: 'dispositivo-nuevo'`) avisa al equipo. La ficha de la familia lista sus dispositivos. En iPhone, Safari y la app instalada cuentan como dos.
 - `public/js/avisos.js` decide qué mostrar por dispositivo: iPhone/iPad necesita iOS 16.4+ y la app instalada en inicio; navegadores dentro de WhatsApp/Instagram no sirven. `public/sw.js` muestra el aviso y abre la URL; si cambia, subir su VERSION.
 
 ## Probar

@@ -21,7 +21,7 @@ export const {
   sumarActividad, actividad,
   familias, reiniciarDemo,
   registrarPush, quitarPush, probarAvisos, avisarLeccion,
-  marcarIngreso, olvidarPerfil, ajustesCobro, guardarAjustesCobro, familiasResumen, historialAcceso, registrarPago, cambiarAcceso,
+  marcarIngreso, registrarDispositivo, dispositivosDeCuenta, olvidarPerfil, ajustesCobro, guardarAjustesCobro, familiasResumen, historialAcceso, registrarPago, cambiarAcceso,
   mensajes, crearMensaje, enviarMensajeYa, borrarMensaje, avisarNinoNuevo, quitarFamilia, cambiarCelular, borrarHistorial,
   chat, chatResumen, enviarChat, marcarChatLeido, chatSinLeer, dispositivosDe,
   chatEquipo, enviarChatEquipo, marcarEquipoVisto, equipoSinLeer, equipoConAvisos,
