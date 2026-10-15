@@ -20,6 +20,7 @@ import { abrirPedir, pintarMisPedidos } from './pedidos.js';
 import { abrirApariencia } from '../apariencia.js';
 import { bandaPrueba, linkInscribirse } from '../piezas.js';
 import { VERSION_PRUEBA } from '../config.js';
+import { abrirPerfilLeccion } from '../perfil-leccion.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -50,7 +51,7 @@ export async function render(root, ctx) {
       : lista.length > 1 ? `<div class="selector-ninos" role="group" aria-label="Elegir niño">${lista.map((x) => `<button data-nino="${esc(x.id)}" aria-pressed="${x.id === nino.id}"><span class="av" style="background:${esc(x.color)}">${esc(x.avatar)}</span>${esc(x.nombre)}</button>`).join('')}</div>` : ''}
     <div class="cabecera">
       <h1>${esc(nino.avatar)} Progreso de ${esc(n)}</h1>
-      ${esEquipo ? `<a class="btn btn-peq" href="#/equipo/subir/${esc(nino.id)}">⬆️ Subir lección</a>` : ''}
+      ${esEquipo ? `<div class="fila envolver"><button class="btn btn-peq btn-blanco" data-perfil-leccion>📋 Perfil para la próxima lección</button><a class="btn btn-peq" href="#/equipo/subir/${esc(nino.id)}">⬆️ Subir lección</a></div>` : ''}
     </div>
 
     <div class="kpis">
@@ -127,6 +128,7 @@ export async function render(root, ctx) {
     root.querySelector('[data-apariencia-p]')?.addEventListener('click', () => abrirApariencia());
     root.querySelector('[data-pedir]')?.addEventListener('click', () => abrirPedir(ctx, { alEnviar: () => pintarMisPedidos(root.querySelector('#misPedidos'), ctx) }));
   }
+  root.querySelector('[data-perfil-leccion]')?.addEventListener('click', () => abrirPerfilLeccion(d));
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
     if (ctx.perfil) ctx.elegirPerfil(b.dataset.nino);
     ctx.refrescar();

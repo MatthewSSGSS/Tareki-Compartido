@@ -863,3 +863,6 @@ button.menu-perfil > span:last-child { min-width: 0; }
 .pasos-num .link { font: inherit; font-weight: 800; padding: 0; }
 .nc-botones .btn { white-space: nowrap; font-size: 1em; }
 @media (max-width: 420px) { .nc-botones .btn { font-size: .92em; } }
+
+/* Perfil para la próxima lección (equipo): texto listo para copiar */
+.perfil-texto { white-space: pre-wrap; word-break: break-word; font: inherit; font-size: .9em; line-height: 1.5; background: var(--soft); color: var(--ink); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; margin: 0; max-height: 46dvh; overflow: auto; }
