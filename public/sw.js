@@ -10,7 +10,7 @@
 // Si cambias este archivo, sube VERSION.
 // =============================================================================
 
-const VERSION = 'v6';
+const VERSION = 'v7';
 const CACHE = `tareki-${VERSION}`;
 
 self.addEventListener('install', (e) => {
