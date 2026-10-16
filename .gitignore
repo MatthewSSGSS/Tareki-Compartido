@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 # Lecciones reales y secretos: NUNCA al repositorio (es público)
 privado/
+
+# Configuración local de Claude (rutas de esta máquina)
+.claude/launch.json
+.claude/settings.local.json
