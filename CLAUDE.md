@@ -14,7 +14,7 @@
 - `puente.js`: abre la lección HTML en un `<iframe sandbox="allow-scripts">` (sin allow-same-origin). Le inyecta un `localStorage` falso lleno con lo guardado; cada cambio llega por `postMessage` y se guarda en la cuenta. Al final lee `KEY`, `FTOP`, `GAMES`, `TIPS` y si existen `bossGame`/`examFinal`/`fichaMission` para el reporte. **Las lecciones no se modifican.**
 - `analisis.js`: reconoce el progreso por su forma (`{clave:{campoS, ficha100, exam100, bossS, *_h}}` y el historial `[{d,n,s,t,h}]`), calcula progreso, temas débiles, consejos para papás y medallas.
 - `racha.js`: un día cuenta con un logro (cambio en claves de progreso/historial) o 5 minutos con la lección visible.
-- `perfil-leccion.js`: botón del equipo "📋 Perfil para la próxima lección" en `#/papas/<id>`. Arma un texto (juegos recientes, favoritos, los que evita, temas débiles, fichas, ritmo y gustos) para pegar en claude.ai con las fotos de la tarea, así la skill `leccion-divertida` hace la lección a la medida del niño. Los gustos se recuerdan en el dispositivo (`tareki:gustos:<id>`).
+- `perfil-leccion.js`: botón del equipo "📋 Perfil para la próxima lección" en `#/papas/<id>`. Arma un texto (juegos recientes, favoritos, los que evita, temas débiles, fichas, ritmo y gustos) para pegar en claude.ai con las fotos de la tarea, así la skill `lesson-maker` (`.claude/skills/lesson-maker/SKILL.md`) hace la lección a la medida del niño. Los gustos se recuerdan en el dispositivo (`tareki:gustos:<id>`).
 - Vistas en `js/vistas/*.js`: `render(root, ctx)` (puede ser async y devolver una función de limpieza). Rutas en `main.js`. Siempre escapar con `esc()`.
 - Estilo en `css/tareki.css` (tokens del mismo diseño de las lecciones).
 

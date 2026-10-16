@@ -3,7 +3,7 @@
 //
 // Junta lo que la app sabe de un niño (juegos que ya vio, sus favoritos, los que
 // evita, temas débiles, fichas, ritmo y gustos) en un texto para pegar en
-// claude.ai junto con las fotos de la tarea. Así la skill "leccion-divertida"
+// claude.ai junto con las fotos de la tarea. Así la skill "lesson-maker"
 // arma la lección a su medida en vez de a ciegas.
 // Los gustos los escribe el equipo y se recuerdan en este dispositivo.
 // =============================================================================
