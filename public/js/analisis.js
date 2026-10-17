@@ -129,28 +129,29 @@ export function consejosPapas({ nino, resumen, racha, actividad, analisis }) {
   const sinEstudiar = ultimoDia ? diasEntre(ultimoDia, hoy()) : null;
   const semana = actividad.filter((a) => a.dia > sumarDias(hoy(), -7)).reduce((s, a) => s + a.minutos, 0);
 
-  if (racha.enRiesgo) out.push({ emoji: '🔥', tono: 'alerta', titulo: `La racha de ${racha.actual} días está en peligro`, texto: `${n} todavía no ha estudiado hoy. Con 10 minutos en cualquier juego la mantiene.` });
-  if (sinEstudiar != null && sinEstudiar >= 3) out.push({ emoji: '⏰', tono: 'alerta', titulo: `${sinEstudiar} días sin estudiar`, texto: `Propónganle un juego corto juntos, sin presión. Volver es más fácil si el primer paso es divertido.` });
-  if (resumen.nuevas) out.push({ emoji: '🎁', tono: 'idea', titulo: `${resumen.nuevas === 1 ? 'Una lección nueva' : `${resumen.nuevas} lecciones nuevas`} sin abrir`, texto: `Ábranla juntos la primera vez: lean la pestaña Aprender y luego dejen que ${n} juegue solo.` });
+  // Siempre en positivo: qué hacer, no qué está mal (regla 2 de PROPUESTAS.md)
+  if (racha.enRiesgo) out.push({ emoji: '🔥', tono: 'idea', titulo: `¡Hoy puede llegar a ${racha.actual + 1} días de racha!`, texto: `Todavía hay tiempo: con 10 minutos en cualquier juego, ${n} sigue sumando días.` });
+  if (sinEstudiar != null && sinEstudiar >= 3) out.push({ emoji: '🌱', tono: 'idea', titulo: '¡Buen momento para volver!', texto: `Hace ${sinEstudiar} días que ${n} no juega. Propónganle un juego corto juntos, sin presión: volver es más fácil si el primer paso es divertido.` });
+  if (resumen.nuevas) out.push({ emoji: '🎁', tono: 'idea', titulo: resumen.nuevas === 1 ? 'Hay una lección nueva esperando' : `Hay ${resumen.nuevas} lecciones nuevas esperando`, texto: `Ábranla juntos la primera vez: lean la pestaña Aprender y luego dejen que ${n} juegue por su cuenta.` });
 
   for (const a of analisis) {
     if (a.notaAnterior != null && a.ultimaNota != null && a.ultimaNota - a.notaAnterior >= 10) {
       out.push({ emoji: '📈', tono: 'bien', titulo: `Subió de ${a.notaAnterior} a ${a.ultimaNota} en «${a.leccion.titulo}»`, texto: `Feliciten a ${n} por el esfuerzo, no solo por la nota: «Se nota que practicaste».` });
     } else if (a.notaAnterior != null && a.ultimaNota != null && a.notaAnterior - a.ultimaNota >= 10) {
-      out.push({ emoji: '📉', tono: 'alerta', titulo: `Bajó de ${a.notaAnterior} a ${a.ultimaNota} en «${a.leccion.titulo}»`, texto: `Es normal: cada ficha trae ejercicios nuevos. Repasen juntos el tema más débil antes de intentarla otra vez.` });
+      out.push({ emoji: '🌱', tono: 'idea', titulo: `«${a.leccion.titulo}»: esta ficha trajo retos nuevos`, texto: `Pasó de ${a.notaAnterior} a ${a.ultimaNota}. Es normal: cada ficha trae ejercicios distintos. Repasen juntos su próximo reto y vuelvan a intentarla: la segunda vez suele salir mejor.` });
     }
     if (a.segPorPregunta != null && a.segPorPregunta < 12 && a.ultimaNota < 80) {
-      out.push({ emoji: '⚡', tono: 'alerta', titulo: 'Responde muy rápido', texto: `En «${a.leccion.titulo}» tardó ${a.segPorPregunta} segundos por pregunta. Puede estar adivinando: pídanle que lea en voz alta antes de responder.` });
+      out.push({ emoji: '📖', tono: 'idea', titulo: 'Una idea: leer con calma', texto: `En «${a.leccion.titulo}» respondió en ${a.segPorPregunta} segundos por pregunta. Pídanle que lea cada pregunta en voz alta antes de responder: así piensa mejor y la nota sube.` });
     }
   }
 
   resumen.debiles.slice(0, 2).forEach((t) => out.push({
-    emoji: t.emoji, tono: 'idea', titulo: `Reforzar: ${t.nombre}`,
-    texto: `${t.ok} de ${t.total} bien en «${t.titulo}».${t.juego ? ` Jueguen «${t.juego}».` : ''}${t.pregunta ? ` Pregúntenle hoy: «${t.pregunta}»` : ''}`,
+    emoji: t.emoji, tono: 'idea', titulo: `Su próximo reto: ${t.nombre}`,
+    texto: `Va ${t.ok} de ${t.total} en «${t.titulo}» y está fortaleciendo este tema.${t.juego ? ` Jueguen «${t.juego}».` : ''}${t.pregunta ? ` Pregúntenle hoy: «${t.pregunta}»` : ''}`,
   }));
 
   if (racha.hoyListo && racha.actual >= 3) out.push({ emoji: '🏅', tono: 'bien', titulo: `¡${racha.actual} días seguidos!`, texto: `Reconózcanle la constancia a ${n}. La racha es lo que más engancha: que no se rompa el fin de semana.` });
-  if (semana < 40 && diasActivos.length) out.push({ emoji: '🗓️', tono: 'idea', titulo: `${semana} minutos esta semana`, texto: 'Meta sugerida: 15 minutos al día, 4 días a la semana. Mejor poquito y seguido que mucho de una vez.' });
+  if (semana < 40 && diasActivos.length) out.push({ emoji: '🗓️', tono: 'idea', titulo: 'Meta de la semana: 60 minutos', texto: `Van ${semana} minutos. Mejor poquito y seguido: 15 minutos al día, 4 días a la semana.` });
   if (!out.length) out.push({ emoji: '🌟', tono: 'bien', titulo: `${n} va muy bien`, texto: 'Sigan así. Cuando saque 3 estrellas en todo, rétenlo con el modo difícil.' });
   return out;
 }

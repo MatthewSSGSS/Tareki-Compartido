@@ -53,13 +53,13 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 11,
+    version: 12,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
       { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1), celular: '573001234567' },
     ],
     ninos: [
-      { id: 'n-sofia', familiaId: 'u-familia', nombre: 'Sofía', avatar: '🦊', color: '#ff9a4d', grado: '4', creado: ts(20) },
+      { id: 'n-sofia', familiaId: 'u-familia', nombre: 'Sofía', avatar: '🦊', color: '#ff9a4d', grado: '4', gustos: 'los gatos, dibujar y el fútbol', creado: ts(20) },
       { id: 'n-tomas', familiaId: 'u-familia', nombre: 'Tomás', avatar: '🐯', color: '#59c3ff', grado: '4', creado: ts(20) },
     ],
     lecciones: [

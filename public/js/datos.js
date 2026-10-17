@@ -15,7 +15,7 @@ const d = MODO_DEMO ? demo : nube;
 export const {
   usuario, ingresar, salir, recuperarClave, estaRecuperando, cambiarClave, cambiarMiNombre,
   revisarCodigo, registrarFamilia, crearInvitacion, invitaciones, anularInvitacion,
-  ninos, nino, guardarNino,
+  ninos, nino, guardarNino, admiteGustos,
   lecciones, todasLasLecciones, leccion, htmlLeccion, subirLeccion, reemplazarArchivo, cambiarLeccion, borrarLeccion,
   estado, estados, guardarDatos, guardarMeta, marcarAbierta,
   sumarActividad, actividad,

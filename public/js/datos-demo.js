@@ -27,7 +27,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 11) return d;
+    if (d && d.version === 12) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);
@@ -155,18 +155,21 @@ export async function nino(id) {
   return (await ninos()).find((n) => n.id === id) || null;
 }
 
-export async function guardarNino({ id, nombre, avatar, color, grado }) {
+export const admiteGustos = () => true;
+
+export async function guardarNino({ id, nombre, avatar, color, grado, gustos }) {
   const u = yo();
   if (!u) falla('Inicia sesión.');
   if (!String(nombre || '').trim()) falla('Escribe el nombre.');
+  const extra = gustos !== undefined ? { gustos: String(gustos).trim().slice(0, 200) } : {};
   if (id) {
     exigirNino(id);
     const n = db.ninos.find((x) => x.id === id);
-    Object.assign(n, { nombre: nombre.trim(), avatar, color, grado });
+    Object.assign(n, { nombre: nombre.trim(), avatar, color, grado, ...extra });
     guardar(); return { ...n };
   }
   if (u.rol !== 'familia') falla('Los perfiles los crea cada familia.');
-  const n = { id: uid(), familiaId: u.id, nombre: nombre.trim(), avatar, color, grado, creado: ahora() };
+  const n = { id: uid(), familiaId: u.id, nombre: nombre.trim(), avatar, color, grado, gustos: '', ...extra, creado: ahora() };
   db.ninos.push(n); guardar();
   return { ...n };
 }

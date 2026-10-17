@@ -46,10 +46,11 @@ Los juegos grandes (tipo consola) se programan **una sola vez en la app** y la l
     - Hay pociones. En normal, si el héroe cae, Lulo lo cura.
 - [ ] **La skill aprende a usar el motor** (si la lección se abre fuera de la app, la tarjeta dice "🎮 Ábrela en Learnground para jugar"): 2 o 3 juegos grandes por lección, escogidos según el perfil (favoritos sí, los que evita no), con el animal, el color y los gustos del niño en el héroe, los enemigos y la historia.
 
-## Paso 3: arreglos rápidos en la app · 📱
-- [ ] **Suavizar las frases actuales para papás**: "Bajó de 80 a 60", "el tema más débil", "puede estar adivinando", "Reforzar:" → regla 2.
-- [ ] **Guía "Cómo usar Learnground" para papás** (idea 13): botón en Papás que explica cada función (lecciones, racha, medallas, buzón, chat, pedidos, pagos, avisos) y cómo trabaja el equipo.
-- [ ] **Los papás llenan los gustos del niño** · 🗄️: campo "Gustos e intereses" en el perfil del niño. Hoy lo escribe el equipo en "📋 Perfil para la próxima lección" y solo queda en ese dispositivo.
+## Paso 3: arreglos rápidos en la app · 📱 ✅
+- [x] **Frases en positivo para papás**: los consejos de Papás ("Su próximo reto", "Esta ficha trajo retos nuevos", "Una idea: leer con calma", "Meta de la semana"…) y el aviso diario de racha al celular ("hoy puedes llegar a N días", `supabase/avisos-positivos.sql`). *(17-oct-2026)*
+- [x] **Guía "Cómo usar Learnground" para papás** (idea 13): tarjeta en Papás con 12 temas (cómo trabajamos, lecciones, juegos, racha, logros, Papás, chat y pedidos, avisos, varios hijos, mensualidad, apariencia, privacidad). *(17-oct-2026)*
+- [x] **Los papás llenan los gustos del niño** · 🗄️: campo "¿Qué le gusta?" en el perfil y tarjeta 💛 en Papás; llega solo al "📋 Perfil para la próxima lección" del equipo. Necesita `supabase/gustos.sql`. *(17-oct-2026)*
+- [x] **Arreglo:** en Papás, el selector de hijos no cambiaba de niño si se entraba sin escoger perfil. *(17-oct-2026)*
 
 ## Paso 4: avatar, recompensas y logros · 📱 🗄️
 Hasta entonces, el héroe de los juegos grandes es el animal y el color que el niño escogió en su perfil.

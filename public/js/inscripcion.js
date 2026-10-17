@@ -15,7 +15,7 @@ const INCLUYE = [
   ['📚', 'Lecciones a su medida', 'Hechas para tu hijo o hija con lo que ve en el colegio.'],
   ['🎮', 'Aprender jugando', 'Juegos, fichas y simulacros para practicar.'],
   ['🔥', 'Racha y logros', 'Estrellas y medallas que los motivan cada día.'],
-  ['📈', 'Reporte para papás', 'Notas, temas que cuestan y consejos.'],
+  ['📈', 'Reporte para papás', 'Notas, su próximo reto y consejos.'],
   ['📷', 'Pide lecciones', 'Con fotos del cuaderno o de la guía.'],
   ['💬', 'Siempre cerca', 'Chat con el equipo y avisos en el celular.'],
 ];

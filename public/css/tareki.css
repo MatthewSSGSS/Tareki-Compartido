@@ -866,3 +866,16 @@ button.menu-perfil > span:last-child { min-width: 0; }
 
 /* Perfil para la próxima lección (equipo): texto listo para copiar */
 .perfil-texto { white-space: pre-wrap; word-break: break-word; font: inherit; font-size: .9em; line-height: 1.5; background: var(--soft); color: var(--ink); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; margin: 0; max-height: 46dvh; overflow: auto; }
+
+/* Guía "Cómo usar Learnground" (js/guia.js) */
+.guia-tarjeta { margin-bottom: 14px; }
+.gustos-tarjeta { margin-top: 0; margin-bottom: 14px; }
+.guia { display: grid; gap: 8px; }
+.guia details { border: 2px solid var(--line); border-radius: 14px; background: var(--soft); }
+.guia summary { cursor: pointer; padding: 10px 14px; font-family: var(--f-head); font-weight: 800; font-size: 1.08em; list-style: none; display: flex; align-items: center; gap: 8px; }
+.guia summary::-webkit-details-marker { display: none; }
+.guia summary::after { content: "＋"; margin-left: auto; color: var(--muted); }
+.guia details[open] summary::after { content: "－"; }
+.guia details > div { padding: 0 14px 12px; font-size: .95em; line-height: 1.5; }
+.guia details > div p { margin: 6px 0; }
+.guia ol, .guia ul { margin: 6px 0; padding-left: 1.3em; display: grid; gap: 6px; }

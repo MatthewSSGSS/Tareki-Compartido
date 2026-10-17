@@ -59,8 +59,9 @@ export async function render(root, ctx) {
 }
 
 /** Formulario para crear o editar el perfil de un niño. */
-export function abrirFormularioNino(nino, alGuardar) {
+export function abrirFormularioNino(nino, alGuardar, { enfocarGustos = false } = {}) {
   const v = { nombre: nino?.nombre || '', avatar: nino?.avatar || AVATARES[0], color: nino?.color || COLORES[0], grado: nino?.grado || '4' };
+  const conGustos = datos.admiteGustos();
   abrirHoja({
     titulo: nino ? `Editar a ${nino.nombre}` : 'Nuevo perfil',
     cuerpo: `
@@ -72,9 +73,13 @@ export function abrirFormularioNino(nino, alGuardar) {
         <div class="colores">${COLORES.map((c) => `<button type="button" data-color="${c}" style="background:${c}" aria-pressed="${c === v.color}" aria-label="Color ${c}"></button>`).join('')}</div></div>
       <div class="campo"><span class="etiqueta">Grado</span>
         <div class="grados">${GRADOS.map((g) => `<button type="button" data-grado="${g}" aria-pressed="${g === v.grado}">${g}.º</button>`).join('')}</div></div>
+      ${conGustos ? `<div class="campo"><label for="pGustos">¿Qué le gusta? <small class="suave">(opcional)</small></label>
+        <input id="pGustos" maxlength="200" value="${esc(nino?.gustos || '')}" placeholder="Ej.: el fútbol, los dinosaurios, dibujar, su perro Rocky" autocomplete="off">
+        <small>Así sus lecciones traen sus personajes, ejemplos e historias favoritas.</small></div>` : ''}
       <p class="error" id="pErr" role="alert"></p>`,
     pie: `<button class="btn btn-verde" data-guardar>${nino ? 'Guardar' : '¡Listo!'}</button>`,
     montar: (el) => {
+      if (enfocarGustos) setTimeout(() => { const g = el.querySelector('#pGustos'); g?.scrollIntoView({ block: 'center' }); g?.focus(); }, 250);
       const vista = el.querySelector('#pVista');
       const marcar = (sel, attr, val) => el.querySelectorAll(sel).forEach((b) => b.setAttribute('aria-pressed', b.dataset[attr] === val));
       el.querySelectorAll('[data-av]').forEach((b) => b.addEventListener('click', () => { v.avatar = b.dataset.av; vista.textContent = v.avatar; marcar('[data-av]', 'av', v.avatar); }));
@@ -82,7 +87,8 @@ export function abrirFormularioNino(nino, alGuardar) {
       el.querySelectorAll('[data-grado]').forEach((b) => b.addEventListener('click', () => { v.grado = b.dataset.grado; marcar('[data-grado]', 'grado', v.grado); }));
       el.querySelector('[data-guardar]').addEventListener('click', async () => {
         try {
-          const n = await datos.guardarNino({ id: nino?.id, ...v, nombre: el.querySelector('#pNombre').value });
+          const gustos = el.querySelector('#pGustos')?.value;
+          const n = await datos.guardarNino({ id: nino?.id, ...v, nombre: el.querySelector('#pNombre').value, ...(gustos !== undefined ? { gustos } : {}) });
           cerrarHoja();
           alGuardar?.(n);
         } catch (x) { el.querySelector('#pErr').textContent = x.message; }

@@ -21,6 +21,8 @@ import { abrirApariencia } from '../apariencia.js';
 import { bandaPrueba, linkInscribirse } from '../piezas.js';
 import { VERSION_PRUEBA } from '../config.js';
 import { abrirPerfilLeccion } from '../perfil-leccion.js';
+import { abrirGuia } from '../guia.js';
+import { abrirFormularioNino } from './perfiles.js';
 
 export async function render(root, ctx) {
   const esEquipo = ctx.usuario.rol === 'equipo';
@@ -53,9 +55,14 @@ export async function render(root, ctx) {
       <h1>${esc(nino.avatar)} Progreso de ${esc(n)}</h1>
       ${esEquipo ? `<div class="fila envolver"><button class="btn btn-peq btn-blanco" data-perfil-leccion>📋 Perfil para la próxima lección</button><a class="btn btn-peq" href="#/equipo/subir/${esc(nino.id)}">⬆️ Subir lección</a></div>` : ''}
     </div>
+    ${esEquipo ? '' : `<div class="card escribenos guia-tarjeta"><span class="em" aria-hidden="true">📖</span><div><b>Cómo usar Learnground</b><small class="suave">Todas las funciones explicadas, y cómo trabaja el equipo.</small></div>
+      <div class="fila envolver"><button class="btn btn-peq btn-blanco" data-guia>Ver la guía</button></div></div>`}
+    ${esEquipo || !datos.admiteGustos() ? '' : `<div class="card escribenos gustos-tarjeta"><span class="em" aria-hidden="true">💛</span>
+      <div><b>${nino.gustos ? `A ${esc(n)} le gusta…` : `¿Qué le gusta a ${esc(n)}?`}</b><small class="suave">${nino.gustos ? esc(nino.gustos) : 'Cuéntanos y sus lecciones vendrán con sus personajes, ejemplos e historias favoritas.'}</small></div>
+      <div class="fila envolver"><button class="btn btn-peq ${nino.gustos ? 'btn-blanco' : 'btn-sol'}" data-gustos>${nino.gustos ? 'Cambiar' : 'Contarnos'}</button></div></div>`}
 
     <div class="kpis">
-      <div class="card kpi"><span>Racha</span><b>🔥 ${racha.actual}</b><small>${racha.hoyListo ? 'Hoy ya estudió' : racha.enRiesgo ? 'Hoy aún no estudia' : 'Sin racha activa'} · récord ${racha.mejor}</small></div>
+      <div class="card kpi"><span>Racha</span><b>🔥 ${racha.actual}</b><small>${racha.hoyListo ? 'Hoy ya estudió' : racha.enRiesgo ? 'Hoy puede seguir sumando' : '¡Hoy puede empezar una!'} · récord ${racha.mejor}</small></div>
       <div class="card kpi"><span>Esta semana</span><b>${minutosTexto(d.minutosSemana)}</b><small>${plural(racha.semana.filter((x) => x.activo).length, 'día activo', 'días activos')} de 7</small></div>
       <div class="card kpi"><span>Nota promedio</span><b>${prom != null ? `${nivelNota(prom).emoji} ${prom}` : '—'}</b><small>${prom != null ? `Desempeño ${nivelNota(prom).nombre} · última ficha de cada lección` : 'Aún no presenta fichas'}</small></div>
       <div class="card kpi"><span>Lecciones</span><b>🎓 ${resumen.terminadas}/${analisis.length}</b><small>${resumen.enCurso} en curso · ${resumen.nuevas} sin abrir</small></div>
@@ -126,12 +133,15 @@ export async function render(root, ctx) {
     root.querySelector('[data-pagar]')?.addEventListener('click', () => abrirComoPagar(ctx.usuario));
     pintarMisPedidos(root.querySelector('#misPedidos'), ctx);
     root.querySelector('[data-apariencia-p]')?.addEventListener('click', () => abrirApariencia());
+    root.querySelector('[data-guia]')?.addEventListener('click', () => abrirGuia());
+    root.querySelector('[data-gustos]')?.addEventListener('click', () => abrirFormularioNino(nino, () => ctx.refrescar(), { enfocarGustos: true }));
     root.querySelector('[data-pedir]')?.addEventListener('click', () => abrirPedir(ctx, { alEnviar: () => pintarMisPedidos(root.querySelector('#misPedidos'), ctx) }));
   }
   root.querySelector('[data-perfil-leccion]')?.addEventListener('click', () => abrirPerfilLeccion(d));
   root.querySelectorAll('[data-nino]').forEach((b) => b.addEventListener('click', () => {
     if (ctx.perfil) ctx.elegirPerfil(b.dataset.nino);
-    ctx.refrescar();
+    // El niño va en la dirección: así cambia aunque se haya entrado a Papás sin escoger perfil
+    ctx.navegar(`#/papas/${b.dataset.nino}`);
   }));
   root.querySelectorAll('[data-detalle]').forEach((b) => b.addEventListener('click', () => {
     const a = analisis.find((x) => x.leccion.id === b.dataset.detalle);

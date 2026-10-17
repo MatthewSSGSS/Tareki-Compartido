@@ -5,7 +5,8 @@
 // evita, temas débiles, fichas, ritmo y gustos) en un texto para pegar en
 // claude.ai junto con las fotos de la tarea. Así la skill "lesson-maker"
 // arma la lección a su medida en vez de a ciegas.
-// Los gustos los escribe el equipo y se recuerdan en este dispositivo.
+// Los gustos los escribe la familia (perfil del niño o Papás); el equipo puede agregar
+// algo más, que se recuerda en este dispositivo.
 // =============================================================================
 
 import { esc, plano, plural, hoy, sumarDias, leerLocal, guardarLocal } from './util.js';
@@ -47,8 +48,9 @@ function juegosDelNino(analisis) {
 }
 
 /** El texto que se pega en claude.ai. */
-export function textoPerfil({ nino, analisis, resumen, actividad }, gustos = '') {
+export function textoPerfil({ nino, analisis, resumen, actividad }, extra = '') {
   const n = nino.nombre;
+  const gustos = [nino.gustos, extra].map((s) => String(s || '').trim()).filter(Boolean).join('; ');
   const j = juegosDelNino(analisis);
   const nombres = (xs, extra = () => '') => xs.slice(0, 8).map((x) => `${x.nombre}${extra(x)}`).join(', ');
   const lineas = [
@@ -57,7 +59,7 @@ export function textoPerfil({ nino, analisis, resumen, actividad }, gustos = '')
     '',
     `👤 ${n} · ${nino.grado}.º grado`,
     `Animal favorito: ${nino.avatar} ${ANIMALES[nino.avatar] || ''} · Color favorito: ${COLORES[nino.color] || nino.color}`.replace(/ +·/, ' ·'),
-    `Gustos: ${gustos.trim() || '(sin datos)'}`,
+    `Gustos: ${gustos || '(sin datos)'}`,
     '',
   ];
 
@@ -101,9 +103,12 @@ export function abrirPerfilLeccion(d) {
     ancha: true,
     cuerpo: `
       <p class="suave peq">Cópialo y pégalo en claude.ai junto con las fotos de la tarea: la lección sale pensada para ${esc(nino.nombre)}.</p>
-      <div class="campo"><label for="pfGustos">Gustos e intereses <small class="suave">(opcional)</small></label>
+      ${nino.gustos
+        ? `<p class="peq">💛 La familia contó que le gusta: <b>${esc(nino.gustos)}</b></p>`
+        : '<p class="peq suave">💛 La familia todavía no ha contado sus gustos (lo puede hacer en Papás).</p>'}
+      <div class="campo"><label for="pfGustos">${nino.gustos ? 'Algo más que sepa el equipo' : 'Gustos e intereses'} <small class="suave">(opcional)</small></label>
         <input id="pfGustos" maxlength="160" value="${esc(gustos)}" placeholder="Ej.: fútbol, dinosaurios, Minecraft, su perro Rocky">
-        <small>Se usan en la historia y los ejemplos. Se recuerdan en este dispositivo.</small></div>
+        <small>Se usan en la historia y los ejemplos. Esto se recuerda en este dispositivo.</small></div>
       <pre class="perfil-texto" id="pfTexto"></pre>`,
     pie: '<button class="btn" data-copiar>📋 Copiar perfil</button>',
     montar: (el) => {

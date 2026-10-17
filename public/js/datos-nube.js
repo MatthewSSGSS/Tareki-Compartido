@@ -38,7 +38,7 @@ function falla(e, porDefecto = 'Algo salió mal. Revisa tu conexión e intenta d
 const ok = ({ data, error }, msg) => { if (error) falla(error, msg); return data; };
 
 // --- Traducción entre la base (snake_case) y la app (camelCase) ---------------------------
-const aNino = (r) => r && ({ id: r.id, familiaId: r.familia_id, nombre: r.nombre, avatar: r.avatar, color: r.color, grado: r.grado, creado: r.creado, familia: r.familia || null });
+const aNino = (r) => r && ({ id: r.id, familiaId: r.familia_id, nombre: r.nombre, avatar: r.avatar, color: r.color, grado: r.grado, gustos: r.gustos || '', creado: r.creado, familia: r.familia || null });
 const aLeccion = (r) => r && ({ id: r.id, ninoId: r.nino_id, titulo: r.titulo, materia: r.materia, archivo: r.archivo, version: r.version, subidaPor: r.subida_por, creada: r.creada, actualizada: r.actualizada, meta: r.meta });
 
 // --- Sesión ---------------------------------------------------------------------------------
@@ -133,26 +133,47 @@ export async function anularInvitacion(codigo) {
 }
 
 // --- Niños ------------------------------------------------------------------------------------
-const CAMPOS_NINO = 'id, familia_id, nombre, avatar, color, grado, creado, familia:perfiles!ninos_familia_id_fkey(id, nombre, correo)';
+// `gustos` llega con supabase/gustos.sql. Mientras no se corra, la app sigue funcionando sin ese campo.
+let conGustos = true;
+const camposNino = () => `id, familia_id, nombre, avatar, color, grado,${conGustos ? ' gustos,' : ''} creado, familia:perfiles!ninos_familia_id_fkey(id, nombre, correo)`;
+const faltaGustos = (error) => conGustos && !!error && /gustos/i.test(`${error.message} ${error.details || ''} ${error.hint || ''}`);
+/** Hace la consulta y, si la columna gustos todavía no existe, la repite sin ella. */
+async function conCamposNino(consulta) {
+  const r = await consulta(camposNino());
+  if (!faltaGustos(r.error)) return r;
+  conGustos = false;
+  return consulta(camposNino());
+}
+/** ¿Ya se puede guardar lo que le gusta al niño? (false hasta correr gustos.sql) */
+export const admiteGustos = () => conGustos;
 
 export async function ninos() {
   if (!(await usuario())) return [];
-  return ok(await cliente().from('ninos').select(CAMPOS_NINO).order('creado')).map(aNino);
+  return ok(await conCamposNino((c) => cliente().from('ninos').select(c).order('creado'))).map(aNino);
 }
 
 export async function nino(id) {
-  const r = ok(await cliente().from('ninos').select(CAMPOS_NINO).eq('id', id).maybeSingle());
+  const r = ok(await conCamposNino((c) => cliente().from('ninos').select(c).eq('id', id).maybeSingle()));
   if (!r) throw new Error('No tienes permiso para ver esto.');
   return aNino(r);
 }
 
-export async function guardarNino({ id, nombre, avatar, color, grado }) {
+export async function guardarNino({ id, nombre, avatar, color, grado, gustos }) {
   if (!String(nombre || '').trim()) throw new Error('Escribe el nombre.');
   const campos = { nombre: nombre.trim(), avatar, color, grado };
-  if (id) return aNino(ok(await cliente().from('ninos').update(campos).eq('id', id).select(CAMPOS_NINO).single()));
-  const yo = await usuario();
-  if (yo?.rol !== 'familia') throw new Error('Los perfiles los crea cada familia.');
-  return aNino(ok(await cliente().from('ninos').insert({ ...campos, familia_id: yo.id }).select(CAMPOS_NINO).single()));
+  if (gustos !== undefined) campos.gustos = String(gustos).trim().slice(0, 200);
+  const enviar = (c) => {
+    if (!conGustos) delete campos.gustos;
+    if (id) return cliente().from('ninos').update(campos).eq('id', id).select(c).single();
+    return cliente().from('ninos').insert({ ...campos, familia_id: yoId }).select(c).single();
+  };
+  let yoId = null;
+  if (!id) {
+    const yo = await usuario();
+    if (yo?.rol !== 'familia') throw new Error('Los perfiles los crea cada familia.');
+    yoId = yo.id;
+  }
+  return aNino(ok(await conCamposNino(enviar)));
 }
 
 // --- Lecciones ----------------------------------------------------------------------------------
