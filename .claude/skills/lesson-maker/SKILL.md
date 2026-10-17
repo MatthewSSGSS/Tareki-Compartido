@@ -45,7 +45,8 @@ La página es un solo archivo, con un `<style>` y un `<script>`. Dentro del scri
 1. Utilidades de la página: `$`, `esc`, `store`/`read`/`readJSON` (siempre con try/catch), `fold`, `PHOTO`, `KEY`, nombre del niño(a), `kp()`, `record()`.
 2. `speak()` (voz del teléfono, es-CO) y sonidos: `beep`, `SFX`, `confetti`, `pick`.
 3. **Motor** (no se toca): dificultad (`DIFF`, `HARD()`, `lv(normal, dificil)`, `setDiff`, `fieldOf`), `INFO`, `DECO`, `startGame` (pantalla de inicio más cuenta 3-2-1), `arena` (HUD con corazones, racha 🔥, puntaje, tiempo, Lulo el delfín rosado 🐬), `finish`, `gameOver`, `plus`, `ring`.
-   - **Lulo es un delfín rosado 🐬**, la mascota de Learnground (no un búho). Si la plantilla todavía dice "búho" o usa 🦉 (en el HUD, el saludo del nombre, el simulacro…), cámbialo por "delfín" y 🐬 en todas partes; es lo único del motor que sí se cambia. La clase CSS `owl` puede quedarse igual.
+   - **Lulo es un delfín rosado 🐬**, la mascota de Learnground (no un búho). Si la plantilla todavía dice "búho" o usa 🦉 (en el HUD, el saludo del nombre, el simulacro…), cámbialo por "delfín" y 🐬 en todas partes. La clase CSS `owl` puede quedarse igual.
+   - Lo único más que se le agrega al motor es el **registro de partidas** (ver abajo). Si la plantilla ya lo trae, déjalo igual.
 4. **Contenido del tema** (`// Contenido: …`): **esto es lo que se reescribe** en cada lección.
 5. Juegos reutilizables: `dragTo`, `loseCheck`, globos, topos, rayo veloz, une las parejas, memoria y sopa de letras.
 6. `// Juegos nuevos de …`: juegos propios del tema.
@@ -66,13 +67,42 @@ Los juegos reutilizables llaman estas funciones. Mantén los mismos nombres y fo
 - `rainRounds()`: 4 rondas `{label, hint, good(), bad()}`.
 - Textos del jefe final (nombre, `TAUNTS`, `HITS`, medalla) y encabezado del examen (materia, título, grado).
 
+### Registro de partidas (para el equipo; el niño no lo ve)
+
+Learnground guarda cómo le fue al niño en cada partida para analizar sus habilidades y armarle rutinas a los papás. Copia esto tal cual, justo después de `gameOver`:
+
+```js
+// ---------- Registro de partidas (para el equipo de Learnground; el niño no lo ve) ----------
+const REG = "ld-" + KEY + "-registro";
+let jugando = null; // juego abierto: { id, hab }
+function anotar(A, fin, ok, total){
+  if(!jugando || !A || A.anotado || !A.inicio) return;
+  A.anotado = true;
+  const r = readJSON(REG, []);
+  r.push({ j: jugando.id, h: jugando.hab || "", m: HARD() ? "d" : "n",
+    ok: ok ?? A.aciertos, n: total ?? (A.aciertos + A.errores), err: A.errores,
+    seg: Math.round((Date.now() - A.inicio) / 1000), fin, d: new Date().toLocaleDateString("en-CA") });
+  store(REG, r.slice(-300));
+}
+```
+
+Y conéctalo en 5 puntos del motor:
+
+1. **`arena`**: guarda el objeto que retorna en `const A = { … }` y haz `return A;`. Agrégale `inicio: 0, aciertos: 0, errores: 0, anotado: false`. Al principio de `say(msg, mood)` cuenta: `if(mood === "ok") this.aciertos++; else if(mood === "bad") this.errores++;` (`praise` y `oops` pasan por `say`, así que no cuentes también ahí). El botón ← (`data-back`) llama `anotar(A, "salio")` antes de `stop()`.
+2. **`startGame`**: justo antes de `go()` (cuando ya dijo "¡Ya!"), `A.inicio = Date.now(); A.aciertos = A.errores = 0; A.anotado = false;`.
+3. **`finish`**: primera línea, `anotar(A, "termino", right, total);`.
+4. **`gameOver`**: primera línea, `anotar(A, "perdio");`.
+5. **`gamesMenu`**: `jugando = g;` antes de `g.run(…)`, y `jugando = { id: "boss", hab: "" };` antes de `bossGame(…)`.
+
+Por eso, en los juegos propios, cada acierto avisa con `A.praise()` o `A.say(…, "ok")` y cada error con `A.oops()` o `A.say(…, "bad")`; no uses esos dos ánimos para otras cosas. Nada de esto se muestra en pantalla.
+
 ## 5. Lo que debe tener la página
 
 **Encabezado:** materia, título corto, grado, duración y "Para {nombre}". Al abrir por primera vez, pide el nombre del niño(a) y úsalo en todo con `{nombre}`.
 
 **5 pestañas fijas arriba** (con íconos, que quepan en 390 px):
 
-1. **📝 Aprender:** la foto de la tarea (se toca para verla grande), botones para saltar a cada tema y una sección por tema: explicación corta, ejemplos, recuadros de "Puedes decir: «…»" para el papá y **una ayuda interactiva por tema** (convertidor, barra que abre un ángulo, tabla que habla al tocarla…). Termina con "🎮 ¡Ahora a jugar!".
+1. **📝 Aprender:** la foto de la tarea (se toca para verla grande), botones para saltar a cada tema y una sección por tema: **📌 Lo importante** (una frase), explicación en bloques cortos con 🔊, ejemplos, **💡 Truco**, recuadros de "Puedes decir: «…»" para el papá y **una ayuda interactiva por tema** (convertidor, barra que abre un ángulo, tabla que habla al tocarla…). Termina con "🎮 ¡Ahora a jugar!". Reglas de texto y trucos más abajo.
 2. **Pestaña del tema:** 🔊 Palabras (vocabulario que se escucha al tocarlo) o 📖 Libro (ficha del libro, sus capítulos, partes del cuento y diario de lectura guardado en el celular) cuando hay una obra.
 3. **🎮 Juegos:** selector **😊 Normal (por defecto) / 🔥 Difícil**, 🏆 Desafíos finales (Jefe final y Simulacro) y juegos agrupados por tema.
 4. **✏️ Ficha:** 10 ejercicios que se revisan solos, con botones para ver respuestas y pedir otra ficha nueva.
@@ -94,6 +124,41 @@ Los juegos reutilizables llaman estas funciones. Mantén los mismos nombres y fo
 4. **👨‍👩‍👧 Reto en familia** (`familiaS`): dos jugadores en el mismo celular, por turnos ("Pásale el celular a papá o mamá"). El adulto recibe preguntas de difícil y el niño de normal; marcador y celebración al final. Las estrellas son por las respuestas del niño. Mete a los papás en el juego.
 5. **🏃 Corre y salta** (`saltaS`): un personaje corre solo y llegan 3 puertas o carriles con respuestas; el niño toca el carril correcto para saltar. Normal más lento; difícil más rápido y con obstáculos. Solo CSS y `requestAnimationFrame`, sin librerías.
 6. **🧪 El laboratorio** (`labS`): construir la respuesta arrastrando piezas (la fracción en la pizza, las palabras de la oración, los pasos del proceso, las partes del circuito) y tocar "¡Probar!". Si está mal, muestra qué pieza sobra o falta.
+
+**🧠 Cada juego entrena una habilidad (sin que el niño lo sepa):** cada juego de `GROUPS` lleva el campo `hab` con una de estas 7 (escritas así, sin tildes):
+
+| `hab` | Qué entrena | Juegos típicos |
+|---|---|---|
+| `memoria` | recordar y relacionar | Memoria, Une las parejas, Arma el planeta (ubicar partes) |
+| `atencion` | fijarse en detalles, ignorar lo que sobra | Sopa de letras, Lluvia de cosas, Toca la parte, 🕵️ Lulo se equivocó |
+| `logica` | clasificar, ordenar, deducir | ¿A dónde va?, ordenar pasos o secuencias, 🔐 Escape room, balanza, 🧪 El laboratorio |
+| `rapidez` | responder bien y rápido | Revienta el globo, Atrapa el topo, Rayo veloz |
+| `lenguaje` | leer, comprender, formar palabras | Arma la palabra, 🗺️ La aventura, completar oraciones |
+| `coordinacion` | mano y ojo, precisión y tiempo | 🏃 Corre y salta, arrastrar con precisión (transportador, construir ángulos) |
+| `creatividad` | inventar o construir algo propio | dibujar, inventar una oración o un problema, armar con varias respuestas válidas |
+
+- Escoge la habilidad que **más** usa el juego (lo que hace el dedo y la cabeza, no el tema). 👨‍👩‍👧 Reto en familia lleva la del tipo de reto que trae.
+- En cada lección, **al menos 4 habilidades distintas** y máximo 3 juegos de la misma.
+- La habilidad **nunca se muestra**: ni en la tarjeta, ni en `INFO`, ni en la descripción. El niño solo juega; la app la lee de `GAMES` para el equipo y los papás.
+
+**💡 Trucos para aprender:** cada tema lleva 1 o 2 tarjetas "💡 Truco" en Aprender: un atajo o una regla para recordar ("×10: a un número entero ponle un 0 al final: 25 × 10 = 250", "antes de p y b siempre va m", la tabla del 9 con los dedos, una frase para recordar los planetas en orden).
+- Solo trucos que **siempre** se cumplan en el nivel del niño. Si tienen excepciones, dilas ("con números con coma, la coma se corre un puesto").
+- En modo normal, la pista de un juego puede ser el truco ("💡 Acuérdate del truco: …").
+- En 💡 Tips, una lista "Trucos para repasar en la casa".
+
+**✂️ Menos texto, sin perder los conceptos:** los niños se aburren con muros de texto, pero las definiciones se quedan completas. Lo que se corta es la palabrería, no el concepto.
+- Cada tema empieza con **📌 Lo importante**: una frase de máximo 20 palabras.
+- La explicación va en **máximo 3 bloques** de unas 35 palabras (3 líneas en celular), cada uno con la palabra clave en negrita y un botón 🔊 que lo lee con `speak()`. Si hay 3 o más cosas, mejor lista que párrafo.
+- Lo demás se enseña con ejemplos, dibujos, tarjetas "¿Sabías que…?" y la ayuda interactiva. Lo extra va en `<details>` "📖 Quiero saber más".
+- En los juegos: instrucciones (`how`) de máximo 2 frases cortas y preguntas de máximo 25 palabras. Lecturas largas solo si la tarea es de comprensión lectora.
+
+**🌈 Siempre en positivo:** el niño tiene que salir con ganas de volver.
+- Nunca le digas "Incorrecto", "Mal", "Error", "Perdiste", "Fallaste" ni "Game over". Sí: "¡Casi!", "¡Uy, por poquito!", "Mira esta pista 💡", "¡Cada intento te hace más fuerte! 💪".
+- Cuando se equivoca, `OOPS` anima y **siempre viene con la pista o la explicación**, no solo "intenta otra vez".
+- `PRAISE` celebra también el esfuerzo: "¡Se nota que practicaste!", "¡Pensaste muy bien, {n}!".
+- Con 1 estrella: "¡Buen comienzo! Cada partida te sale mejor". Si el jefe gana: "¡{villano} se salvó por poquito! Vuelve más fuerte 💪".
+- En la ficha y el simulacro, lo que quedó mal se marca con 🔸 "Revisa esta" y su explicación (no con ❌). La escala de notas se queda igual, pero debajo de la nota va una frase de ánimo según el nivel; en Bajo: "¡Vas en camino! Repasa las que se te escaparon y vuelve a intentarlo 💪".
+- En los Tips para el papá, igual: nada de "débil" ni "le va mal"; sí "su próximo reto", "está fortaleciendo".
 
 **🔁 Las que fallaste vuelven:** guarda en el navegador las preguntas que el niño falla (clave `ld-<tema>-fallas`, máximo 20, con try/catch). `mcPool` y `tfPool` mezclan primero hasta 2 de esas en cada partida, y una pregunta sale de la lista cuando la acierta 2 veces. Así lo que le costó reaparece hasta que lo domina.
 
@@ -117,10 +182,13 @@ Cada juego tiene:
 3. Prueba con Playwright en 390×844: todas las pestañas, **cada juego en normal y en difícil**, jefe final y simulacro, sin `pageerror`. Comprueba que `document.documentElement.scrollWidth` sea 390. Si algo se sale, usa `grid-template-columns: minmax(0,1fr)`.
 4. Mira las capturas y corrige textos cortados, superposiciones y títulos del HUD partidos.
 5. Cuenta los juegos: máximo la mitad de "pregunta y elige", al menos 2 del catálogo y, si hubo perfil, que no se repitan más de 2 de sus últimas lecciones. Prueba "Las que fallaste vuelven": falla una pregunta, empieza otra partida y comprueba que reaparece.
+6. Habilidades: cada juego de `GAMES` tiene `hab` de la tabla, hay al menos 4 distintas y ninguna aparece en pantalla.
+7. Registro: con Playwright termina un juego y sal de otro a la mitad con ←. `localStorage["ld-" + KEY + "-registro"]` debe tener dos entradas con `j`, `h`, `ok`, `n`, `err`, `seg` y `fin` ("termino" y "salio").
+8. Texto y tono: ningún bloque de Aprender pasa de unas 40 palabras, cada tema tiene 📌 Lo importante y al menos un 💡 Truco, y busca en todo el HTML que no queden "Incorrecto", "Perdiste", "Fallaste" ni "Game over".
 
 ## 7. Entrega
 
 - Publica un **artifact nuevo** por cada tarea (un tema = una página) y envía también el archivo `.html`.
 - Si el usuario pide cambios, republica la misma ruta para conservar el enlace.
-- Responde en español, corto y claro: una línea de qué se hizo; qué trae cada pestaña; la lista de juegos con una frase cada uno; los desafíos; y avisos honestos (qué no se pudo verificar, qué conviene hacer con materiales reales, como un transportador). Termina con una sugerencia útil y las fuentes si hubo búsqueda.
+- Responde en español, corto y claro: una línea de qué se hizo; qué trae cada pestaña; la lista de juegos con una frase cada uno y su habilidad entre paréntesis (eso es para el equipo; en la página no aparece); los desafíos; y avisos honestos (qué no se pudo verificar, qué conviene hacer con materiales reales, como un transportador). Termina con una sugerencia útil y las fuentes si hubo búsqueda.
 - No pongas WhatsApp ni pidas cosas por fuera de la página. El usuario no lo quiere.

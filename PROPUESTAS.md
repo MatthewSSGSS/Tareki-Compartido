@@ -1,7 +1,7 @@
 # Propuestas para Learnground
 
 Ideas para mejorar la app y las lecciones. Muchas vienen de una mamá que usa Learnground; otras salieron de conversarlas.
-Están en el orden en que proponemos hacerlas. Cuando una se termine, marquen la casilla `[x]` y anoten la fecha.
+Están en el orden en que las vamos a hacer (7 pasos): cada paso prepara el siguiente. No abrimos dos pasos grandes a la vez. Cuando una se termine, marquen la casilla `[x]` y anoten la fecha.
 
 **Dónde vive cada cosa**
 - 🧩 **Skill**: las lecciones HTML las hace la skill `lesson-maker` (antes `leccion-divertida`; está en `.claude/skills/lesson-maker`). Cambiar la skill mejora las lecciones *nuevas*.
@@ -20,93 +20,81 @@ Están en el orden en que proponemos hacerlas. Cuando una se termine, marquen la
 
 ---
 
-## Fase 1: rápido y con impacto inmediato
+## Paso 1: mejorar la skill · 🧩 *(en curso)*
+Va primero porque cada lección hecha desde ese día ya guarda los datos por habilidad, y los informes del paso 5 necesitan semanas de datos.
 
-- [ ] **Guía "Cómo usar Learnground" para papás** (idea 13) · 📱
-  Un botón en Papás que explica cada función (lecciones, racha, medallas, buzón, chat, pedidos, pagos, avisos) y cómo trabaja el equipo.
-- [ ] **Trucos para aprender** (idea 16) · 🧩
-  Tarjetas "💡 Truco" en cada tema: "×10 = ponle un 0", "la prueba del 9", reglas para recordar…
-- [ ] **Menos texto, mejor repartido** (idea 6) · 🧩
-  Párrafos cortos en tarjetas, "¿Sabías que…?", y un botón 🔊 que lee en voz alta. Mantener los conceptos, pero sin muros de texto.
-- [ ] **Tono optimista en las lecciones** · 🧩
-  Aplicar la regla 1 en todos los mensajes de la skill.
-- [ ] **Habilidad escondida y registro de intentos en cada juego** (ideas 3 y 4) · 🧩
-  Cada juego de la lección lleva su habilidad (`hab`) y anota cada partida (aciertos, errores, tiempo, fecha). Viaja solo a la cuenta del niño como el resto del progreso: no necesita SQL. Para las lecciones viejas, la app deduce la habilidad por el nombre del juego.
-- [ ] **Los papás llenan los gustos del niño** · 📱 🗄️
-  Campo "Gustos e intereses" en el perfil del niño. Hoy lo escribe el equipo en "📋 Perfil para la próxima lección" y solo queda en ese dispositivo.
-- [ ] **Suavizar las frases actuales para papás** · 📱
-  Hoy hay textos como "Bajó de 80 a 60", "el tema más débil", "puede estar adivinando" o "Reforzar:". Pasarlos a la regla 2.
+- [x] **Habilidad escondida y registro de partidas** (ideas 3 y 4): cada juego lleva `hab`. Cada partida queda en `ld-<KEY>-registro` con aciertos, errores, tiempo, modo y cómo terminó (`termino`, `perdio` o `salio`). Viaja solo a la cuenta del niño, sin SQL. La app ya lee la `hab` de cada juego. *(17-oct-2026, probado con Playwright)*
+- [x] **Trucos para aprender** (idea 16): 1 o 2 tarjetas "💡 Truco" por tema, como pista en normal y en los Tips.
+- [x] **Menos texto, mejor repartido** (idea 6): "📌 Lo importante", bloques de máximo 3 líneas con 🔊 y lo extra en "📖 Quiero saber más".
+- [x] **Tono optimista en las lecciones**: reglas para `OOPS`, `PRAISE`, finales, jefe, ficha y simulacro.
+- [ ] **Subir la skill nueva a claude.ai** y hacer una lección de prueba.
 
-## Fase 2: juegos de verdad y motivación
+## Paso 2: arreglos rápidos en la app · 📱
+- [ ] **Suavizar las frases actuales para papás**: "Bajó de 80 a 60", "el tema más débil", "puede estar adivinando", "Reforzar:" → regla 2.
+- [ ] **Guía "Cómo usar Learnground" para papás** (idea 13): botón en Papás que explica cada función (lecciones, racha, medallas, buzón, chat, pedidos, pagos, avisos) y cómo trabaja el equipo.
+- [ ] **Los papás llenan los gustos del niño** · 🗄️: campo "Gustos e intereses" en el perfil del niño. Hoy lo escribe el equipo en "📋 Perfil para la próxima lección" y solo queda en ese dispositivo.
 
-- [ ] **Motor de juegos** (idea 1) · 📱 🧩
-  Los juegos viven una sola vez en la app (`juegos/motor-v1.js`) y la lección solo trae los datos (preguntas, parejas, enemigos). Así:
+## Paso 3: avatar, recompensas y logros · 📱 🗄️
+Va antes de los juegos grandes porque **el protagonista de esos juegos es el avatar**.
+- [ ] **Creador de avatar** (idea 10): el niño arma su personaje (animal, color, sombrero, arma, capa…).
+- [ ] **Recompensas**: al terminar lecciones y lograr metas desbloquea accesorios, y se le ven puestos.
+- [ ] **Logros más atractivos** (idea 12): medallas con niveles (bronce, plata, oro), ligadas a las recompensas. Que no sea solo la racha.
+
+## Paso 4: motor de juegos con varios modelos · 📱 🧩
+- [ ] **Motor de juegos** (idea 1): los juegos viven una sola vez en la app (`juegos/motor-v1.js`) y la lección solo trae los datos (preguntas, parejas, enemigos, escenas). Así:
   - las lecciones pesan mucho menos y Claude no se corta al escribirlas (hoy una lección pesa ~250 KB);
-  - los juegos pueden ser más elaborados y salen siempre bien;
+  - los juegos pueden ser mucho más elaborados y salen siempre bien;
   - el registro por habilidad es igual en todos.
 
-  Juegos de arranque:
-  - parejas de memoria;
-  - unir palabras con imágenes;
-  - ordenar;
-  - "corre y salta";
-  - un **jefe final que ataca de verdad**.
-
   Versionado (`v1`, `v2`…) para no dañar lecciones viejas.
-- [ ] **RPG por turnos, tipo Final Fantasy pequeño** (idea nueva) · 📱 🧩 🗄️
-  Pelear es responder:
-  - ⚔️ **Atacar:** pregunta fácil.
-  - ✨ **Magia:** pregunta difícil, con elementos 🔥💧⚡.
-  - 🧪 **Objetos:** pociones ganadas en lecciones.
-  - 🛡️ **Defender:** cuando el enemigo carga un ataque fuerte.
+- [ ] **Modelos de juego**, todos con el avatar como protagonista. **El RPG es un ejemplo, no el único**: la idea es tener varios modelos y que se vayan rotando.
+  - ⚔️ **RPG por turnos (tipo Final Fantasy pequeño).** Pelear es responder:
+    - ⚔️ **Atacar:** pregunta fácil.
+    - ✨ **Magia:** pregunta difícil, con elementos 🔥💧⚡.
+    - 🧪 **Objetos:** ganados en lecciones.
+    - 🛡️ **Defender:** cuando el enemigo carga un ataque fuerte.
 
-  Los enemigos salen del tema de la lección y cada uno tiene una debilidad que hay que recordar (memoria y lógica). Mapa de mundo por capítulos y el héroe sube de nivel entre lecciones.
+    Los enemigos salen del tema y cada uno tiene una debilidad que hay que recordar. Hay mapa de mundo por capítulos y el héroe sube de nivel entre lecciones.
+  - 🃏 Memoria, 🔗 unir palabras con imágenes, 🔢 ordenar.
+  - 🏃 Plataformas, "corre y salta".
+  - 👾 **Jefe final que ataca de verdad** (con fases, ataques y estrategia).
+  - Otros por definir: aventura por escenas, escape room, simulación ("tu tiendita", "tu granja"), carreras…
+- [ ] **La skill aprende a usar el motor**: escribe solo los datos de cada modelo.
+- Se hace por partes y cada parte se prueba antes de seguir (por ejemplo: primero una batalla del RPG, luego niveles y objetos, luego el mapa).
 
-  Por partes:
-  1. Prototipo de una batalla.
-  2. Nivel, objetos y varios enemigos.
-  3. Mapa y capítulos.
-  4. La skill escribe los enemigos y las preguntas.
-- [ ] **Creador de avatar y recompensas** (idea 10) · 📱 🗄️
-  El niño arma su personaje (animal, color, sombrero, arma, capa…). **El protagonista del RPG es ese avatar.** Al terminar lecciones y lograr metas desbloquea accesorios, y se le ven puestos.
-- [ ] **Logros más atractivos** (idea 12) · 📱
-  Medallas con niveles (bronce, plata, oro), ligadas a las recompensas del avatar. Que no sea solo la racha.
-
-## Fase 3: análisis e informes
-
-- [ ] **Análisis por habilidad para el equipo** (idea 4) · 📱
-  Errores por juego y por habilidad, tiempos, evolución. Solo lo ve el equipo.
-- [ ] **Sección "🌟 Cómo va [niño]" para papás** (idea 5) · 📱
-  Incluye:
+## Paso 5: análisis e informes · 📱
+Para entonces ya habrá un mes o más de datos del paso 1.
+- [ ] **Análisis por habilidad para el equipo** (idea 4): errores por juego y por habilidad, tiempos, partidas abandonadas y evolución. Solo lo ve el equipo.
+- [ ] **Sección "🌟 Cómo va [niño]" para papás** (idea 5): incluye
   - ✨ en qué se destaca;
   - 🌱 su próximo reto, con una **rutina de 10 minutos** para la casa;
   - 💬 una frase para animarlo.
 
-  Las rutinas salen de una biblioteca por habilidad que escribe el equipo. Si todavía no hay suficientes datos: "Todavía estamos conociendo a…".
-- [ ] **Informe semanal** (idea 5) · 📱
-  Aviso los domingos: "📬 El informe semanal está listo".
-- [ ] **Modo padre e hijo** (idea 11) · 🧩 📱
-  Retos que se juegan con mamá o papá (la skill ya tiene "👨‍👩‍👧 Reto en familia"). Falta que den **recompensas mejores** en la app.
+  Si aún no hay datos: "Todavía estamos conociendo a…".
+- [ ] **Biblioteca de rutinas por habilidad**: la redacta Claude y **el equipo la revisa y aprueba** (son las que leen los papás).
+- [ ] **Informe semanal** (idea 5): aviso los domingos, "📬 El informe semanal está listo".
+- [ ] **Modo padre e hijo** (idea 11): retos con mamá o papá (la skill ya tiene "👨‍👩‍👧 Reto en familia") que den **recompensas mejores** en la app.
 
-## Fase 4: más allá de las lecciones
+## Paso 6: más allá de las lecciones · 📱
+- [ ] **Pausas activas** (idea 2): estiramientos con videos de YouTube elegidos por el equipo (modo sin cookies) y/o rutinas animadas propias, con temporizador.
+- [ ] **Modo arte** (idea 8): lienzo para dibujar con colores y sellos; el dibujo se guarda o se le manda al equipo.
+- [ ] **Programación para niños** (idea 15): "lleva al delfín a la meta" con flechas, luego bucles ("repite 3 veces") y condiciones.
+- [ ] **Más imágenes y animaciones** (ideas 7 y 14): se van sumando en cada cosa nueva (respetando "reducir movimiento").
 
-- [ ] **Pausas activas** (idea 2) · 📱
-  Sección con estiramientos: videos de YouTube elegidos por el equipo (modo sin cookies) y/o rutinas animadas propias, con temporizador.
-- [ ] **Modo arte** (idea 8) · 📱
-  Lienzo para dibujar con colores y sellos; el dibujo se guarda o se le manda al equipo.
-- [ ] **Programación para niños** (idea 15) · 📱 🧩
-  "Lleva al delfín a la meta" con flechas, luego bucles ("repite 3 veces") y condiciones.
-- [ ] **Más imágenes y animaciones** (ideas 7 y 14) · 📱 🧩
-  Se va sumando en cada cosa nueva (las animaciones respetan "reducir movimiento").
-
-## Fase 5: lo más difícil
-
-- [ ] **Comandos de voz** (idea 7) · 📱
-  Pronunciar en inglés, leer sílabas en transición y primero. Funciona en Chrome y iPhone, no en todos los navegadores. El audio pasa por Google o Apple. Va en la app, no en la lección (las lecciones corren aisladas por seguridad).
-- [ ] **Juegos con cámara, tipo Kinect** (idea 9) · 📱
-  Detectar las manos con MediaPipe (gratis, corre en el celular, el video no sale del dispositivo) para mover piezas con las manos. No todo celular lo mueve bien: probar en equipos sencillos.
+## Paso 7: lo más difícil · 📱
+- [ ] **Comandos de voz** (idea 7): pronunciar en inglés y leer sílabas en transición y primero.
+  - Funciona en Chrome y en iPhone, no en todos los navegadores.
+  - El audio pasa por Google o Apple.
+  - Va en la app, no en la lección, porque las lecciones corren aisladas.
+- [ ] **Juegos con cámara, tipo Kinect** (idea 9): detectar las manos con MediaPipe para mover piezas.
+  - Es gratis y corre en el celular; el video no sale del dispositivo.
+  - Hay que probarlo en celulares sencillos.
 
 ---
+
+## Recomendaciones
+- **Después del paso 3, mostrarle la app a la mamá que dio las ideas.** Su opinión puede cambiar el orden de lo que sigue.
+- **Terminar un paso**, que las familias lo usen y luego seguir.
 
 ## Más ideas para considerar
 

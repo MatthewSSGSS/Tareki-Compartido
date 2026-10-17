@@ -47,7 +47,7 @@ const SCRIPT_META = `<script>(function(){
     titulo: (h1 && h1.textContent.trim()) || document.title,
     clave: g(function(){ return KEY; }),
     temas: limpio(g(function(){ return FTOP; })),
-    juegos: g(function(){ return GAMES.map(function(x){ return { id: x.id, nombre: x.name, emoji: x.emoji, f: x.f }; }); }),
+    juegos: g(function(){ return GAMES.map(function(x){ return { id: x.id, nombre: x.name, emoji: x.emoji, f: x.f, hab: x.hab || undefined }; }); }),
     tips: limpio(g(function(){ return TIPS; })),
     jefe: g(function(){ return typeof bossGame === "function"; }) || false,
     simulacro: g(function(){ return typeof examFinal === "function"; }) || false,
