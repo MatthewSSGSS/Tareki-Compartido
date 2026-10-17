@@ -56,9 +56,19 @@ const SCRIPT_META = `<script>(function(){
   try { parent.postMessage({ tareki: "meta", meta: meta }, "*"); } catch (e) {}
 })();<\/script>`;
 
-/** Arma el HTML final: almacén al principio, lector de datos al final. */
-export function prepararHtml(html, datos, nombre = '') {
-  const almacen = scriptAlmacen(datos, nombre);
+// Motor de juegos grandes (nave, bloques…): la lección solo manda los datos y llama LG.jugar().
+// Va con dirección completa porque la lección corre en un srcdoc sin origen propio.
+const MOTOR = new URL('../juegos/motor-v1.js', import.meta.url).href;
+
+/** El niño para los juegos grandes (su animal y su color son el héroe) y el motor. */
+function scriptMotor(nino) {
+  const n = { nombre: nino?.nombre || '', avatar: nino?.avatar || '', color: nino?.color || '' };
+  return `<script>window.LG_NINO = ${jsonSeguro(n)};<\/script><script src="${MOTOR}"><\/script>`;
+}
+
+/** Arma el HTML final: almacén y motor al principio, lector de datos al final. */
+export function prepararHtml(html, datos, nombre = '', nino = null) {
+  const almacen = scriptAlmacen(datos, nombre) + scriptMotor({ nombre, ...nino });
   let out = /<head(\s[^>]*)?>/i.test(html) ? html.replace(/<head(\s[^>]*)?>/i, (m) => m + almacen) : almacen + html;
   const fin = out.toLowerCase().lastIndexOf('</body>');
   out = fin >= 0 ? out.slice(0, fin) + SCRIPT_META + out.slice(fin) : out + SCRIPT_META;
@@ -71,10 +81,10 @@ export const esClaveDeLogro = (k) => /progress|progreso|hist/i.test(k);
 /**
  * Monta la lección en un iframe.
  * @param {HTMLIFrameElement} iframe
- * @param {{html:string, datos:object, nombre?:string, alCambiar:(datos:object)=>void, alMeta:(meta:object)=>void}} o
+ * @param {{html:string, datos:object, nombre?:string, nino?:{avatar?:string, color?:string}, alCambiar:(datos:object)=>void, alMeta:(meta:object)=>void}} o
  * @returns {() => void} función para desconectar
  */
-export function montarLeccion(iframe, { html, datos, nombre, alCambiar, alMeta }) {
+export function montarLeccion(iframe, { html, datos, nombre, nino, alCambiar, alMeta }) {
   // Sin allow-same-origin: la lección queda en un origen aparte y no puede leer la app.
   iframe.setAttribute('sandbox', 'allow-scripts allow-modals allow-popups allow-downloads');
   iframe.setAttribute('allow', 'autoplay; fullscreen');
@@ -88,7 +98,7 @@ export function montarLeccion(iframe, { html, datos, nombre, alCambiar, alMeta }
     if (e.data.tareki === 'meta' && e.data.meta && typeof e.data.meta === 'object') alMeta(e.data.meta);
   };
   window.addEventListener('message', escuchar);
-  iframe.srcdoc = prepararHtml(html, datos, nombre);
+  iframe.srcdoc = prepararHtml(html, datos, nombre, nino);
   return () => window.removeEventListener('message', escuchar);
 }
 

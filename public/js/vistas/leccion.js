@@ -115,6 +115,7 @@ export async function render(root, ctx) {
     html,
     datos: est.datos,
     nombre: nino.nombre,
+    nino: { avatar: nino.avatar, color: nino.color },
     alCambiar,
     alMeta: (mt) => { meta = mt; pintarLado(); datos.guardarMeta(id, mt).catch(() => {}); },
   });

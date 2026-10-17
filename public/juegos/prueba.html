@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Juegos de prueba · Learnground</title>
+<link rel="icon" href="../icons/favicon-64.png" type="image/png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap">
+<style>
+  :root { --bg:#eaf6ff; --ink:#1f2544; --card:#fff; --muted:#4a5075; --line:#1f2544; --soft:#f3f8ff;
+    --f-head:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --f-body:"Nunito","Trebuchet MS",system-ui,sans-serif; color-scheme:light; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121a33; --ink:#f2f4ff; --card:#1f2a4d; --muted:#b9c0e6; --line:#0a0f22; --soft:#26335c; color-scheme:dark; } }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-weight:700; font-size:17px; line-height:1.45 }
+  .wrap { max-width:640px; margin:0 auto; padding:16px 16px 48px }
+  h1, h2 { font-family:var(--f-head); font-weight:800; line-height:1.1; margin:0 }
+  h1 { font-size:1.7em } h2 { font-size:1.2em; margin-bottom:8px }
+  .card { background:var(--card); border:3px solid var(--line); border-radius:22px; box-shadow:4px 4px 0 var(--line); padding:14px 16px; margin-top:14px }
+  .suave { color:var(--muted); font-size:.92em; margin:4px 0 0 }
+  .fila { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px }
+  .op { border:3px solid var(--line); border-radius:14px; background:var(--soft); color:var(--ink); font:inherit; font-size:1.3em; min-width:46px; height:46px; cursor:pointer; padding:0 8px }
+  .op[aria-pressed="true"] { background:#ffcf3f; color:#1f2544 }
+  .color { width:46px; border-radius:50% }
+  .color[aria-pressed="true"] { outline:4px solid var(--ink); outline-offset:2px }
+  .jugar { display:block; width:100%; margin-top:14px; font-family:var(--f-head); font-weight:800; font-size:1.25em; background:#ff6b9a; color:#fff;
+    border:3px solid var(--line); border-radius:999px; padding:12px; box-shadow:4px 4px 0 var(--line); cursor:pointer }
+  #juego { margin-top:14px }
+  pre { white-space:pre-wrap; word-break:break-word; background:var(--soft); border-radius:12px; padding:10px; font-size:.78em; margin:6px 0 0; max-height:260px; overflow:auto }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎮 Juegos de prueba</h1>
+  <p class="suave">Página para probar los juegos grandes de Learnground antes de usarlos en las lecciones. Los datos son de ejemplo (tablas de multiplicar).</p>
+
+  <div class="card" id="ajustes">
+    <h2>Tu héroe</h2>
+    <div class="fila" id="animales"></div>
+    <div class="fila" id="colores"></div>
+    <h2 style="margin-top:14px">Dificultad</h2>
+    <div class="fila"><button class="op" data-d="normal" aria-pressed="true">😊 Normal</button><button class="op" data-d="dificil" aria-pressed="false">🔥 Difícil</button></div>
+    <button class="jugar" data-juego="nave">🚀 Jugar la nave</button>
+    <button class="jugar" data-juego="bloques" style="background:#4f7cff">🧱 Jugar bloques</button>
+    <button class="jugar" data-juego="plataformas" style="background:#35b862">🍄 Jugar plataformas</button>
+    <button class="jugar" data-juego="culebrita" style="background:#1f6644">🐍 Jugar culebrita</button>
+    <button class="jugar" data-juego="ladrillos" style="background:#ff9a4d">💥 Jugar rompe-ladrillos</button>
+    <button class="jugar" data-juego="rpg" style="background:#6a4fbf">⚔️ Jugar la batalla (RPG)</button>
+  </div>
+
+  <div id="juego"></div>
+
+  <div class="card">
+    <h2>📋 Lo que queda registrado</h2>
+    <p class="suave">Estrellas de la última partida: <b id="estrellas">—</b></p>
+    <pre id="registro">Todavía no hay partidas.</pre>
+    <button class="op" id="borrar" style="font-size:.9em; margin-top:8px">🗑️ Borrar registro</button>
+  </div>
+</div>
+
+<script src="motor-v1.js"></script>
+<script>
+  const ANIMALES = ["🐬", "🦊", "🐯", "🐼", "🐸", "🦁", "🦖", "🐱"];
+  const COLORES = ["#ff6b9a", "#59c3ff", "#35b862", "#ffcf3f", "#a77bff", "#ff9a4d"];
+  const REG = "lg-prueba-registro";
+  let animal = "🐬", color = "#ff6b9a", dificil = false;
+
+  const $ = (id) => document.getElementById(id);
+  $("animales").innerHTML = ANIMALES.map((a) => `<button class="op" data-a="${a}" aria-pressed="${a === animal}">${a}</button>`).join("");
+  $("colores").innerHTML = COLORES.map((c) => `<button class="op color" data-c="${c}" style="background:${c}" aria-label="Color" aria-pressed="${c === color}"></button>`).join("");
+  const marcar = (sel, attr, val) => document.querySelectorAll(sel).forEach((b) => b.setAttribute("aria-pressed", b.dataset[attr] === val));
+  document.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => { animal = b.dataset.a; marcar("[data-a]", "a", animal); });
+  document.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => { color = b.dataset.c; marcar("[data-c]", "c", color); });
+  document.querySelectorAll("[data-d]").forEach((b) => b.onclick = () => { dificil = b.dataset.d === "dificil"; marcar("[data-d]", "d", b.dataset.d); });
+
+  // ---------- Datos de ejemplo (así los mandaría una lección) ----------
+  const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = (a) => a[Math.random() * a.length | 0];
+  const shuffle = (a) => a.map((x) => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map((p) => p[1]);
+  function preguntaMult() {
+    const a = rnd(2, 9), b = rnd(2, 9), p = a * b;
+    const malas = [...new Set([p + a, p - b, p + b, a + b, p + 10].filter((x) => x > 0 && x !== p))];
+    return { pregunta: `¿Cuánto es ${a} × ${b}?`, opciones: [String(p), ...shuffle(malas).slice(0, 3).map(String)], correcta: 0, explicacion: `${a} × ${b} = ${p}.` };
+  }
+  const DATOS_NAVE = {
+    titulo: "🚀 La nave de las tablas",
+    rondas: [
+      { consigna: "Dispara a los resultados de la tabla del 3", bien: () => String(3 * rnd(1, 10)),
+        mal: () => { let x; do { x = rnd(2, 31); } while (x % 3 === 0); return String(x); }, explica: "La tabla del 3: 3, 6, 9, 12, 15, 18…" },
+      { consigna: "Dispara a los números pares", bien: () => String(2 * rnd(1, 25)), mal: () => String(2 * rnd(0, 24) + 1),
+        explica: "Los pares terminan en 0, 2, 4, 6 u 8." },
+      { consigna: "Dispara a las cuentas que dan 24", bien: ["3 × 8", "8 × 3", "4 × 6", "6 × 4", "2 × 12", "12 × 2"],
+        mal: () => { let a, b; do { a = rnd(2, 9); b = rnd(2, 9); } while (a * b === 24); return `${a} × ${b}`; }, explica: "Haz la cuenta en tu cabeza: 4 × 6 = 24." },
+    ],
+    jefe: { nombre: "Olvidón", emoji: "👾", preguntas: () => Array.from({ length: 8 }, preguntaMult) },
+  };
+  const DATOS = {
+    nave: DATOS_NAVE,
+    bloques: { titulo: "🧱 Bloques de las tablas", preguntas: () => Array.from({ length: 8 }, preguntaMult) },
+    plataformas: { titulo: "🍄 El camino de las tablas", preguntas: () => Array.from({ length: 8 }, preguntaMult) },
+    culebrita: { titulo: "🐍 La culebrita de las tablas", rondas: DATOS_NAVE.rondas.slice(0, 2).map((r) => ({ ...r, consigna: r.consigna.replace("Dispara a", "Cómete") })) },
+    ladrillos: { titulo: "💥 Rompe-ladrillos de las tablas", preguntas: () => Array.from({ length: 8 }, preguntaMult) },
+    rpg: {
+      titulo: "⚔️ La batalla de las tablas",
+      preguntas: () => Array.from({ length: 8 }, preguntaMult),
+      enemigos: [{ nombre: "Borrón", emoji: "👻" }, { nombre: "Enredón", emoji: "🐙" }],
+      jefe: { nombre: "Olvidón", emoji: "👾" },
+    },
+  };
+  const HABILIDAD = { nave: "atencion", bloques: "logica", plataformas: "coordinacion", culebrita: "atencion", ladrillos: "coordinacion", rpg: "logica" };
+
+  function pintarRegistro() {
+    let r = [];
+    try { r = JSON.parse(localStorage.getItem(REG) || "[]"); } catch (e) {}
+    $("registro").textContent = r.length ? r.slice(-8).reverse().map((x) => JSON.stringify(x)).join("\n") : "Todavía no hay partidas.";
+  }
+  $("borrar").onclick = () => { try { localStorage.removeItem(REG); } catch (e) {} pintarRegistro(); };
+
+  function volver() { $("juego").innerHTML = ""; $("ajustes").scrollIntoView({ behavior: "smooth" }); pintarRegistro(); }
+  document.querySelectorAll("[data-juego]").forEach((b) => b.onclick = () => {
+    const tipo = b.dataset.juego;
+    LG.jugar(tipo, $("juego"), DATOS[tipo], {
+      id: tipo, hab: HABILIDAD[tipo], dificil, nombre: "campeón", heroe: { emoji: animal, color },
+      registro: REG,
+      alTerminar: (n) => { $("estrellas").textContent = "⭐".repeat(n); pintarRegistro(); },
+      alSalir: volver,
+      alCambiarDificultad: (d) => { dificil = d === "dificil"; marcar("[data-d]", "d", d); },
+    });
+  });
+  pintarRegistro();
+</script>
+</body>
+</html>

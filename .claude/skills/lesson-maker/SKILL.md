@@ -158,7 +158,7 @@ Por eso, en los juegos propios, cada acierto avisa con `A.praise()` o `A.say(…
 - `PRAISE` celebra también el esfuerzo: "¡Se nota que practicaste!", "¡Pensaste muy bien, {n}!".
 - Con 1 estrella: "¡Buen comienzo! Cada partida te sale mejor". Si el jefe gana: "¡{villano} se salvó por poquito! Vuelve más fuerte 💪".
 - En la ficha y el simulacro, lo que quedó mal se marca con 🔸 "Revisa esta" y su explicación (no con ❌). La escala de notas se queda igual, pero debajo de la nota va una frase de ánimo según el nivel; en Bajo: "¡Vas en camino! Repasa las que se te escaparon y vuelve a intentarlo 💪".
-- En los Tips para el papá, igual: nada de "débil" ni "le va mal"; sí "su próximo reto", "está fortaleciendo".
+- En los Tips y en el reporte de la ficha para el papá, igual: nada de "débil", "le va mal", "Bajó X puntos" ni "puede estar adivinando"; sí "su próximo reto", "está fortaleciendo", "Esta ficha trajo retos nuevos: repasen juntos su próximo reto" e "Invítenlo a leer en voz alta antes de responder".
 
 **🔁 Las que fallaste vuelven:** guarda en el navegador las preguntas que el niño falla (clave `ld-<tema>-fallas`, máximo 20, con try/catch). `mcPool` y `tfPool` mezclan primero hasta 2 de esas en cada partida, y una pregunta sale de la lista cuando la acierta 2 veces. Así lo que le costó reaparece hasta que lo domina.
 
