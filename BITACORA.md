@@ -24,6 +24,29 @@ Antes de empezar algo, anótalo aquí (quién, qué y qué archivos va a tocar) 
 
 ---
 
+## 🗺️ Lo que sigue (según `PROPUESTAS.md`)
+
+Pasos 1, 2 y 3 terminados. En orden:
+
+1. **Paso 4: avatar, recompensas y logros** · 🗄️ necesita SQL
+   - El niño arma su personaje (animal, color, sombrero, capa…), y ese es el héroe de los juegos grandes (hoy `LG_NINO` usa su animal y su color).
+   - Gana accesorios al terminar lecciones y lograr metas.
+   - Medallas con niveles (bronce, plata, oro) ligadas a las recompensas.
+   - Después de este paso, mostrarle la app a la mamá que dio las ideas.
+2. **Paso 5: análisis e informes**
+   - Análisis por habilidad para el equipo (con el registro `ld-<KEY>-registro`).
+   - Sección "🌟 Cómo va [niño]" para papás, con rutinas de 10 minutos que el equipo revisa.
+   - Informe semanal por aviso los domingos.
+   - Recompensas extra por jugar con papá o mamá.
+3. **Paso 6:** pausas activas (videos), modo arte (dibujar) y juegos tanda 3 (laberinto, defensa de torres, corta frutas).
+4. **Paso 7:** comandos de voz, juegos con cámara y juegos tanda 4 (ritmo, carreras, programa al robot).
+5. **Pequeños pendientes:**
+   - Agregar a la guía para papás (`js/guia.js`) los juegos "🌟 Aventuras" y el botón "🚪 Salir" del celular.
+   - Revisar la primera lección real hecha con la skill nueva.
+6. **En pausa:** tutor con IA (plan aparte). No empezar sin Mateo.
+
+---
+
 ## ✅ Terminado (lo más nuevo arriba)
 
 ### 2026-10-17 · Mateo + Claude · Versión de prueba completa (`1ac4405`)
