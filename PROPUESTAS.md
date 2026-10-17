@@ -4,7 +4,7 @@ Ideas para mejorar la app y las lecciones. Muchas vienen de una mamá que usa Le
 Están en el orden en que proponemos hacerlas. Cuando una se termine, marquen la casilla `[x]` y anoten la fecha.
 
 **Dónde vive cada cosa**
-- 🧩 **Skill**: las lecciones HTML las hace la skill `leccion-divertida` en claude.ai. Cambiar la skill mejora las lecciones *nuevas*.
+- 🧩 **Skill**: las lecciones HTML las hace la skill `lesson-maker` (antes `leccion-divertida`; está en `.claude/skills/lesson-maker`). Cambiar la skill mejora las lecciones *nuevas*.
 - 📱 **App**: lo que construimos en este repo (fijo para todos los niños).
 - 🗄️ **SQL**: necesita correr un archivo nuevo en Supabase antes de publicar.
 
