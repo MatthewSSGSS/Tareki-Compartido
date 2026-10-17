@@ -12,7 +12,9 @@
 import { promedio, primerNombre, diasEntre, hoy, sumarDias } from './util.js';
 
 const leer = (v) => { if (typeof v !== 'string') return v; try { return JSON.parse(v); } catch { return v; } };
-const esHistorial = (x) => Array.isArray(x) && x.length > 0 && x.every((e) => e && typeof e === 'object' && typeof e.n === 'number' && typeof e.d === 'string');
+// Historial de fichas: [{d, n (nota), s, t, h}]. El registro de partidas ([{j, h, m, ok, n, err, seg, fin, d}])
+// también trae n y d, pero NO es de notas: se reconoce por `j` (el juego) y `fin`.
+const esHistorial = (x) => Array.isArray(x) && x.length > 0 && x.every((e) => e && typeof e === 'object' && typeof e.n === 'number' && typeof e.d === 'string' && !('j' in e) && !('fin' in e));
 
 /**
  * Analiza una lección.

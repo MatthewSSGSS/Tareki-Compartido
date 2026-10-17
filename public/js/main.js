@@ -10,7 +10,8 @@
 // =============================================================================
 
 import * as datos from './datos.js';
-import { MODO_DEMO } from './config.js';
+import { MODO_DEMO, VERSION_PRUEBA } from './config.js';
+import { abrirRecorrido, recorridoVisto } from './recorrido.js';
 import { leerLocal, guardarLocal, esc, primerNombre } from './util.js';
 import { abrirHoja, cerrarHoja, hojaAbierta, aviso, animarPantalla } from './ui.js';
 import * as ingreso from './vistas/ingreso.js';
@@ -121,7 +122,12 @@ async function render() {
   if (u && datos.estaRecuperando()) pedirClaveNueva();
   if (u && !avisosRevisados) { avisosRevisados = true; revisarAvisos(); datos.marcarIngreso().catch(() => {}); registrarEsteDispositivo().catch(() => {}); }
   if (u) contarSinLeer(u);
+  // Versión de prueba: la primera vez, la bienvenida con qué probar
+  if (VERSION_PRUEBA && u?.rol === 'familia' && !def.pantallaCompleta && !recorridoVisto()) abrirRecorrido(ctx);
 }
+
+// "🧭 Qué probar" de la franja de la versión de prueba
+document.addEventListener('click', (e) => { if (e.target.closest('[data-recorrido]')) abrirRecorrido({ navegar, elegirPerfil }); });
 
 /** Puntico con los mensajes de chat sin leer en el menú (Mensajes para el equipo, Papás para la familia). */
 async function contarSinLeer(u) {

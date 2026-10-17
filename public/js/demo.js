@@ -1,12 +1,14 @@
 // =============================================================================
 // demo.js — Datos de prueba para ver la app sin Supabase.
 // Las fechas se arman a partir de hoy para que la racha y las gráficas se vean vivas.
-// La lección de muestra está en demo/fracciones.html (no tiene datos de niños reales).
+// La lección de muestra está en demo/muestra.html (no tiene datos de niños reales): trae
+// todo lo de una lección real, con los juegos grandes del motor, para que la versión de
+// prueba muestre lo que ofrecemos.
 // =============================================================================
 
 import { hoy, sumarDias } from './util.js';
 
-const ARCHIVO_MUESTRA = 'demo/fracciones.html';
+const ARCHIVO_MUESTRA = 'demo/muestra.html';
 
 // "Foto" del cuaderno para el pedido de muestra (un dibujo, no una foto real)
 const FOTO_MUESTRA = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
@@ -22,30 +24,50 @@ const META_MUESTRA = {
   clave: 'fracciones-muestra',
   temas: {
     con: { n: '¿Qué es una fracción?', e: '🍕', game: 'pizza', q: 'Si parto una pizza en 8 pedazos y me como 3, ¿qué fracción me comí?' },
-    equ: { n: 'Fracciones equivalentes', e: '⚖️', game: 'pizza', q: '¿Por qué 1/2 y 2/4 son la misma cantidad?' },
+    equ: { n: 'Fracciones equivalentes', e: '⚖️', game: 'bloques', q: '¿Por qué 1/2 y 2/4 son la misma cantidad?' },
     com: { n: 'Comparar fracciones', e: '🔍', game: 'mayor', q: '¿Qué es más: 1/3 o 1/4 de un chocolate? ¿Por qué?' },
   },
   juegos: [
-    { id: 'pizza', nombre: 'Pizza veloz', emoji: '🍕', f: 'pizzaS' },
-    { id: 'mayor', nombre: '¿Cuál es mayor?', emoji: '🔍', f: 'mayorS' },
+    { id: 'nave', nombre: 'La nave', emoji: '🚀', f: 'naveS', hab: 'atencion' },
+    { id: 'plataformas', nombre: 'Plataformas', emoji: '🍄', f: 'platS', hab: 'coordinacion' },
+    { id: 'bloques', nombre: 'Bloques', emoji: '🧱', f: 'bloquesS', hab: 'logica' },
+    { id: 'culebrita', nombre: 'Culebrita', emoji: '🐍', f: 'culebraS', hab: 'atencion' },
+    { id: 'ladrillos', nombre: 'Rompe-ladrillos', emoji: '💥', f: 'ladrillosS', hab: 'coordinacion' },
+    { id: 'pizza', nombre: 'Pizza veloz', emoji: '🍕', f: 'pizzaS', hab: 'rapidez' },
+    { id: 'mayor', nombre: '¿Cuál es mayor?', emoji: '🔍', f: 'mayorS', hab: 'logica' },
   ],
   tips: {
     consejos: [
-      'Usen comida de verdad: una arepa o una pizza partida en pedazos iguales explica más que cualquier dibujo.',
-      'Repitan la frase: «el de abajo dice en cuántas partes partí; el de arriba, cuántas tomé».',
-      'Para comparar, dibujen las dos fracciones del mismo tamaño, una al lado de la otra.',
+      'Usen comida de verdad: una arepa partida en pedazos iguales explica más que cualquier dibujo.',
+      'Pídanle que lo diga en voz alta: «partí en 8, tomé 3: tres octavos».',
+      'Celebren el esfuerzo, no solo la nota: «se nota que practicaste».',
     ],
     errores: [
       'Creer que 1/4 es más que 1/3 porque 4 es mayor que 3. Entre más partes, más pequeño cada pedazo.',
       'Partir en pedazos de distinto tamaño: en una fracción todos los pedazos son iguales.',
+      'Voltear la fracción (escribir 8/3 en vez de 3/8).',
     ],
     preguntas: [
       '¿Qué significa el número de abajo de una fracción?',
       'Dibuja 2/4 y 1/2. ¿Qué notas?',
+      '¿Qué es más: 1/3 o 1/4 de un chocolate? ¿Por qué?',
     ],
     casa: 'A la hora del postre, que {nombre} reparta en partes iguales y diga qué fracción le tocó a cada uno.',
   },
+  jefe: true,
+  ficha: true,
 };
+
+/** Registro de partidas de ejemplo (el que llenan los juegos con su habilidad). */
+function registroMuestra(d) {
+  const P = (dia, j, h, ok, n, err, seg, fin = 'termino', m = 'n') => ({ j, h, m, ok, n, err, seg, fin, d: d(dia) });
+  return [
+    P(8, 'pizza', 'rapidez', 4, 6, 2, 95), P(8, 'nave', 'atencion', 14, 18, 3, 140), P(5, 'mayor', 'logica', 4, 6, 2, 80),
+    P(5, 'plataformas', 'coordinacion', 5, 6, 1, 160), P(4, 'bloques', 'logica', 6, 8, 2, 210), P(3, 'pizza', 'rapidez', 6, 6, 0, 70),
+    P(2, 'boss', 'logica', 9, 11, 2, 240), P(2, 'nave', 'atencion', 19, 20, 1, 150), P(1, 'pizza', 'rapidez', 6, 8, 2, 90, 'termino', 'd'),
+    P(1, 'culebrita', 'atencion', 3, 5, 2, 60, 'salio'),
+  ];
+}
 
 export function semilla() {
   const h = hoy();
@@ -53,7 +75,7 @@ export function semilla() {
   const ts = (n, hora = 17) => `${d(n)}T${String(hora).padStart(2, '0')}:20:00`;
 
   return {
-    version: 12,
+    version: 13,
     usuarios: [
       { id: 'u-equipo', correo: 'equipo@tareki.demo', clave: 'tareki', rol: 'equipo', dueno: true, nombre: 'Mateo', creado: ts(30) },
       { id: 'u-familia', correo: 'familia@tareki.demo', clave: 'tareki', rol: 'familia', nombre: 'Laura Pérez', creado: ts(20), accesoHasta: sumarDias(h, 2), suspendido: false, ultimoIngreso: ts(1), celular: '573001234567' },
@@ -73,7 +95,8 @@ export function semilla() {
         actualizado: ts(1),
         meta: META_MUESTRA,
         datos: {
-          'ld-progress': JSON.stringify({ 'fracciones-muestra': { pizzaS: 3, ficha100: 83 } }),
+          'ld-progress': JSON.stringify({ 'fracciones-muestra': { naveS: 3, platS: 2, bloquesS: 2, pizzaS: 3, pizzaS_h: 2, mayorS: 2, bossS: 2, ficha100: 83 } }),
+          'ld-fracciones-muestra-registro': JSON.stringify(registroMuestra(d)),
           'ld-ficha-hist': JSON.stringify([
             { d: d(8), n: 50, s: 420, t: { con: [2, 2], equ: [0, 2], com: [1, 2] }, h: 0 },
             { d: d(5), n: 67, s: 360, t: { con: [2, 2], equ: [1, 2], com: [1, 2] }, h: 0 },

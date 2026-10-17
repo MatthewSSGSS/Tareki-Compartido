@@ -27,7 +27,7 @@ let db = cargar();
 function cargar() {
   try {
     const d = JSON.parse(localStorage.getItem(CLAVE));
-    if (d && d.version === 12) return d;
+    if (d && d.version === 13) return d;
   } catch { /* datos dañados: se vuelve a empezar */ }
   const s = semilla();
   guardar(s);

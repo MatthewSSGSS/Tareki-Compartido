@@ -14,7 +14,7 @@ export const linkInscribirse = () => (CONTACTO_WHATSAPP
 /** Franja de la versión de prueba (datos inventados). En la app real lleva "Salir de la prueba". */
 export const bandaPrueba = ({ reiniciar = false } = {}) => (MODO_DEMO ? `
   <div class="banda-demo"><span>🧪 <b>Versión de prueba:</b> datos inventados que se guardan solo en este navegador.${reiniciar ? '' : ' Para inscribirte: pagas la mensualidad y te enviamos tu código.'}</span>
-    <span class="fila envolver">${reiniciar ? '<button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button>' : linkInscribirse() ? `<a class="btn btn-peq btn-wa" href="${linkInscribirse()}" target="_blank" rel="noopener">💬 Quiero inscribirme</a>` : ''}${NUBE.url ? '<a class="btn btn-peq btn-blanco" href="./">Salir de la prueba</a>' : ''}</span></div>` : '');
+    <span class="fila envolver">${reiniciar ? '' : '<button type="button" class="btn btn-peq btn-sol" data-recorrido>🧭 Qué probar</button>'}${reiniciar ? '<button class="btn btn-peq btn-blanco" data-reiniciar>Reiniciar datos</button>' : linkInscribirse() ? `<a class="btn btn-peq btn-wa" href="${linkInscribirse()}" target="_blank" rel="noopener">💬 Quiero inscribirme</a>` : ''}${NUBE.url ? '<a class="btn btn-peq btn-blanco" href="./">Salir de la prueba</a>' : ''}</span></div>` : '');
 
 const ESTADO = {
   nueva: { texto: '¡Nueva!', boton: '¡Empezar! ▶' },

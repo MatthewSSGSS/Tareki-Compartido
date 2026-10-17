@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Las fracciones · Lección de muestra</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<!-- Lección de MUESTRA de Learnground (versión de prueba). No tiene datos de niños reales.
+     Muestra lo mismo que trae una lección real: Aprender con trucos, Palabras, juegos
+     (los grandes los pone el motor de la app), jefe final, ficha con nota y Tips.
+     Guarda igual que las reales: ld-progress, ld-ficha-hist y ld-<KEY>-registro. -->
+<style>
+:root{ --bg:#eaf6ff; --ink:#1f2544; --card:#fff; --muted:#4a5075; --line:#1f2544; --soft:#f3f8ff; --sun:#ffcf3f; --pink:#ff6b9a; --green:#35b862; --blue:#59c3ff; --orange:#ff9a4d; --purple:#a77bff;
+  --f-head:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --f-body:"Nunito","Trebuchet MS",system-ui,sans-serif; color-scheme:light; }
+@media (prefers-color-scheme: dark){ :root{ --bg:#121a33; --ink:#f2f4ff; --card:#1f2a4d; --muted:#b9c0e6; --line:#0a0f22; --soft:#26335c; color-scheme:dark; } }
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-weight:700; font-size:17px; line-height:1.45}
+h1,h2,h3{font-family:var(--f-head); font-weight:800; line-height:1.1; margin:0}
+p{margin:0}
+button{font:inherit; color:inherit}
+.wrap{max-width:660px; margin:0 auto; padding:14px 14px 60px}
+.card{background:var(--card); border:3px solid var(--line); border-radius:22px; box-shadow:5px 5px 0 var(--line); padding:16px; margin-top:14px}
+.hero{background:linear-gradient(135deg,#ffcf3f,#ff9a4d); color:#1f2544; position:relative; overflow:hidden; margin-top:0}
+.hero .big{position:absolute; right:10px; bottom:-8px; font-size:86px; line-height:1}
+.hero h1{font-size:1.8em; padding-right:90px}
+.hero small{font-size:.85em; opacity:.85}
+.chip{display:inline-block; background:#fff; color:#1f2544; border:2px solid #1f2544; border-radius:999px; padding:0 10px; font-size:.85em; margin:8px 4px 0 0}
+.tabs{position:sticky; top:0; z-index:5; background:var(--bg); display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; padding:10px 0 8px}
+.tab{background:var(--card); border:3px solid var(--line); border-radius:16px; padding:5px 0; font-family:var(--f-head); font-weight:800; cursor:pointer; box-shadow:3px 3px 0 var(--line); font-size:.72em; display:flex; flex-direction:column; align-items:center; line-height:1.1; min-width:0}
+.tab .ti{font-size:1.6em}
+.tab[aria-selected="true"]{background:var(--green); color:#fff}
+.btn{display:flex; width:100%; justify-content:center; align-items:center; gap:6px; font-family:var(--f-head); font-weight:800; font-size:1.12em; background:var(--pink); color:#fff; border:3px solid var(--line); border-radius:999px; padding:10px 20px; box-shadow:4px 4px 0 var(--line); cursor:pointer; margin-top:12px; text-align:center}
+.btn:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--line)}
+.btn.blanco{background:var(--card); color:var(--ink)}
+.imp{background:#fff1a8; color:#1f2544; border:2px solid #1f2544; border-radius:14px; padding:8px 12px; margin:8px 0}
+.blk{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:start; margin:8px 0}
+.rd,.spk{background:#d6f0ff; color:#10233a; border:2px solid var(--line); border-radius:12px; padding:2px 8px; cursor:pointer; font-size:.9em}
+.truco{background:#e3f8e9; color:#10331d; border:2px dashed #35b862; border-radius:14px; padding:8px 12px; margin:8px 0}
+.say{background:var(--soft); border-radius:14px; padding:8px 12px; margin-top:8px; font-style:italic}
+.pizzas{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:10px 0}
+.pz{text-align:center; font-family:var(--f-head); font-size:1.3em}
+.ayuda{background:var(--soft); border:2px dashed var(--line); border-radius:16px; padding:12px; margin-top:10px; text-align:center}
+.ayuda h3{margin-bottom:6px}
+.pasos{display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin:8px 0}
+.paso{display:flex; flex-direction:column; align-items:center; gap:4px}
+.paso small{font-weight:800; color:var(--muted)}
+.paso div{display:flex; align-items:center; gap:6px}
+.paso button{width:38px; height:38px; border:2px solid var(--line); border-radius:12px; background:var(--sun); color:#1f2544; font-weight:800; font-size:1.2em; cursor:pointer}
+.paso b{min-width:30px; font-family:var(--f-head); font-size:1.5em}
+.fr{font-family:var(--f-head); font-size:2.2em; line-height:1}
+.words{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-top:12px}
+.word{background:var(--card); border:3px solid var(--line); border-radius:18px; box-shadow:3px 3px 0 var(--line); padding:10px; text-align:center; cursor:pointer}
+.word b{display:block; font-family:var(--f-head); font-size:1.2em}
+.word span{font-size:.82em; color:var(--muted)}
+.diff{display:grid; grid-template-columns:1fr 1fr; background:var(--soft); border:3px solid var(--line); border-radius:999px; padding:4px; gap:4px}
+.diff button{border:0; border-radius:999px; padding:8px 4px; font-family:var(--f-head); font-weight:800; cursor:pointer; background:transparent}
+.diff button[aria-checked="true"][data-d="normal"]{background:#35b862; color:#fff}
+.diff button[aria-checked="true"][data-d="dificil"]{background:#e8452c; color:#fff}
+.gsec{font-size:1.25em; margin:18px 0 0}
+.gsec small{display:block; font-family:var(--f-body); font-size:.62em; color:var(--muted); font-weight:700}
+.gmenu{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.gcard{display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; cursor:pointer; color:#1f2544; padding:12px 8px; margin-top:12px}
+.gcard .gem{font-size:46px; line-height:1}
+.gcard h3{font-size:1.05em}
+.gcard p{font-size:.78em; opacity:.8}
+.gstars{letter-spacing:2px}
+.jefe{display:flex; gap:12px; align-items:center; text-align:left; cursor:pointer; color:#fff; background:linear-gradient(135deg,#5b1a6e,#c2185b); width:100%}
+.jefe .ce{font-size:54px; line-height:1}
+.jefe h3{font-size:1.3em}
+.q{font-family:var(--f-head); font-size:1.3em; text-align:center; margin:8px 0}
+.opts{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px}
+.opt{background:var(--card); border:3px solid var(--line); border-radius:16px; padding:10px; font-family:var(--f-head); font-weight:800; font-size:1.3em; cursor:pointer; box-shadow:3px 3px 0 var(--line)}
+.opt.ok{background:#8ee0a8 !important; color:#1f2544} .opt.no{background:#ff9dbd !important; color:#1f2544}
+.prog{height:12px; border:2px solid var(--line); border-radius:99px; background:var(--soft); overflow:hidden}
+.prog i{display:block; height:100%; background:var(--green); transition:width .3s}
+.lulo{display:flex; align-items:center; gap:8px; margin-top:12px}
+.lulo span{font-size:34px}
+.lulo p{background:var(--soft); border:2px solid var(--line); border-radius:14px 14px 14px 4px; padding:6px 10px; flex:1}
+.res{text-align:center}
+.res .grande{font-size:64px; line-height:1.1}
+.nota{display:inline-flex; flex-direction:column; align-items:center; justify-content:center; width:130px; height:130px; border-radius:50%; border:4px solid #1f2544; background:#fff; color:#1f2544; box-shadow:4px 4px 0 #1f2544; transform:rotate(-4deg)}
+.nota b{font-family:var(--f-head); font-size:2.8em; line-height:1}
+.barras{display:grid; gap:8px; margin-top:8px}
+.barra{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto; gap:8px; align-items:center; font-size:.9em}
+.barra .t{height:14px; background:var(--soft); border:2px solid var(--line); border-radius:8px; overflow:hidden}
+.barra .t i{display:block; height:100%}
+.reto{background:#fff1a8; color:#1f2544; border-radius:14px; padding:10px 12px; margin-top:10px}
+ul.tight{margin:6px 0 0; padding-left:1.2em; display:grid; gap:4px}
+.plan{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+.plan li{display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:start}
+.plan .tm{background:var(--sun); color:#1f2544; border:2px solid var(--line); border-radius:12px; padding:2px 8px; font-weight:800; font-size:.85em; white-space:nowrap}
+@media (prefers-reduced-motion: no-preference){ .gcard .gem{animation:wig 2.6s ease-in-out infinite} @keyframes wig{0%,85%,100%{transform:rotate(0)}90%{transform:rotate(-10deg)}95%{transform:rotate(8deg)}} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card hero"><small>Lección Divertida · Matemáticas</small><h1>Las fracciones</h1>
+    <div style="padding-right:84px"><span class="chip">4.º grado</span><span class="chip">40 min</span><span class="chip" id="forWho"></span></div>
+    <div class="big" aria-hidden="true">🍕</div></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="aprender" aria-selected="true"><span class="ti">📝</span>Aprender</button>
+    <button class="tab" role="tab" data-tab="palabras" aria-selected="false"><span class="ti">🔊</span>Palabras</button>
+    <button class="tab" role="tab" data-tab="juegos" aria-selected="false"><span class="ti">🎮</span>Juegos</button>
+    <button class="tab" role="tab" data-tab="ficha" aria-selected="false"><span class="ti">✏️</span>Ficha</button>
+    <button class="tab" role="tab" data-tab="tips" aria-selected="false"><span class="ti">💡</span>Tips</button>
+  </div>
+  <div id="box"></div>
+</div>
+<script>
+// ---------- Utilidades ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function store(k, v){ try{ localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v)) }catch(e){} }
+function read(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+function readJSON(k, d){ try{ const v = JSON.parse(read(k)); return v ?? d }catch(e){ return d } }
+const shuffle = a => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const pick = a => a[Math.random() * a.length | 0];
+const uniq = a => [...new Set(a)];
+function speak(t){ try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(t)); u.lang = "es-CO"; u.rate = .92; speechSynthesis.speak(u); }catch(e){} }
+
+const KEY = "fracciones-muestra";
+const REG = "ld-" + KEY + "-registro";
+const name = read("ld-name") || "campeón";
+let progress = readJSON("ld-progress", {});
+const kp = () => progress[KEY] || {};
+function record(field, value){ const r = progress[KEY] ||= {}; r[field] = Math.max(r[field] || 0, value); store("ld-progress", progress); }
+let DIFF = read("ld-diff") === "dificil" ? "dificil" : "normal";
+const HARD = () => DIFF === "dificil";
+const setDiff = d => { DIFF = d; store("ld-diff", d); };
+const campo = f => f + (HARD() ? "_h" : "");
+
+// ---------- Contenido: fracciones ----------
+const FTOP = {
+  con:{ n:"¿Qué es una fracción?", e:"🍕", game:"pizza", q:"Si parto una pizza en 8 pedazos y me como 3, ¿qué fracción me comí?" },
+  equ:{ n:"Fracciones equivalentes", e:"⚖️", game:"bloques", q:"¿Por qué 1/2 y 2/4 son la misma cantidad?" },
+  com:{ n:"Comparar fracciones", e:"🔍", game:"mayor", q:"¿Qué es más: 1/3 o 1/4 de un chocolate? ¿Por qué?" }
+};
+function pizza(n, d, size = 96){
+  const r = size / 2 - 4, c = size / 2;
+  let s = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${n} de ${d}">`;
+  for(let i = 0; i < d; i++){
+    const a1 = (i / d) * 2 * Math.PI - Math.PI / 2, a2 = ((i + 1) / d) * 2 * Math.PI - Math.PI / 2;
+    const x1 = c + r * Math.cos(a1), y1 = c + r * Math.sin(a1), x2 = c + r * Math.cos(a2), y2 = c + r * Math.sin(a2);
+    s += d === 1 ? `<circle cx="${c}" cy="${c}" r="${r}" fill="${n ? "#ff9a4d" : "#fff3cf"}" stroke="#1f2544" stroke-width="3"/>`
+      : `<path d="M${c} ${c} L${x1} ${y1} A${r} ${r} 0 0 1 ${x2} ${y2} Z" fill="${i < n ? "#ff9a4d" : "#fff3cf"}" stroke="#1f2544" stroke-width="3"/>`;
+  }
+  return s + "</svg>";
+}
+const pz = (n, d) => `<div class="pz">${pizza(n, d)}<div>${n}/${d}</div></div>`;
+const valor = f => { const [a, b] = f.split("/").map(Number); return a / b; };
+
+// Preguntas {pregunta, opciones, correcta, explicacion, t (tema), img?}
+function qCon(){
+  const d = pick([3, 4, 5, 6, 8]), n = 1 + (Math.random() * (d - 1) | 0), ok = `${n}/${d}`;
+  const malas = uniq([`${d}/${n}`, `${n}/${d + 2}`, `${d - n}/${d}`, `${n + 1}/${d}`]).filter(x => x !== ok);
+  const o = shuffle([ok, ...shuffle(malas).slice(0, HARD() ? 3 : 2)]);
+  return { t:"con", pregunta:`Partí una pizza en ${d} pedazos iguales y me comí ${n}. ¿Qué fracción me comí?`, opciones:o, correcta:o.indexOf(ok), explicacion:`Abajo va en cuántas partes partí (${d}); arriba, cuántas me comí (${n}): ${ok}.`, img:pizza(n, d, 110) };
+}
+function qEqu(){
+  const [a, b] = pick([[1,2],[1,3],[2,3],[1,4],[3,4]]), k = pick([2, 3]), ok = `${a * k}/${b * k}`;
+  const malas = uniq([`${a + k}/${b + k}`, `${a * k}/${b}`, `${a}/${b * k}`, `${a * k + 1}/${b * k}`]).filter(x => x !== ok && valor(x) !== a / b);
+  const o = shuffle([ok, ...shuffle(malas).slice(0, HARD() ? 3 : 2)]);
+  return { t:"equ", pregunta:`¿Qué fracción vale lo mismo que ${a}/${b}?`, opciones:o, correcta:o.indexOf(ok), explicacion:`Multiplicamos arriba y abajo por ${k}: ${a}/${b} = ${ok}.` };
+}
+function qCom(){
+  const [x, y] = pick([["1/3","1/4"],["1/2","1/5"],["2/3","1/3"],["3/4","1/4"],["1/6","1/2"],["2/5","4/5"],["1/8","1/3"]]);
+  const ok = valor(x) > valor(y) ? x : y, o = shuffle([x, y]);
+  return { t:"com", pregunta:`¿Cuál es mayor: ${o[0]} o ${o[1]}?`, opciones:o, correcta:o.indexOf(ok), explicacion: x.split("/")[0] === y.split("/")[0] ? "Con el mismo número arriba, gana el de abajo más pequeño: sus pedazos son más grandes." : "Con el mismo número abajo, gana el que tiene más pedazos arriba." };
+}
+function qPartes(){
+  const d = pick([3, 4, 6, 8, 10]), n = 1 + (Math.random() * (d - 1) | 0), ok = String(d);
+  const o = shuffle(uniq([ok, String(n), String(d + n), String(d - 1)]).slice(0, HARD() ? 4 : 3));
+  return { t:"con", pregunta:`En la fracción ${n}/${d}, ¿en cuántas partes iguales se partió?`, opciones:o, correcta:o.indexOf(ok), explicacion:`El número de abajo dice en cuántas partes: ${d}.` };
+}
+const GENS = [qCon, qCon, qEqu, qEqu, qCom, qCom, qPartes];
+function mcPool(n){ return Array.from({ length:n }, () => pick(GENS)()); }
+const sinImagen = n => mcPool(n).map(q => ({ ...q, img:undefined }));
+
+// Misiones para la nave y la culebrita (lo de "bien" y lo de "mal" nunca se cruzan)
+const IGUAL_MITAD = ["1/2","2/4","3/6","4/8","5/10","6/12"], NO_MITAD = ["1/3","2/3","1/4","3/4","2/5","3/8","5/6","1/6"];
+const MAYOR_MITAD = ["2/3","3/4","5/6","4/5","7/8","3/5"], MENOR_MITAD = ["1/3","1/4","2/5","1/6","3/8","2/6"];
+const RONDAS = (verbo) => [
+  { consigna:`${verbo} las fracciones iguales a 1/2`, bien:IGUAL_MITAD, mal:NO_MITAD, explica:"Valen 1/2 cuando el de arriba es justo la mitad del de abajo: 2/4, 3/6, 4/8…" },
+  { consigna:`${verbo} las fracciones mayores que 1/2`, bien:MAYOR_MITAD, mal:MENOR_MITAD, explica:"Son mayores que 1/2 cuando el de arriba es más de la mitad del de abajo." },
+];
+
+// ---------- Juegos ----------
+const PRAISE = ["¡Eso, {n}!","¡Súper!","¡Así se hace!","¡Pensaste muy bien!","¡Se nota que practicaste!"];
+const OOPS = ["¡Casi!","¡Uy, por poquito!","¡Tú puedes!"];
+function anotar(j, h, ok, n, err, seg, fin){
+  const r = readJSON(REG, []); r.push({ j, h, m:HARD() ? "d" : "n", ok, n, err, seg, fin, d:new Date().toLocaleDateString("en-CA") }); store(REG, r.slice(-300));
+}
+// Los juegos grandes los pone la app (motor de Learnground); aquí solo van los datos.
+function juegoGrande(tipo, datos){
+  return (g, back) => {
+    if(!window.LG || !Array.isArray(LG.juegos) || !LG.juegos.includes(tipo)){
+      box.innerHTML = `<div class="card" style="text-align:center"><div style="font-size:56px">🎮</div><h3>Este juego se juega en Learnground</h3><p>Abre la lección desde la app para jugarlo.</p><button class="btn" id="out">← Volver a los juegos</button></div>`;
+      $("out").onclick = back; return;
+    }
+    LG.jugar(tipo, box, datos, { id:g.id, hab:g.hab, dificil:HARD(), nombre:name, registro:REG,
+      alTerminar:n => record(campo(g.f), n), alSalir:back, alCambiarDificultad:setDiff });
+  };
+}
+// Juego rápido de preguntas (los "clásicos" de las lecciones)
+function rapido(gen, titulo){
+  return (g, back) => {
+    const qs = Array.from({ length:HARD() ? 8 : 6 }, gen), t0 = Date.now(); let i = 0, right = 0, err = 0, first = true;
+    const draw = () => {
+      if(i >= qs.length){
+        const stars = right / qs.length >= .9 ? 3 : right / qs.length >= .6 ? 2 : 1;
+        record(campo(g.f), stars); anotar(g.id, g.hab, right, qs.length, err, Math.round((Date.now() - t0) / 1000), "termino");
+        box.innerHTML = `<div class="card res"><div class="grande">${stars === 3 ? "🏆" : "🎖️"}</div><div style="font-size:2em">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
+          <h2>${stars === 3 ? "¡Perfecto" : stars === 2 ? "¡Muy bien" : "¡Buen comienzo"}, ${esc(name)}!</h2><p>${right} de ${qs.length} a la primera</p>
+          <button class="btn" id="again">🔁 Jugar otra vez</button><button class="btn blanco" id="out">Elegir otro juego</button></div>`;
+        $("again").onclick = () => rapido(gen, titulo)(g, back); $("out").onclick = back; return;
+      }
+      const q = qs[i]; first = true;
+      box.innerHTML = `<div class="card"><div style="display:flex;gap:10px;align-items:center"><button class="spk" id="out">←</button><h3 style="flex:1">${g.emoji} ${esc(titulo)}</h3><span>⭐ ${right}</span></div>
+        <div class="prog" style="margin-top:10px"><i style="width:${i * 100 / qs.length}%"></i></div>
+        <div class="q">${esc(q.pregunta)} <button class="spk" id="leer">🔊</button></div>${q.img ? `<div class="pizzas">${q.img}</div>` : ""}
+        <div class="opts">${q.opciones.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>
+        <div class="lulo"><span>🐬</span><p id="fb">¡Tú puedes, ${esc(name)}!</p></div></div>`;
+      $("out").onclick = () => { anotar(g.id, g.hab, right, i, err, Math.round((Date.now() - t0) / 1000), "salio"); back(); };
+      $("leer").onclick = () => speak(q.pregunta);
+      box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+        if(Number(b.dataset.k) === q.correcta){ b.classList.add("ok"); if(first) right++; $("fb").textContent = pick(PRAISE).replace("{n}", name) + " " + q.explicacion; i++; setTimeout(draw, 1300); }
+        else { b.classList.add("no"); b.disabled = true; if(first) err++; first = false; $("fb").textContent = pick(OOPS) + " 💡 " + q.explicacion; }
+      });
+    };
+    draw();
+  };
+}
+
+const GROUPS = [
+  { t:"🌟 Aventuras", sub:"Juegos tipo consola: tu héroe es tu animal", g:[
+    { id:"nave", name:"La nave", desc:"Dispara a las fracciones correctas", emoji:"🚀", color:"#e3d4ff", f:"naveS", hab:"atencion",
+      run: juegoGrande("nave", { titulo:"🚀 La nave de las fracciones", rondas:RONDAS("Dispara a"), jefe:{ nombre:"Pizzarrón", emoji:"👾", preguntas:() => sinImagen(8) } }) },
+    { id:"plataformas", name:"Plataformas", desc:"Salta y abre las puertas", emoji:"🍄", color:"#c9f7d6", f:"platS", hab:"coordinacion",
+      run: juegoGrande("plataformas", { titulo:"🍄 El camino de las fracciones", preguntas:() => sinImagen(10) }) },
+    { id:"bloques", name:"Bloques", desc:"Arma filas y responde", emoji:"🧱", color:"#d6f0ff", f:"bloquesS", hab:"logica",
+      run: juegoGrande("bloques", { titulo:"🧱 Bloques de fracciones", preguntas:() => sinImagen(10) }) },
+    { id:"culebrita", name:"Culebrita", desc:"Cómete solo las correctas", emoji:"🐍", color:"#c9f2d6", f:"culebraS", hab:"atencion",
+      run: juegoGrande("culebrita", { titulo:"🐍 La culebrita de fracciones", rondas:RONDAS("Cómete") }) },
+    { id:"ladrillos", name:"Rompe-ladrillos", desc:"Rompe los ladrillos pregunta", emoji:"💥", color:"#ffe0b8", f:"ladrillosS", hab:"coordinacion",
+      run: juegoGrande("ladrillos", { titulo:"💥 Rompe-ladrillos de fracciones", preguntas:() => sinImagen(10) }) } ] },
+  { t:"🍕 Juegos rápidos", sub:"Para practicar en un ratico", g:[
+    { id:"pizza", name:"Pizza veloz", desc:"¿Qué fracción es?", emoji:"🍕", color:"#ffd1e0", f:"pizzaS", hab:"rapidez", run: rapido(() => pick([qCon, qPartes])(), "Pizza veloz") },
+    { id:"mayor", name:"¿Cuál es mayor?", desc:"Compara fracciones", emoji:"🔍", color:"#fff1a8", f:"mayorS", hab:"logica", run: rapido(qCom, "¿Cuál es mayor?") } ] }
+];
+const GAMES = GROUPS.flatMap(x => x.g);
+// Jefe final: la batalla por turnos del motor contra Pizzarrón
+function bossGame(back){
+  juegoGrande("rpg", { titulo:"⚔️ La batalla contra Pizzarrón", preguntas:() => sinImagen(10),
+    enemigos:[{ nombre:"Migajón", emoji:"🍞" }, { nombre:"Quesote", emoji:"🧀" }], jefe:{ nombre:"Pizzarrón", emoji:"👾" } })({ id:"boss", hab:"logica", f:"bossS" }, back);
+}
+
+// ---------- Pestañas ----------
+const box = $("box");
+const blk = (html, leer) => `<div class="blk"><p>${html}</p><button class="rd" data-leer="${esc(leer)}" aria-label="Escuchar">🔊</button></div>`;
+const PALABRAS = [
+  ["fracción","una parte de algo partido en pedazos iguales","🍕"],["numerador","el número de arriba: cuántas partes tomo","⬆️"],
+  ["denominador","el número de abajo: en cuántas partes partí","⬇️"],["mitad","1/2: partir en 2 y tomar 1","✌️"],
+  ["tercio","1/3: partir en 3 y tomar 1","🥪"],["cuarto","1/4: partir en 4 y tomar 1","🍫"],
+  ["equivalente","que vale lo mismo, aunque se vea distinto","⚖️"],["entero","la pizza completa: 4/4, 8/8…","⭕"],
+  ["mayor que","que vale más","🔼"],["menor que","que vale menos","🔽"]
+];
+const TIPS = {
+  plan:[["10 min","Con una arepa o una pizza de papel, partan en pedazos iguales y nombren la fracción. Luego la ayuda «Parte la pizza» de Aprender."],["15 min","Juegos: Pizza veloz y ¿Cuál es mayor? Después una aventura (la nave o plataformas)."],["15 min","La ficha: 8 ejercicios con nota de 1 a 100. Revisen juntos «Su próximo reto»."]],
+  trucos:["Abajo = en cuántas partes partí. Arriba = cuántas tomé.","Para encontrar una equivalente, multiplica arriba y abajo por el mismo número: 1/2 = 2/4 = 3/6.","Con el mismo número arriba, gana el de abajo más pequeño: 1/3 es más que 1/4.","Vale 1/2 cuando el de arriba es justo la mitad del de abajo: 4/8, 5/10."],
+  consejos:["Usen comida de verdad: una arepa partida en pedazos iguales explica más que cualquier dibujo.","Pídanle que lo diga en voz alta: «partí en 8, tomé 3: tres octavos».","Celebren el esfuerzo, no solo la nota: «se nota que practicaste»."],
+  errores:["Creer que 1/4 es más que 1/3 porque 4 es mayor que 3. Entre más partes, más pequeño cada pedazo.","Partir en pedazos de distinto tamaño: en una fracción todos los pedazos son iguales.","Voltear la fracción (escribir 8/3 en vez de 3/8)."],
+  preguntas:["¿Qué significa el número de abajo de una fracción?","Dibuja 2/4 y 1/2. ¿Qué notas?","¿Qué es más: 1/3 o 1/4 de un chocolate? ¿Por qué?"],
+  casa:"A la hora del postre, que {nombre} reparta en partes iguales y diga qué fracción le tocó a cada uno."
+};
+const panes = {
+  aprender(){
+    box.innerHTML = `
+      <div class="card"><h2>🍕 1. ¿Qué es una fracción?</h2>
+        <div class="imp">📌 <b>Lo importante:</b> una fracción es una parte de algo que se partió en pedazos iguales.</div>
+        ${blk("El número de <b>abajo</b> (denominador) dice en cuántas partes iguales partimos.", "El número de abajo, el denominador, dice en cuántas partes iguales partimos.")}
+        ${blk("El número de <b>arriba</b> (numerador) dice cuántas partes tomamos.", "El número de arriba, el numerador, dice cuántas partes tomamos.")}
+        <div class="pizzas">${pz(1,2)}${pz(3,4)}${pz(3,8)}</div>
+        <div class="truco">💡 <b>Truco:</b> abajo = en cuántas partes <b>partí</b>; arriba = cuántas <b>tomé</b>.</div>
+        <div class="ayuda"><h3>🍕 Parte la pizza</h3>
+          <div class="pasos">
+            <div class="paso"><small>Partes</small><div><button data-p="-1" aria-label="Menos partes">−</button><b id="hp">8</b><button data-p="1" aria-label="Más partes">+</button></div></div>
+            <div class="paso"><small>Tomadas</small><div><button data-t="-1" aria-label="Tomar menos">−</button><b id="ht">3</b><button data-t="1" aria-label="Tomar más">+</button></div></div>
+          </div>
+          <div class="pizzas" id="hpz"></div><div class="fr" id="hfr"></div><p class="suave" id="htx"></p></div>
+        <div class="say">Puedes decir: «Partimos en 8 y tomamos 3: eso es tres octavos».</div></div>
+      <div class="card"><h2>⚖️ 2. Fracciones equivalentes</h2>
+        <div class="imp">📌 <b>Lo importante:</b> son fracciones que se ven distintas pero valen lo mismo.</div>
+        ${blk("1/2, 2/4 y 4/8 pintan la <b>misma cantidad</b> de pizza.", "Un medio, dos cuartos y cuatro octavos pintan la misma cantidad de pizza.")}
+        <div class="pizzas">${pz(1,2)}${pz(2,4)}${pz(4,8)}</div>
+        <div class="truco">💡 <b>Truco:</b> multiplica arriba y abajo por el mismo número y la fracción no cambia: 1/2 = 2/4 = 3/6.</div></div>
+      <div class="card"><h2>🔍 3. Comparar fracciones</h2>
+        <div class="imp">📌 <b>Lo importante:</b> si el número de arriba es igual, gana la que tiene el de abajo más pequeño.</div>
+        ${blk("1/3 es <b>mayor</b> que 1/4: entre más partes, más pequeño cada pedazo.", "Un tercio es mayor que un cuarto: entre más partes, más pequeño cada pedazo.")}
+        <div class="pizzas">${pz(1,3)}${pz(1,4)}</div>
+        <div class="truco">💡 <b>Truco:</b> ¿quieres saber si es más que la mitad? Mira si el de arriba es más de la mitad del de abajo: 5/8 sí, 3/8 no.</div></div>
+      <button class="btn" id="aJugar">🎮 ¡Ahora a jugar!</button>`;
+    box.querySelectorAll("[data-leer]").forEach(b => b.onclick = () => speak(b.dataset.leer));
+    let p = 8, t = 3;
+    const pintar = () => { $("hp").textContent = p; $("ht").textContent = t; $("hpz").innerHTML = pizza(t, p, 130); $("hfr").textContent = `${t}/${p}`; $("htx").textContent = `Partimos en ${p} y tomamos ${t}.`; };
+    box.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { p = Math.max(2, Math.min(12, p + Number(b.dataset.p))); t = Math.min(t, p); pintar(); });
+    box.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { t = Math.max(0, Math.min(p, t + Number(b.dataset.t))); pintar(); speak(`${t} de ${p}`); });
+    pintar();
+    $("aJugar").onclick = () => select("juegos");
+  },
+  palabras(){
+    box.innerHTML = `<div class="card"><h2>🔊 Palabras del tema</h2><p class="suave">Toca una palabra para escucharla. Pídele a ${esc(name)} que la explique con sus palabras.</p></div>
+      <div class="words">${PALABRAS.map(([w, s, e], i) => `<button class="word" data-i="${i}"><div style="font-size:30px">${e}</div><b>${esc(w)}</b><span>${esc(s)}</span></button>`).join("")}</div>`;
+    box.querySelectorAll(".word").forEach(b => b.onclick = () => { const [w, s] = PALABRAS[b.dataset.i]; speak(`${w}. ${s}`); });
+  },
+  juegos(){
+    const p = kp(), st = f => p[campo(f)] || 0;
+    const back = () => { panes.juegos(); window.scrollTo({ top:0 }); };
+    box.innerHTML = `<div class="card"><div class="diff" role="radiogroup" aria-label="Dificultad">
+        <button role="radio" data-d="normal" aria-checked="${!HARD()}">😊 Normal</button><button role="radio" data-d="dificil" aria-checked="${HARD()}">🔥 Difícil</button></div>
+        <p class="suave" style="margin-top:8px">${HARD() ? "<b>Difícil:</b> más rápido, con tiempo y 3 corazones." : "<b>Normal:</b> a tu ritmo, con pistas. Ideal para aprender."}</p></div>
+      <h2 class="gsec">🏆 Jefe final</h2>
+      <button class="card jefe" id="jefe"><span class="ce">👾</span><span><h3>La batalla contra Pizzarrón</h3><p>Ataca con respuestas, usa magia y defiéndete.</p><span class="gstars">${st("bossS") ? "⭐".repeat(st("bossS")) + "☆".repeat(3 - st("bossS")) : "☆☆☆ ¡Nadie lo ha vencido!"}</span></span></button>
+      ${GROUPS.map(gr => `<h2 class="gsec">${gr.t}<small>${gr.sub}</small></h2><div class="gmenu">${gr.g.map(g => `<button class="card gcard" data-g="${g.id}" style="background:${g.color}"><span class="gem" aria-hidden="true">${g.emoji}</span><h3>${g.name}</h3><p>${g.desc}</p><span class="gstars">${"⭐".repeat(st(g.f))}${"☆".repeat(3 - st(g.f))}</span></button>`).join("")}</div>`).join("")}`;
+    box.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { setDiff(b.dataset.d); panes.juegos(); });
+    $("jefe").onclick = () => bossGame(back);
+    box.querySelectorAll(".gcard").forEach(b => b.onclick = () => { const g = GAMES.find(x => x.id === b.dataset.g); g.run(g, back); });
+  },
+  ficha(){ fichaMission(); },
+  tips(){
+    box.innerHTML = `<div class="card"><h2>⏱️ Plan de 40 minutos</h2><ol class="plan">${TIPS.plan.map(([t, x]) => `<li><span class="tm">${t}</span><p>${esc(x)}</p></li>`).join("")}</ol></div>
+      <div class="card"><h2>💡 Trucos para repasar en la casa</h2><ul class="tight">${TIPS.trucos.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card"><h2>🗣️ Consejos para explicar</h2><ul class="tight">${TIPS.consejos.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card"><h2>🧭 Errores comunes</h2><ul class="tight">${TIPS.errores.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card"><h2>❓ Preguntas para hacerle</h2><ul class="tight">${TIPS.preguntas.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card"><h2>🏠 Para seguir en casa</h2><p>${esc(TIPS.casa.replace("{nombre}", name))}</p></div>`;
+  }
+};
+
+// ---------- Ficha: 8 ejercicios, nota de 1 a 100 y su próximo reto ----------
+function fichaMission(){
+  const items = shuffle([qCon(), qCon(), qPartes(), qEqu(), qEqu(), qCom(), qCom(), qCom()]), ans = {}, t0 = Date.now();
+  box.innerHTML = `<div class="card"><h2>✏️ Ficha</h2><p>Responde las ${items.length} preguntas y entrega. Las respuestas se ven al final. ¡Verás tu nota de 1 a 100!</p></div>` +
+    items.map((q, k) => `<div class="card"><b>${k + 1}.</b> <span style="font-size:1.08em">${esc(q.pregunta)}</span>${q.img ? `<div class="pizzas">${q.img}</div>` : ""}
+      <div class="opts">${q.opciones.map((o, j) => `<button class="opt" data-k="${k}" data-j="${j}">${esc(o)}</button>`).join("")}</div><p class="fb"></p></div>`).join("") +
+    `<button class="btn" id="send">📤 Entregar ficha</button><p id="falta" class="suave" style="text-align:center"></p>`;
+  box.querySelectorAll(".opt").forEach(b => b.onclick = () => { ans[b.dataset.k] = Number(b.dataset.j); box.querySelectorAll(`.opt[data-k="${b.dataset.k}"]`).forEach(x => x.style.background = x === b ? "#59c3ff" : ""); });
+  $("send").onclick = () => {
+    const faltan = items.length - Object.keys(ans).length;
+    if(faltan && !$("send").dataset.ok){ $("send").dataset.ok = 1; $("falta").textContent = `Te ${faltan === 1 ? "falta 1 pregunta" : `faltan ${faltan} preguntas`}. Toca otra vez para entregar así.`; return; }
+    const t = {}; let ok = 0;
+    items.forEach((q, k) => {
+      const good = ans[k] === q.correcta; if(good) ok++; t[q.t] ||= [0, 0]; t[q.t][1]++; if(good) t[q.t][0]++;
+      const card = box.querySelectorAll(".opts")[k].parentElement;
+      card.querySelectorAll(".opt").forEach(b => { b.disabled = true; if(Number(b.dataset.j) === q.correcta) b.classList.add("ok"); });
+      card.querySelector(".fb").textContent = good ? `✅ ¡Muy bien! ${q.explicacion}` : `🔸 Revisa esta: ${q.explicacion}`;
+    });
+    const n = Math.max(1, Math.round(100 * ok / items.length)), seg = Math.round((Date.now() - t0) / 1000);
+    record("ficha100", n);
+    const h = readJSON("ld-ficha-hist", []); h.push({ d:new Date().toLocaleDateString("en-CA"), n, s:seg, t, h:HARD() ? 1 : 0 }); store("ld-ficha-hist", h.slice(-12));
+    const nivel = n >= 90 ? ["Superior","🏆","¡Excelente! Dominas el tema"] : n >= 80 ? ["Alto","🌟","¡Muy bien! Ya casi lo tienes todo"] : n >= 60 ? ["Básico","👍","¡Vas bien! Un repasito más y lo dominas"] : ["Bajo","💪","¡Vas en camino! Repasa las que tienen 🔸 y vuelve a intentarlo"];
+    const reto = Object.keys(t).sort((a, b) => t[a][0] / t[a][1] - t[b][0] / t[b][1])[0];
+    const todo = Object.values(t).every(([a, b]) => a === b);
+    $("send").outerHTML = `<div class="card res"><div>Tu nota</div><div class="nota"><b>${n}</b><small>de 100</small></div>
+      <h2 style="margin-top:12px">${nivel[1]} Desempeño ${nivel[0]}</h2><p>${nivel[2]}</p>
+      <div class="barras">${Object.keys(FTOP).filter(k => t[k]).map(k => { const [a, b] = t[k], pc = Math.round(a / b * 100); return `<div class="barra"><span>${FTOP[k].e} ${FTOP[k].n}</span><div class="t"><i style="width:${pc}%;background:${pc === 100 ? "#35b862" : pc >= 50 ? "#ffcf3f" : "#ff9a4d"}"></i></div><b>${a}/${b}</b></div>`; }).join("")}</div>
+      <div class="reto">${todo ? `🎉 <b>¡Todo bien!</b> ${esc(name)} domina el tema. Rétenlo en modo difícil.` : `🎯 <b>Su próximo reto:</b> ${FTOP[reto].e} ${FTOP[reto].n}<br>Jueguen «${GAMES.find(g => g.id === FTOP[reto].game)?.name || "un juego del tema"}» y pregúntenle: «${FTOP[reto].q}»`}</div>
+      <button class="btn" id="otra">🔁 Otra ficha con ejercicios nuevos</button></div>`;
+    $("falta").textContent = "";
+    $("otra").onclick = () => { fichaMission(); window.scrollTo({ top:0 }); };
+  };
+}
+
+function select(id){ document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === id)); try{ speechSynthesis.cancel() }catch(e){} panes[id](); window.scrollTo({ top:0 }); }
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => select(t.dataset.tab));
+$("forWho").textContent = `Para ${name}`;
+panes.aprender();
+</script>
+</body>
+</html>
