@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T23:28:21+00:00",
+  "title": "Design System: Learnground",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta Marina",
+        "canonical": "oklch(27.6% 0.058 274)",
+        "tonalRamp": [
+          "#06081f",
+          "#1c213f",
+          "#373e5a",
+          "#565c75",
+          "#7a7f94",
+          "#a0a4b3",
+          "#c7cad4",
+          "#ebeef9"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Pizarra Suave",
+        "canonical": "oklch(44.2% 0.061 277)",
+        "tonalRamp": [
+          "#08091a",
+          "#1e223a",
+          "#383d5d",
+          "#555b7f",
+          "#787e9d",
+          "#9ea3bd",
+          "#c5c9dd",
+          "#ebeefb"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Cielo Claro",
+        "canonical": "oklch(96.7% 0.018 240)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#222426",
+          "#3e4042",
+          "#5b5e60",
+          "#7c8185",
+          "#9ea6ab",
+          "#c2ccd3",
+          "#e5f0f9"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Papel"
+      },
+      "soft": {
+        "role": "neutral",
+        "displayName": "Nube"
+      },
+      "pink": {
+        "role": "primary",
+        "displayName": "Rosado Lulo",
+        "canonical": "oklch(72.3% 0.185 3)",
+        "tonalRamp": [
+          "#1a0309",
+          "#3d1421",
+          "#66273b",
+          "#933b57",
+          "#c75277",
+          "#fe6a99",
+          "#ff9dc1",
+          "#ffcbe6"
+        ]
+      },
+      "sun": {
+        "role": "secondary",
+        "displayName": "Amarillo Sol",
+        "canonical": "oklch(87.3% 0.160 89)",
+        "tonalRamp": [
+          "#120a00",
+          "#2c230b",
+          "#4a3f21",
+          "#6e5c2a",
+          "#987d32",
+          "#c4a038",
+          "#f2c53e",
+          "#ffea74"
+        ]
+      },
+      "green": {
+        "role": "secondary",
+        "displayName": "Verde Cuaderno",
+        "canonical": "oklch(69.3% 0.167 150)",
+        "tonalRamp": [
+          "#001003",
+          "#042d12",
+          "#0e4d24",
+          "#1a6f38",
+          "#29984f",
+          "#47c06d",
+          "#86e39d",
+          "#baffc9"
+        ]
+      },
+      "blue": {
+        "role": "tertiary",
+        "displayName": "Azul Piscina",
+        "canonical": "oklch(77.9% 0.130 237)",
+        "tonalRamp": [
+          "#000d17",
+          "#122733",
+          "#204459",
+          "#2e6483",
+          "#3f89b3",
+          "#50afe5",
+          "#79d6ff",
+          "#adf9ff"
+        ]
+      },
+      "purple": {
+        "role": "tertiary",
+        "displayName": "Morado Uva",
+        "canonical": "oklch(68.5% 0.189 296)",
+        "tonalRamp": [
+          "#0d061c",
+          "#281a44",
+          "#463170",
+          "#6649a0",
+          "#8b66d6",
+          "#b188ff",
+          "#d4b5ff",
+          "#f6deff"
+        ]
+      },
+      "orange": {
+        "role": "tertiary",
+        "displayName": "Naranja Mandarina",
+        "canonical": "oklch(77.8% 0.151 55)",
+        "tonalRamp": [
+          "#170600",
+          "#331e0f",
+          "#5a361b",
+          "#834f28",
+          "#b36c37",
+          "#e68b46",
+          "#ffb16e",
+          "#ffdaa3"
+        ]
+      },
+      "bad": {
+        "role": "tertiary",
+        "displayName": "Coral Alerta",
+        "canonical": "oklch(59.4% 0.185 20)",
+        "tonalRamp": [
+          "#210002",
+          "#49040f",
+          "#741722",
+          "#a32b38",
+          "#d84451",
+          "#f5797d",
+          "#ffaaaa",
+          "#ffd6d5"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título de cada pantalla."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de sección y de ventana."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Lecciones, tarjetas y botones."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Todo el texto corrido, siempre en 700."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Chips, metadatos y etiquetas."
+      },
+      "number": {
+        "displayName": "Number",
+        "purpose": "Racha, KPI, estrellas y notas."
+      }
+    },
+    "shadows": [
+      {
+        "name": "solida",
+        "value": "4px 4px 0 var(--line)",
+        "purpose": "Tarjetas y botones. De salida: no usar en nada nuevo."
+      },
+      {
+        "name": "solida-chica",
+        "value": "2px 2px 0 var(--line)",
+        "purpose": "Piezas internas. De salida."
+      },
+      {
+        "name": "ventana",
+        "value": "8px 8px 0 var(--line)",
+        "purpose": "Hojas en computador. De salida."
+      },
+      {
+        "name": "anillo-foco",
+        "value": "0 0 0 4px var(--sun)",
+        "purpose": "Foco de campos y teclado. Se queda."
+      }
+    ],
+    "motion": [
+      {
+        "name": "rebote-entrada",
+        "value": "cubic-bezier(.2, .9, .3, 1.2)",
+        "purpose": "Tarjetas que entran en cascada (45 ms entre cada una, .5 s)."
+      },
+      {
+        "name": "barra",
+        "value": "cubic-bezier(.2, .9, .3, 1.05)",
+        "purpose": "Barras de progreso que se llenan (.9 s)."
+      },
+      {
+        "name": "toque",
+        "value": "transform .14s ease",
+        "purpose": "Hover y presión de botones."
+      },
+      {
+        "name": "pantalla",
+        "value": "entraPantalla .3s ease-out",
+        "purpose": "Cambio de pantalla. Todo se apaga con prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "chico",
+        "value": "520px"
+      },
+      {
+        "name": "rejilla",
+        "value": "640px"
+      },
+      {
+        "name": "ventana",
+        "value": "700px"
+      },
+      {
+        "name": "computador",
+        "value": "900px"
+      },
+      {
+        "name": "visor-ancho",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de cada pantalla. Hoy con borde y sombra sólida, que se retiran.",
+      "html": "<button class=\"ds-btn\">¡Empezar!</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-head); font-weight: 800; font-size: 1.1em; line-height: 1.2; background: var(--pink); color: #fff; border: 3px solid var(--line); border-radius: 999px; padding: 10px 22px; box-shadow: 4px 4px 0 var(--line); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, filter .14s ease; } .ds-btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--line); filter: saturate(1.08); } .ds-btn:active { transform: translate(3px, 3px) scale(.98); box-shadow: 1px 1px 0 var(--line); } .ds-btn:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botón blanco",
+      "kind": "button",
+      "refersTo": "button-white",
+      "description": "Acción secundaria (Preguntar, Salir de la prueba).",
+      "html": "<button class=\"ds-btn-blanco\">❓ Preguntar</button>",
+      "css": ".ds-btn-blanco { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-head); font-weight: 800; font-size: 1.1em; background: var(--card); color: var(--ink); border: 3px solid var(--line); border-radius: 999px; padding: 10px 22px; box-shadow: 4px 4px 0 var(--line); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease; } .ds-btn-blanco:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--line); } .ds-btn-blanco:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botón sol",
+      "kind": "button",
+      "refersTo": "button-sun",
+      "description": "Llamado amable o premiado (Cómo pagar).",
+      "html": "<button class=\"ds-btn-sol\">Cómo pagar</button>",
+      "css": ".ds-btn-sol { font-family: var(--f-head); font-weight: 800; font-size: .92em; background: var(--sun); color: #1f2544; border: 3px solid var(--line); border-radius: 999px; padding: 6px 14px; box-shadow: 3px 3px 0 var(--line); cursor: pointer; transition: transform .14s ease; } .ds-btn-sol:hover { transform: translate(-1px, -1px); } .ds-btn-sol:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Correo, contraseña y formularios.",
+      "html": "<label class=\"ds-campo\"><span>Correo</span><input class=\"ds-input\" type=\"email\" placeholder=\"tu@correo.com\"></label>",
+      "css": ".ds-campo { display: grid; gap: 6px; font-weight: 800; color: var(--ink); } .ds-input { width: 100%; background: var(--soft); color: var(--ink); border: 3px solid var(--line); border-radius: 16px; padding: 11px 14px; font: 700 16px var(--f-body); } .ds-input:focus { outline: none; background: var(--card); box-shadow: 0 0 0 4px var(--sun); }"
+    },
+    {
+      "name": "Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Grado, estado y etiquetas cortas.",
+      "html": "<span class=\"ds-chip\">4.º grado</span> <span class=\"ds-chip ds-sol\">⭐ 3</span> <span class=\"ds-chip ds-rosa\">¡Nueva!</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--soft); color: var(--ink); border: 2px solid var(--line); border-radius: 999px; padding: 1px 10px; font: 800 .84em var(--f-body); white-space: nowrap; } .ds-sol { background: var(--sun); color: #1f2544; } .ds-rosa { background: var(--pink); color: #fff; }"
+    },
+    {
+      "name": "Tarjeta de lección",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Lección en el inicio del niño: icono de materia, título, avance y barra.",
+      "html": "<a class=\"ds-leccion\" href=\"#\"><span class=\"ds-icono\">🔢</span><span><b>Las fracciones</b><small>Matemáticas · llevas 68%</small><span class=\"ds-barra\"><i style=\"width:68%\"></i></span></span></a>",
+      "css": ".ds-leccion { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; background: var(--card); color: var(--ink); text-decoration: none; border: 3px solid var(--line); border-radius: 22px; padding: 18px; box-shadow: 4px 4px 0 var(--line); transition: transform .15s, box-shadow .15s; } .ds-leccion:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--line); } .ds-leccion:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; } .ds-icono { width: 66px; height: 66px; border-radius: 20px; border: 3px solid var(--line); background: var(--sun); display: grid; place-items: center; font-size: 36px; } .ds-leccion b { display: block; font-family: var(--f-head); font-size: 1.22em; line-height: 1.1; } .ds-leccion small { display: block; color: var(--muted); font-size: .85em; margin-top: 2px; } .ds-barra { display: block; height: 12px; margin-top: 8px; border: 2px solid var(--line); border-radius: 99px; background: var(--soft); overflow: hidden; } .ds-barra i { display: block; height: 100%; background: var(--green); border-radius: 99px; }"
+    },
+    {
+      "name": "Menú (celular)",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Barra de abajo en celular; la opción activa en sol suave.",
+      "html": "<nav class=\"ds-menu\"><a class=\"ds-activo\" href=\"#\"><span>🏠</span>Inicio</a><a href=\"#\"><span>🏅</span>Logros</a><a href=\"#\"><span>👪</span>Papás</a></nav>",
+      "css": ".ds-menu { display: flex; background: var(--card); border-top: 3px solid var(--line); padding: 6px 4px; } .ds-menu a { flex: 1; display: flex; flex-direction: column; align-items: center; text-decoration: none; font-family: var(--f-head); font-weight: 800; font-size: .78em; color: var(--muted); border-radius: 16px; padding: 4px 2px; } .ds-menu span { font-size: 1.7em; line-height: 1.1; transition: transform .2s; } .ds-menu a:hover span { transform: scale(1.12) rotate(-4deg); } .ds-menu a.ds-activo { color: var(--ink); background: var(--sun-s); } .ds-menu a:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }"
+    },
+    {
+      "name": "Lulo con globo",
+      "kind": "custom",
+      "description": "La mascota habla: saludo, estados vacíos y carga.",
+      "html": "<div class=\"ds-lulo\"><span class=\"ds-lulo-m\">🐬</span><p class=\"ds-globo\">¡Juega un ratico hoy para no perder tu racha!</p></div>",
+      "css": ".ds-lulo { display: flex; align-items: flex-end; gap: 10px; } .ds-lulo-m { font-size: 48px; line-height: 1; } .ds-globo { flex: 1; margin: 0; background: var(--card); color: var(--ink); border: 3px solid var(--line); border-radius: 18px 18px 18px 4px; padding: 8px 14px; font-weight: 800; box-shadow: 3px 3px 0 var(--line); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La caja de juguetes y el cuaderno de juegos",
+    "overview": "Learnground tiene un mismo mundo con dos caras según la edad. Para primaria (1.º a 5.º) es **la caja de juguetes**: piezas gordas y redondeadas, colores de crayola, una mascota que brinca y premios que se sienten como un sticker nuevo. Para bachillerato (6.º a 11.º) es **el cuaderno de juegos**: el mismo color y la misma tipografía, pero con más orden y menos ruido, como un cuaderno del colegio que alguien convirtió en juego. Las dos caras comparten paleta, tipografías, formas redondeadas y a Lulo; cambian la densidad, el tamaño y la cantidad de adorno. Hoy la app tiene una sola cara (la de juguetes) y la de cuaderno es la dirección para cuando se separe por grado.\n\nEl tono es cálido, cercano y alegre, nunca serio ni de oficina. El fondo es un azul cielo muy claro con puntitos suaves, como el papel de las lecciones. Cada bloque tiene un color con significado (sol para lo activo y lo premiado, rosado para la acción principal y lo nuevo, verde para el progreso, rojo coral para lo urgente) y la letra es redonda y gruesa (Baloo 2 para títulos y números, Nunito en peso 700 para el texto). Las animaciones son de rebote y entrada en cascada, y todas se apagan con \"reducir movimiento\".\n\n**Decisión vigente:** los bordes oscuros gruesos (3 px en tinta) y las sombras sólidas desplazadas (4 px 4 px 0) de hoy son el rasgo que más \"se ve hecho por IA\" y **se retiran**. Siguen en el código hasta el rediseño, pero nada nuevo los usa. Rechazo confirmado: nada que parezca app de banco o de empresa (gris, sobrio, corporativo).",
+    "keyCharacteristics": [
+      "Fondo cielo claro (#eaf6ff) con puntitos de 22 px; tarjetas blancas encima.",
+      "Paleta de crayola con un color por significado y fondos suaves de cada color para tarjetas tematizadas.",
+      "Baloo 2 en 800 para títulos y cifras; Nunito en 700 para todo el texto.",
+      "Formas muy redondeadas: tarjetas de 22 px, botones y chips en píldora.",
+      "Emoji como iconografía y Lulo (delfín rosado) como voz de la app.",
+      "Modo oscuro azul noche y un control de brillo propio en modo claro.",
+      "Movimiento de rebote, siempre apagable."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Significado",
+        "body": "Cada color dice algo: sol = elegido o premiado, rosado = acción principal o nuevo, verde = progreso, coral = urgente. No uses un color solo para adornar si ya tiene un significado en esa pantalla.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Tinta",
+        "body": "El texto oscuro es siempre la tinta marina (#1f2544), nunca negro puro, y va sobre sol, verdes suaves y fondos pastel.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Peso Firme",
+        "body": "Nada de texto delgado: el cuerpo va en 700 y los títulos en 800. Los niños de primaria leen mejor letras gruesas.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de los Números Redondos",
+        "body": "Toda cifra que se celebra o se compara (racha, estrellas, KPI, nota) va en Baloo 2, más grande que su etiqueta.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de lo de Adentro",
+        "body": "Lo que vive dentro de una tarjeta va más liviano que ella: fondo nube, sin sombra, borde fino o ninguno. La jerarquía se lee por capas.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** usar la paleta por significado: sol para lo elegido o premiado, rosado para la acción principal, verde para el progreso y coral para lo urgente.",
+      "**Do** mantener Baloo 2 800 en títulos y cifras y Nunito 700 en el texto, sin pesos delgados.",
+      "**Do** redondear todo: 22 px en tarjetas, píldora en botones y chips.",
+      "**Do** poner el texto oscuro en tinta marina (#1f2544) sobre sol y fondos pastel.",
+      "**Do** dejar que Lulo y los emoji den la personalidad, con mensajes cortos y en tuteo.",
+      "**Do** apagar toda animación con `prefers-reduced-motion` y conservar el anillo de foco sol de 4 px.",
+      "**Do** diseñar primero a 390 px y aprovechar el computador desde 900 px (menú lateral y columnas)."
+    ],
+    "donts": [
+      "**Don't** agregar bordes de tinta de 3 px ni sombras sólidas desplazadas (4 px 4 px 0) a nada nuevo: se retiran del sistema.",
+      "**Don't** hacer que se vea como una app de banco o de empresa: nada de grises sobrios, letras delgadas ni tablas frías.",
+      "**Don't** poner texto blanco sobre el rosado (2.7:1) o el verde (2.6:1) en texto normal: no llega al contraste mínimo. Usa tinta encima o una versión más oscura del color.",
+      "**Don't** usar negro puro para el texto o los bordes.",
+      "**Don't** meter sombra ni borde grueso dentro de una tarjeta que ya tiene uno."
+    ]
+  }
+}
