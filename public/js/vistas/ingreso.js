@@ -31,6 +31,7 @@ export async function render(root, ctx) {
     <div class="ingreso"><div class="ingreso-caja">
       <div class="marca"><img class="marca-logo" src="img/lulo-128.png" alt="" aria-hidden="true"><span class="marca-nombre">Learn<b>ground</b></span></div>
       <p class="lema">Lecciones divertidas para aprender jugando</p>
+      ${PRUEBA ? '' : '<div id="nuevaCuenta" hidden></div><p class="ya-cuenta" hidden>¿Ya tienes cuenta? Entra aquí 👇</p>'}
       ${PRUEBA ? '' : `<div class="pestanas" role="tablist">
         <button role="tab" data-modo="entrar">Entrar</button>
         <button role="tab" data-modo="codigo">Tengo un código</button>
@@ -53,19 +54,21 @@ export async function render(root, ctx) {
         <span><b>¿Quieres ver cómo funciona?</b><small>Entra a la versión de prueba: una lección de muestra y datos inventados. Sin cuenta.</small></span>
         <span class="btn btn-peq btn-sol">Probar</span>
       </a>`}
-      ${PRUEBA ? '' : '<div id="nuevaCuenta" hidden></div>'}
     </div></div>`;
 
   const caja = root.querySelector('#caja');
 
-  // "¿Aún no tienes cuenta?": precios y cómo inscribirse (se paga antes de recibir el código).
-  // Reemplaza la tarjeta de "Probar" (la trae incluida).
+  // "¿Primera vez?": los 3 pasos para inscribirse (se paga antes de recibir el código).
+  // Va ARRIBA del formulario para entrar y reemplaza la tarjeta de "Probar" (la trae incluida).
+  // En computador queda a la izquierda y "Entrar" a la derecha.
   if (!PRUEBA) {
     datos.ajustesCobro().then((cobro) => {
       const el = root.querySelector('#nuevaCuenta');
       if (!el || !hayInscripcion(cobro)) return;
       el.innerHTML = tarjetaInscripcion(cobro);
       el.hidden = false;
+      root.querySelector('.ya-cuenta').hidden = false;
+      root.querySelector('.ingreso-caja').classList.add('con-inscripcion');
       root.querySelector('.prueba-caja')?.remove();
       const irACodigo = () => { modo = 'codigo'; pintar(); root.querySelector('.pestanas')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
       el.querySelector('[data-inscribirme]').addEventListener('click', () => abrirInscripcion(cobro, { alTengoCodigo: irACodigo }));

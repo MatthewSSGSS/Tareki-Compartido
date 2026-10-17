@@ -69,7 +69,7 @@ export async function render(root, ctx) {
     </div>
 
     ${esEquipo ? '' : `
-      <div class="titulo-seccion"><h2>👤 Tu cuenta</h2></div>
+      <div class="titulo-seccion"><h2>👤 Tu cuenta</h2><button class="btn btn-peq btn-blanco solo-cel" data-salir-p>🚪 Salir</button></div>
       <div class="cuenta">
         ${VERSION_PRUEBA ? `<div class="card cuenta-pago"><span class="em" aria-hidden="true">🎟️</span>
           <div><span class="suave peq">¿Te gustó?</span><b>Inscribe a tu familia</b>
@@ -134,6 +134,8 @@ export async function render(root, ctx) {
     pintarMisPedidos(root.querySelector('#misPedidos'), ctx);
     root.querySelector('[data-apariencia-p]')?.addEventListener('click', () => abrirApariencia());
     root.querySelector('[data-guia]')?.addEventListener('click', () => abrirGuia());
+    // En el celular el menú de abajo no trae "Salir" (en computador está en el menú lateral)
+    root.querySelector('[data-salir-p]')?.addEventListener('click', () => ctx.salir());
     root.querySelector('[data-gustos]')?.addEventListener('click', () => abrirFormularioNino(nino, () => ctx.refrescar(), { enfocarGustos: true }));
     root.querySelector('[data-pedir]')?.addEventListener('click', () => abrirPedir(ctx, { alEnviar: () => pintarMisPedidos(root.querySelector('#misPedidos'), ctx) }));
   }

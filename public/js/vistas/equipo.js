@@ -73,8 +73,8 @@ async function resumen(root, ctx) {
 
   root.innerHTML = `
     ${bandaPrueba({ reiniciar: true })}
-    <div class="cabecera"><div><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1><span class="fila envolver" style="gap:14px"><button class="link peq" data-mi-nombre-res>✏️ Cambiar mi nombre</button><button class="link peq" data-apariencia-res>🎨 Apariencia</button></span></div>
-      <span class="fila envolver"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a><a class="btn btn-peq btn-blanco" href="juegos/prueba.html" target="_blank" rel="noopener" title="Los juegos grandes con datos de ejemplo">🎮 Probar juegos</a></span></div>
+    <div class="cabecera"><div><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1><span class="fila envolver" style="gap:14px"><button class="link peq" data-mi-nombre-res>✏️ Cambiar mi nombre</button><button class="link peq" data-apariencia-res>🎨 Apariencia</button><button class="link peq solo-cel" data-salir-res>🚪 Salir</button></span></div>
+      <span class="fila envolver"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a><a class="btn btn-peq btn-blanco" href="juegos/prueba.html" title="Los juegos grandes con datos de ejemplo">🎮 Probar juegos</a></span></div>
     <div class="kpis">
       <div class="card kpi"><span>Familias</span><b>👨‍👩‍👧 ${fams.length}</b></div>
       <div class="card kpi"><span>Niños</span><b>🧒 ${lista.length}</b></div>
@@ -101,6 +101,8 @@ async function resumen(root, ctx) {
   tarjetaAvisos(root.querySelector('#avisos'));
   root.querySelector('[data-mi-nombre-res]')?.addEventListener('click', () => abrirMiNombre(ctx.usuario, () => location.reload()));
   root.querySelector('[data-apariencia-res]')?.addEventListener('click', () => abrirApariencia());
+  // En el celular el menú de abajo no trae "Salir" (en computador está en el menú lateral)
+  root.querySelector('[data-salir-res]')?.addEventListener('click', () => ctx.salir());
   root.querySelector('[data-reiniciar]')?.addEventListener('click', async () => {
     if (!(await confirmar({ titulo: '¿Reiniciar los datos de prueba?', texto: 'Se borra todo lo que hayas creado en este navegador y vuelven los datos de ejemplo.', si: 'Reiniciar', peligro: true }))) return;
     await datos.reiniciarDemo();

@@ -86,7 +86,7 @@
 .lg-vidas{flex:none;font-size:15px;letter-spacing:1px}
 .lg-vidas .off{filter:grayscale(1);opacity:.3}
 .lg-consigna{display:flex;align-items:center;gap:8px;margin:0 12px;background:#fff;color:#1f2544;border:3px solid #1f2544;border-radius:16px;padding:6px 10px;
-  font-family:var(--f-head,${FUENTE});font-weight:800;font-size:1.02em;line-height:1.15;min-height:46px}
+  font-family:var(--f-head,${FUENTE});font-weight:800;font-size:1.02em;line-height:1.15;min-height:calc(2.3em + 18px)}
 .lg-consigna span{flex:1;min-width:0;overflow-wrap:anywhere}
 .lg-consigna.lg-pop{animation:lg-pop .35s}
 .lg-oir{flex:none;background:#d6f0ff;color:#1f2544;border:2px solid #1f2544;border-radius:12px;padding:2px 8px;cursor:pointer;font-size:.9em}
@@ -116,7 +116,7 @@
 .lg-medalla{display:inline-block;margin-top:6px;background:#ffcf3f;color:#1f2544;border:3px solid #1f2544;border-radius:999px;padding:3px 12px;font-weight:800;font-size:.9em}
 .lg-masc{display:flex;align-items:flex-end;gap:8px;padding:8px 12px 12px}
 .lg-masc>span:first-child{font-size:38px;line-height:1;flex:none}
-.lg-msg{flex:1;min-width:0;background:#fff;color:#1f2544;border:3px solid #1f2544;border-radius:16px 16px 16px 4px;padding:6px 12px;font-weight:800;font-size:.92em;min-height:2.3em;display:flex;align-items:center;overflow-wrap:anywhere}
+.lg-msg{flex:1;min-width:0;background:#fff;color:#1f2544;border:3px solid #1f2544;border-radius:16px 16px 16px 4px;padding:6px 12px;font-weight:800;font-size:.92em;min-height:calc(2.7em + 18px);display:flex;align-items:center;overflow-wrap:anywhere}
 .lg-teclas{font-size:.8em;color:#4a5075}
 .lg-preg-t{margin:0 0 4px;font-weight:800;color:#4a5075;font-size:.9em}
 .lg-preg{padding:12px 14px}
@@ -137,7 +137,8 @@
   touch-action:none;padding:0;font-family:var(--f-head,${FUENTE});font-weight:800}
 .lg-ctl:active,.lg-ctl.lg-on{transform:translate(2px,2px);box-shadow:1px 1px 0 #1f2544;background:#ffcf3f}
 .lg-ctl.lg-ancho{grid-column:1/-1;font-size:1.25em}
-.lg-ctl.lg-cmd{font-size:1.08em}
+.lg-ctl.lg-cmd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.74em;line-height:1.05;height:58px;padding:0 2px;overflow:hidden}
+.lg-ctl.lg-cmd span{font-size:22px;line-height:1}
 .lg-ctl:disabled{opacity:.45;cursor:default}
 .lg-rpg{position:relative;overflow:hidden;background:linear-gradient(#3b2a7a,#6a4fbf 56%,#3f8a4f 56%,#2f6a3d)}
 .lg-rpg .lg-ene{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;max-width:70%}
@@ -169,6 +170,18 @@
 @keyframes lg-muere{to{transform:scale(0) rotate(200deg);opacity:0}}
 @keyframes lg-sube{to{transform:translateY(-60px);opacity:0}}
 @media (prefers-reduced-motion: reduce){.lg-ene-cara,.lg-golpe,.lg-ataca,.lg-ataca-ene,.lg-carga,.lg-escudo,.lg-entra{animation:none}}
+@media (max-height:780px){
+  .lg-hud{padding:8px 10px 4px}
+  .lg-b{width:34px;height:34px;font-size:15px;border-radius:12px}
+  .lg-consigna{min-height:calc(2.3em + 14px);font-size:.95em;padding:4px 10px;margin:0 10px}
+  .lg-fila2{margin:6px 10px 0}
+  .lg-zona{margin-top:6px}
+  .lg-controles{padding:8px 10px 0;gap:6px}
+  .lg-ctl{height:48px;font-size:22px}
+  .lg-masc{padding:6px 10px 8px}
+  .lg-masc>span:first-child{font-size:28px}
+  .lg-msg{min-height:calc(2.7em + 14px);padding:4px 10px;font-size:.85em}
+}
 @keyframes lg-pop{from{transform:scale(.3);opacity:0}}
 @media (prefers-reduced-motion: reduce){.lg-tarjeta,.lg-cuenta,.lg-consigna.lg-pop{animation:none}}`;
     document.head.appendChild(s);
@@ -216,6 +229,18 @@
       mostrar(html) { capa.innerHTML = html; capa.hidden = false; },
       ocultar() { capa.hidden = true; capa.innerHTML = ""; },
     };
+  }
+
+  /**
+   * Alto de la zona de juego para que TODO el juego quepa en la pantalla sin desplazarse.
+   * Dentro de la lección, las pestañas quedan fijas arriba (unos 92 px): por eso la reserva.
+   * Llamar después de poner los controles, porque cuentan en el alto.
+   */
+  const RESERVA = 96;
+  function altoDisponible(M, min, max) {
+    const resto = M.raiz.offsetHeight - M.zona.offsetHeight;
+    const libre = (window.innerHeight || 700) - resto - RESERVA;
+    return Math.round(Math.max(min, Math.min(max, libre)));
   }
 
   /** Pantalla de inicio y cuenta 3-2-1. */
@@ -411,7 +436,7 @@
     let W = 340, H = 420;
     function medir() {
       W = M.zona.clientWidth || 340;
-      H = Math.round(Math.max(340, Math.min(540, (window.innerHeight || 700) * 0.6)));
+      H = altoDisponible(M, 260, 540);
       const r = Math.min(2, window.devicePixelRatio || 1);
       cv.width = Math.round(W * r); cv.height = Math.round(H * r); cv.style.height = H + "px";
       ctx.setTransform(r, 0, 0, r, 0, 0);
@@ -846,6 +871,11 @@
     if (!primeraPregunta) throw new Error("Bloques necesita preguntas con pregunta, opciones y correcta.");
     const COLS = 10, FILAS = 18, CADA = 3, META = D ? 12 : 8;
     const M = marco(host, datos.titulo || "🧱 Bloques");
+    const CONTROLES = `<button class="lg-ctl" data-c="izq" aria-label="Mover a la izquierda">⬅️</button>
+      <button class="lg-ctl" data-c="girar" aria-label="Girar">🔄</button>
+      <button class="lg-ctl" data-c="der" aria-label="Mover a la derecha">➡️</button>
+      <button class="lg-ctl" data-c="caer" aria-label="Dejar caer">⏬</button>`;
+    M.controles(CONTROLES); // antes de medir: cuentan en el alto
     const cv = document.createElement("canvas");
     cv.setAttribute("aria-label", "Tablero de bloques");
     M.zona.prepend(cv);
@@ -855,7 +885,7 @@
     const oy = 8;
     function medir() {
       W = M.zona.clientWidth || 340;
-      const alto = Math.max(330, Math.min(560, (window.innerHeight || 700) * 0.58));
+      const alto = altoDisponible(M, 230, 560);
       cs = Math.max(12, Math.floor(Math.min((W - 24 - 96) / COLS, (alto - 16) / FILAS)));
       H = cs * FILAS + oy * 2;
       ox = Math.round((W - cs * COLS - 96) / 2); panel = ox + cs * COLS + 12;
@@ -1006,10 +1036,7 @@
     const texto = (x, y, txt, color, escala = 1) => S.textos.push({ x, y, txt, color, t: 1, escala });
 
     // --- Controles: botones, gestos en el tablero y teclado ---
-    const ctl = M.controles(`<button class="lg-ctl" data-c="izq" aria-label="Mover a la izquierda">⬅️</button>
-      <button class="lg-ctl" data-c="girar" aria-label="Girar">🔄</button>
-      <button class="lg-ctl" data-c="der" aria-label="Mover a la derecha">➡️</button>
-      <button class="lg-ctl" data-c="caer" aria-label="Dejar caer">⏬</button>`);
+    const ctl = M.controles(CONTROLES);
     ctl.querySelectorAll(".lg-ctl").forEach((b) => {
       const c = b.dataset.c;
       b.addEventListener("pointerdown", (e) => {
@@ -1142,7 +1169,7 @@
         ctx.fillStyle = i < S.desdePregunta ? "#35b862" : "rgba(255,255,255,.25)";
         ctx.beginPath(); ctx.arc(px - 20 + i * 20, oy + 184, 6, 0, 7); ctx.fill();
       }
-      ctx.font = `30px ${EMOJI}`; ctx.fillText("🧱", px, oy + 222);
+      if (H > 260) { ctx.font = `30px ${EMOJI}`; ctx.fillText("🧱", px, oy + 222); }
       // Efectos
       S.chispas.forEach((c) => { ctx.globalAlpha = Math.max(0, Math.min(1, c.t * 2)); ctx.fillStyle = c.color; ctx.fillRect(c.x - 3, c.y - 3, 6, 6); });
       ctx.globalAlpha = 1;
@@ -1199,13 +1226,15 @@
     const PUERTAS = D ? 8 : 6, VEL = D ? 215 : 165, G = 1700, SALTO = 640;
     const heroe = nino(opts);
     const M = marco(host, datos.titulo || "🍄 Plataformas");
+    const CONTROLES = `<button class="lg-ctl lg-ancho" data-c="saltar">⬆️ ¡Saltar!</button>`;
+    M.controles(CONTROLES); // antes de medir: cuentan en el alto
     const cv = document.createElement("canvas");
     cv.setAttribute("aria-label", "Camino de plataformas");
     M.zona.prepend(cv);
     const ctx = cv.getContext("2d");
 
     let W = 340;
-    const H = Math.round(Math.max(320, Math.min(420, (window.innerHeight || 700) * 0.5)));
+    const H = altoDisponible(M, 230, 420);
     const gy = H - 56; // altura del piso
     function medir() {
       W = M.zona.clientWidth || 340;
@@ -1277,7 +1306,7 @@
     }
     S._saltar = saltar; // solo para las pruebas automáticas
     cv.addEventListener("pointerdown", (e) => { if (S.fase !== "juego") return; e.preventDefault(); saltar(); });
-    const ctl = M.controles(`<button class="lg-ctl lg-ancho" data-c="saltar">⬆️ ¡Saltar!</button>`);
+    const ctl = M.controles(CONTROLES);
     const bSaltar = ctl.querySelector("[data-c]");
     bSaltar.addEventListener("pointerdown", (e) => { e.preventDefault(); bSaltar.classList.add("lg-on"); saltar(); });
     ["pointerup", "pointercancel", "pointerleave"].forEach((t) => bSaltar.addEventListener(t, () => bSaltar.classList.remove("lg-on")));
@@ -1640,7 +1669,10 @@
     const META = D ? 6 : 5;
     const heroe = nino(opts);
     const M = marco(host, datos.titulo || "🐍 Culebrita");
-    const alto = Math.round(Math.max(300, Math.min(470, (window.innerHeight || 700) * 0.5)));
+    const CONTROLES = `<button class="lg-ctl" data-d="-1,0" aria-label="Izquierda">⬅️</button><button class="lg-ctl" data-d="0,-1" aria-label="Arriba">⬆️</button>
+      <button class="lg-ctl" data-d="0,1" aria-label="Abajo">⬇️</button><button class="lg-ctl" data-d="1,0" aria-label="Derecha">➡️</button>`;
+    M.controles(CONTROLES); // antes de medir: cuentan en el alto
+    const alto = altoDisponible(M, 210, 470);
     const S = {
       fase: "intro", ronda: 0, progreso: 0, aciertos: 0, errores: 0, escapados: 0, puntos: 0, vidas: D ? 3 : 0,
       cuerpo: [], dir: { x: 1, y: 0 }, cola: [], comida: [], reloj: 0, paso: 0, chispas: [], textos: [], inicio: 0, anotado: false,
@@ -1753,8 +1785,7 @@
     });
     B.escuchar(B.cv, "pointerup", () => { toque = null; });
     B.escuchar(B.cv, "pointercancel", () => { toque = null; });
-    const ctl = M.controles(`<button class="lg-ctl" data-d="-1,0" aria-label="Izquierda">⬅️</button><button class="lg-ctl" data-d="0,-1" aria-label="Arriba">⬆️</button>
-      <button class="lg-ctl" data-d="0,1" aria-label="Abajo">⬇️</button><button class="lg-ctl" data-d="1,0" aria-label="Derecha">➡️</button>`);
+    const ctl = M.controles(CONTROLES);
     ctl.querySelectorAll("[data-d]").forEach((b) => {
       const [dx, dy] = b.dataset.d.split(",").map(Number);
       b.addEventListener("pointerdown", (e) => { e.preventDefault(); b.classList.add("lg-on"); girar(dx, dy); });
@@ -1837,7 +1868,7 @@
     if (!pendiente) throw new Error("Rompe-ladrillos necesita preguntas con pregunta, opciones y correcta.");
     const heroe = nino(opts);
     const M = marco(host, datos.titulo || "💥 Rompe-ladrillos");
-    const alto = Math.round(Math.max(360, Math.min(520, (window.innerHeight || 700) * 0.58)));
+    const alto = altoDisponible(M, 280, 520);
     const S = {
       fase: "intro", aciertos: 0, errores: 0, escapados: 0, puntos: 0, vidas: D ? 3 : 0,
       ladrillos: [], paleta: { x: 170, w: 90 }, bola: { x: 0, y: 0, vx: 0, vy: 0, pegada: true, espera: 0.8 },
@@ -2061,8 +2092,11 @@
       { nombre: String(jefe.nombre), emoji: jefe.emoji || "👾", max: VJEFE, jefe: true },
     ].map((e) => ({ ...e, vida: e.max, debil: elegir(ELEMENTOS).id }));
     const M = marco(host, datos.titulo || "⚔️ La batalla");
-    // Alto suficiente para que quepa la tarjeta de pregunta encima de la batalla
-    const alto = Math.round(Math.max(340, Math.min(420, (window.innerHeight || 700) * 0.5)));
+    // Los 4 botones en una fila (ícono arriba, palabra abajo) y antes de medir: cuentan en el alto
+    const ctl = M.controles(`<button class="lg-ctl lg-cmd" data-c="atacar"><span aria-hidden="true">⚔️</span>Atacar</button><button class="lg-ctl lg-cmd" data-c="magia"><span aria-hidden="true">✨</span>Magia</button>
+      <button class="lg-ctl lg-cmd" data-c="pocion"><span aria-hidden="true">🧪</span>Poción</button><button class="lg-ctl lg-cmd" data-c="defender"><span aria-hidden="true">🛡️</span>Defender</button>`);
+    // Mínimo 320: tiene que caber la tarjeta de pregunta encima de la batalla
+    const alto = altoDisponible(M, 320, 420);
     M.zona.insertAdjacentHTML("afterbegin", `<div class="lg-rpg" style="height:${alto}px">
       <div class="lg-ene"><div class="lg-ficha"><b class="lg-nom"></b><div class="lg-hp"><i></i></div><small class="lg-int"></small></div>
         <div class="lg-cara lg-ene-cara" aria-hidden="true"></div></div>
@@ -2070,9 +2104,6 @@
         <div class="lg-ficha"><b>${esc(heroe.nombre)}</b><div class="lg-hp v"><i></i></div><small class="lg-mp"></small></div></div></div>`);
     const $ = (s) => M.zona.querySelector(s);
     const escena = $(".lg-rpg"), caraEne = $(".lg-ene-cara"), caraHer = $(".lg-her-cara");
-    const ctl = M.controles(`<button class="lg-ctl lg-cmd" data-c="atacar">⚔️ Atacar</button><button class="lg-ctl lg-cmd" data-c="magia">✨ Magia</button>
-      <button class="lg-ctl lg-cmd" data-c="pocion">🧪 Poción</button><button class="lg-ctl lg-cmd" data-c="defender">🛡️ Defender</button>`);
-    ctl.style.gridTemplateColumns = "repeat(2,minmax(0,1fr))";
 
     const S = {
       fase: "intro", heroe: { vida: 20, max: 20, mp: 3, pociones: D ? 2 : 3 }, enemigos, idx: 0,
@@ -2112,7 +2143,7 @@
       animar(caraEne, "lg-entra");
       const el = ELEMENTOS.find((x) => x.id === e.debil);
       M.consigna(`${e.emoji} ${e.jefe ? "¡El jefe " : "¡"}${e.nombre} apareció! (${S.idx + 1} de ${S.enemigos.length})`);
-      M.decir(`🐬 Pista de Lulo: a ${e.nombre} le duele el ${el.n} ${el.e}. ¡Recuérdalo para tu magia!`);
+      M.decir(`🐬 A ${e.nombre} le duele el ${el.n} ${el.e}. ¡Recuérdalo!`);
       S.cargando = false; S.defendiendo = false; S.turnosEne = 0; S.fase = "turno";
       pintar();
     }

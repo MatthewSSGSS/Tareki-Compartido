@@ -26,11 +26,14 @@
   .jugar { display:block; width:100%; margin-top:14px; font-family:var(--f-head); font-weight:800; font-size:1.25em; background:#ff6b9a; color:#fff;
     border:3px solid var(--line); border-radius:999px; padding:12px; box-shadow:4px 4px 0 var(--line); cursor:pointer }
   #juego { margin-top:14px }
+  .volver { display:inline-block; margin-bottom:12px; font-family:var(--f-head); font-weight:800; color:var(--ink); background:var(--card);
+    border:3px solid var(--line); border-radius:999px; padding:6px 16px; box-shadow:3px 3px 0 var(--line); text-decoration:none }
   pre { white-space:pre-wrap; word-break:break-word; background:var(--soft); border-radius:12px; padding:10px; font-size:.78em; margin:6px 0 0; max-height:260px; overflow:auto }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <a class="volver" href="../#/equipo" id="volver">← Volver al panel</a>
   <h1>🎮 Juegos de prueba</h1>
   <p class="suave">Página para probar los juegos grandes de Learnground antes de usarlos en las lecciones. Los datos son de ejemplo (tablas de multiplicar).</p>
 
@@ -66,6 +69,8 @@
   let animal = "🐬", color = "#ff6b9a", dificil = false;
 
   const $ = (id) => document.getElementById(id);
+  // Si llegó desde la app, vuelve a la pantalla anterior (conserva ?demo si estaba en la demo)
+  $("volver").onclick = (e) => { if (history.length > 1 && document.referrer.startsWith(location.origin)) { e.preventDefault(); history.back(); } };
   $("animales").innerHTML = ANIMALES.map((a) => `<button class="op" data-a="${a}" aria-pressed="${a === animal}">${a}</button>`).join("");
   $("colores").innerHTML = COLORES.map((c) => `<button class="op color" data-c="${c}" style="background:${c}" aria-label="Color" aria-pressed="${c === color}"></button>`).join("");
   const marcar = (sel, attr, val) => document.querySelectorAll(sel).forEach((b) => b.setAttribute("aria-pressed", b.dataset[attr] === val));
