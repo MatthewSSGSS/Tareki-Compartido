@@ -9,6 +9,20 @@
 - Textos, comentarios y nombres de funciones/variables **en español** (es-CO, tuteo). Hablar de los niños con su nombre o en neutro ("su hijo o hija").
 - Debe verse bien en celular (390 px, sin desborde) y aprovechar el computador (≥ 900 px: menú lateral y tableros en columnas).
 
+## Trabajo en equipo (varias personas, cada una con su Claude)
+Para no pisar ni sobreescribir el trabajo de otro:
+1. **Al empezar:** `git pull --rebase` y lee `BITACORA.md`: "🚧 En curso" (qué está tocando cada quien) y las últimas entradas.
+2. **Antes de un cambio grande:** anótalo en "🚧 En curso" (quién, qué, archivos) y súbelo. Si alguien ya está en esos archivos, coordinen primero por el chat del equipo.
+3. **Edita puntual:** nunca reescribas un archivo completo ni borres código que no entiendas. Si algo parece raro, pregunta antes de "arreglarlo".
+4. **Antes de subir:** `git pull --rebase`. Si hay conflicto, junta los dos cambios. **Nunca** `git push --force` ni `reset --hard` sobre trabajo de otros.
+5. **Al terminar:** agrega una entrada arriba en "✅ Terminado" de `BITACORA.md` (fecha, quién, qué, archivos, SQL por correr, pendientes, "ojo") y quítate de "En curso". Si queda algo que haga una persona (correr SQL, subir la skill a claude.ai), ponlo en "⏳ Pendiente de alguien". Si cambió cómo funciona algo, actualiza también este archivo y, si aplica, `PROPUESTAS.md` y la guía para papás (`js/guia.js`).
+6. **Cuidados que ya nos costaron:**
+   - Los SQL de `privado/` pueden estar viejos: usa los de `supabase/`.
+   - `datos-nube.js` y `datos-demo.js` siempre con las mismas funciones.
+   - Si cambian los datos de la demo, sube `version` en `demo.js` y `datos-demo.js`.
+   - `motor-v1.js` no cambia su comportamiento (los cambios grandes van a `motor-v2.js`).
+   - Después de cambiar la skill, rearma el zip y anota que hay que subirla a claude.ai.
+
 ## Arquitectura (`public/js/`)
 - `datos.js`: **única puerta a los datos**. Hoy en `MODO_DEMO` (localStorage, semilla en `demo.js`) e imita los permisos que pondrá Supabase con RLS. Al conectar Supabase se reescribe este archivo sin tocar las vistas.
 - `puente.js`: abre la lección HTML en un `<iframe sandbox="allow-scripts">` (sin allow-same-origin). Le inyecta un `localStorage` falso lleno con lo guardado; cada cambio llega por `postMessage` y se guarda en la cuenta. Al final lee `KEY`, `FTOP`, `GAMES` (con `hab`, la habilidad escondida de cada juego), `TIPS` y si existen `bossGame`/`examFinal`/`fichaMission` para el reporte. **Las lecciones no se modifican.**
