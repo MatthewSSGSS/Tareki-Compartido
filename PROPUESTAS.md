@@ -29,7 +29,7 @@ Cada lección hecha desde ahora ya guarda los datos por habilidad, y los informe
 - [x] **Tono optimista en las lecciones**: reglas para `OOPS`, `PRAISE`, finales, jefe, ficha, simulacro y reporte para papás.
 - [x] **Skill subida a claude.ai y lección de prueba** (multiplicación): trae habilidades, registro, trucos y tono positivo.
 
-## Paso 2: motor de juegos, tandas 1 y 2 · 📱 🧩 *(en curso)*
+## Paso 2: motor de juegos, tandas 1 y 2 · 📱 🧩 ✅
 Los juegos grandes (tipo consola) se programan **una sola vez en la app** y la lección solo manda el contenido. Así no se cortan las lecciones, los juegos salen siempre bien y sirven para cualquier materia.
 
 - [x] **Motor** (`public/juegos/motor-v1.js`): `LG.jugar(tipo, host, datos, opciones)`, controles táctiles y teclado, sonidos, estrellas, mensajes positivos y el mismo registro por habilidad. `puente.js` lo mete en cada lección con el nombre, el animal y el color del niño (`window.LG_NINO`). *(17-oct-2026)*
@@ -44,7 +44,7 @@ Los juegos grandes (tipo consola) se programan **una sola vez en la app** y la l
     - Cada enemigo tiene una debilidad que Lulo dice una sola vez (memoria).
     - Defenderse sirve cuando el enemigo carga un ataque fuerte (estrategia).
     - Hay pociones. En normal, si el héroe cae, Lulo lo cura.
-- [ ] **La skill aprende a usar el motor** (si la lección se abre fuera de la app, la tarjeta dice "🎮 Ábrela en Learnground para jugar"): 2 o 3 juegos grandes por lección, escogidos según el perfil (favoritos sí, los que evita no), con el animal, el color y los gustos del niño en el héroe, los enemigos y la historia.
+- [x] **La skill aprende a usar el motor** *(17-oct-2026)*: cada lección nueva trae 2 o 3 juegos grandes en "🌟 Aventuras", escogidos según el perfil (favoritos sí, los que evita no), con las preguntas de la lección. Fuera de la app la tarjeta dice "Este juego se juega en Learnground". Probado con una lección real dentro de la app: se juega, guarda estrellas y registro. El equipo tiene el botón "🎮 Probar juegos" en su panel.
 
 ## Paso 3: arreglos rápidos en la app · 📱 ✅
 - [x] **Frases en positivo para papás**: los consejos de Papás ("Su próximo reto", "Esta ficha trajo retos nuevos", "Una idea: leer con calma", "Meta de la semana"…) y el aviso diario de racha al celular ("hoy puedes llegar a N días", `supabase/avisos-positivos.sql`). *(17-oct-2026)*

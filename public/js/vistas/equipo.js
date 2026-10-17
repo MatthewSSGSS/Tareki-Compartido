@@ -74,7 +74,7 @@ async function resumen(root, ctx) {
   root.innerHTML = `
     ${bandaPrueba({ reiniciar: true })}
     <div class="cabecera"><div><h1>Hola, ${esc(primerNombre(ctx.usuario.nombre))} 👋</h1><span class="fila envolver" style="gap:14px"><button class="link peq" data-mi-nombre-res>✏️ Cambiar mi nombre</button><button class="link peq" data-apariencia-res>🎨 Apariencia</button></span></div>
-      <span class="fila"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a></span></div>
+      <span class="fila envolver"><a class="btn btn-peq" href="#/equipo/subir">⬆️ Subir lección</a><a class="btn btn-peq btn-azul" href="#/equipo/mensajes/nuevo">✉️ Mensaje</a><a class="btn btn-peq btn-sol" href="#/equipo/codigos">🎟️ Código</a><a class="btn btn-peq btn-blanco" href="juegos/prueba.html" target="_blank" rel="noopener" title="Los juegos grandes con datos de ejemplo">🎮 Probar juegos</a></span></div>
     <div class="kpis">
       <div class="card kpi"><span>Familias</span><b>👨‍👩‍👧 ${fams.length}</b></div>
       <div class="card kpi"><span>Niños</span><b>🧒 ${lista.length}</b></div>

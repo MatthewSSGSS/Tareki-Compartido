@@ -113,7 +113,7 @@ Por eso, en los juegos propios, cada acierto avisa con `A.praise()` o `A.say(…
 **Variedad (los niños se aburren si todo es lo mismo):**
 
 - **Máximo la mitad** de los juegos pueden ser de "pregunta y elige la respuesta" (globos, topos, rayo veloz y cualquier variante con otro dibujo). Cambiar el dibujo no cuenta como juego nuevo: lo que cuenta es lo que hace el dedo.
-- **Incluye al menos 2 del catálogo de abajo** en cada lección, alternándolos entre lecciones.
+- **Incluye al menos 2 del catálogo de abajo** en cada lección, alternándolos entre lecciones. Los juegos grandes (🌟 Aventuras) van aparte y no cuentan como "pregunta y elige".
 - **Nombres estables:** el mismo juego se llama igual en todas las lecciones (por ejemplo, siempre "🕵️ Lulo se equivocó"), porque la app reconoce los juegos por su nombre para saber cuáles le gustan.
 
 **Catálogo de juegos de otras mecánicas** (regístralos en `GAMES`, `GROUPS` e `INFO` como los demás, con su campo de estrellas terminado en `S`):
@@ -124,6 +124,64 @@ Por eso, en los juegos propios, cada acierto avisa con `A.praise()` o `A.say(…
 4. **👨‍👩‍👧 Reto en familia** (`familiaS`): dos jugadores en el mismo celular, por turnos ("Pásale el celular a papá o mamá"). El adulto recibe preguntas de difícil y el niño de normal; marcador y celebración al final. Las estrellas son por las respuestas del niño. Mete a los papás en el juego.
 5. **🏃 Corre y salta** (`saltaS`): un personaje corre solo y llegan 3 puertas o carriles con respuestas; el niño toca el carril correcto para saltar. Normal más lento; difícil más rápido y con obstáculos. Solo CSS y `requestAnimationFrame`, sin librerías.
 6. **🧪 El laboratorio** (`labS`): construir la respuesta arrastrando piezas (la fracción en la pizza, las palabras de la oración, los pasos del proceso, las partes del circuito) y tocar "¡Probar!". Si está mal, muestra qué pieza sobra o falta.
+
+**🌟 Juegos grandes de Learnground (tipo consola):** la app de Learnground trae un motor con 6 juegos grandes ya hechos y probados. La lección **no los programa**: solo manda los datos y llama `LG.jugar(...)`. Cada lección lleva **2 o 3** en un grupo **"🌟 Aventuras"**, el primero del menú.
+
+| `tipo` | `name` (siempre igual) | `f` | `hab` | Datos que manda la lección |
+|---|---|---|---|---|
+| `nave` | La nave | `naveS` | `atencion` | `rondas` + `jefe` |
+| `culebrita` | Culebrita | `culebraS` | `atencion` | `rondas` |
+| `bloques` | Bloques | `bloquesS` | `logica` | `preguntas` |
+| `plataformas` | Plataformas | `platS` | `coordinacion` | `preguntas` |
+| `ladrillos` | Rompe-ladrillos | `ladrillosS` | `coordinacion` | `preguntas` |
+| `rpg` | La batalla | `batallaS` | `logica` | `preguntas`, `enemigos`, `jefe` |
+
+Copia este bloque tal cual, justo después del registro de partidas:
+
+```js
+// ---------- Juegos grandes de Learnground (la app pone el juego; aquí solo van los datos) ----------
+function juegoGrande(tipo, datos){
+  return (host, onEnd, onBack) => {
+    if(!window.LG || !Array.isArray(LG.juegos) || !LG.juegos.includes(tipo)){
+      host.innerHTML = `<div class="pane"><div class="card" style="text-align:center"><div style="font-size:56px">🎮</div>
+        <h3>Este juego se juega en Learnground</h3><p>Abre la lección desde la app para jugarlo. ¡Mientras tanto, prueba los otros juegos!</p>
+        <button class="btn" data-out>← Volver a los juegos</button></div></div>`;
+      host.querySelector("[data-out]").onclick = onBack;
+      return;
+    }
+    LG.jugar(tipo, host, datos, {
+      id: jugando ? jugando.id : tipo, hab: jugando ? jugando.hab : undefined,
+      dificil: HARD(), nombre: kid().name, registro: REG,
+      alTerminar: n => onEnd(n), alSalir: onBack, alCambiarDificultad: setDiff
+    });
+  };
+}
+const sinImagen = n => mcPool(n * 2).filter(q => !q.img).slice(0, n);
+```
+
+Y regístralos en `GROUPS` como los demás (el motor anota el registro y las estrellas él solo):
+
+```js
+{ t:"🌟 Aventuras", g:[
+  { id:"nave", name:"La nave", desc:"Dispara a los resultados de la tabla del 3", emoji:"🚀", color:"#e3d4ff", f:"naveS", hab:"atencion",
+    run: juegoGrande("nave", { titulo:"🚀 La nave de las tablas", rondas: RONDAS, jefe:{ nombre:"Olvidón", emoji:"👾", preguntas: () => sinImagen(8) } }) },
+  { id:"plataformas", name:"Plataformas", desc:"Salta y abre las puertas", emoji:"🍄", color:"#c9f7d6", f:"platS", hab:"coordinacion",
+    run: juegoGrande("plataformas", { titulo:"🍄 El camino de las tablas", preguntas: () => sinImagen(10) }) } ] },
+```
+
+Formato de los datos:
+
+- **`preguntas`** (bloques, plataformas, rompe-ladrillos y batalla): una función que devuelve preguntas `{pregunta, opciones, correcta, explicacion?, pista?}`, el mismo formato de `mcPool`. Usa `() => sinImagen(10)`, porque los juegos grandes no muestran imágenes. Opciones cortas (máximo unos 30 caracteres).
+- **`rondas`** (nave y culebrita): 2 o 3 misiones `{ consigna, bien, mal, explica }`. `consigna` dice qué hacer ("Dispara a los resultados de la tabla del 3", "Cómete los sustantivos"). `bien` y `mal` son listas o funciones que devuelven **textos cortos** (máximo unos 14 caracteres: "12", "3 × 8", "perro"). `explica` es una frase corta que sale cuando se equivoca. **Lo de `bien` y lo de `mal` nunca pueden cruzarse**: verifícalo con Node. Solo úsalas cuando el tema tenga grupos claros (múltiplos, pares, sustantivos y verbos, órganos de un sistema, animales vertebrados…).
+- **`jefe`** (nave): `{ nombre, emoji, preguntas }`. **La batalla** usa `enemigos: [{nombre, emoji}, {nombre, emoji}]` (2, del tema: "Borrón", "Enredón"…) y `jefe: {nombre, emoji}` (puede ser el mismo villano del jefe final de la lección). Opcional: `preguntasMagia` con preguntas más difíciles.
+- **`titulo`**: corto, con el emoji del juego y el tema ("🧱 Bloques de fracciones").
+
+Cuáles poner:
+
+- **2 o 3 por lección**, de habilidades distintas. Rota entre lecciones: no repitas los mismos 3 seguidos.
+- **Con perfil:** si uno de estos está en "favoritos", repítelo; si está en "los evita", no lo pongas. Si "juega pocos minutos", máximo 2.
+- La nave y la culebrita solo si el tema tiene grupos claros (ver `rondas`); si no, usa los de `preguntas`.
+- El héroe es el animal y el color del niño: los pone la app, no los escribas.
 
 **🧠 Cada juego entrena una habilidad (sin que el niño lo sepa):** cada juego de `GROUPS` lleva el campo `hab` con una de estas 7 (escritas así, sin tildes):
 
@@ -185,10 +243,14 @@ Cada juego tiene:
 6. Habilidades: cada juego de `GAMES` tiene `hab` de la tabla, hay al menos 4 distintas y ninguna aparece en pantalla.
 7. Registro: con Playwright termina un juego y sal de otro a la mitad con ←. `localStorage["ld-" + KEY + "-registro"]` debe tener dos entradas con `j`, `h`, `ok`, `n`, `err`, `seg` y `fin` ("termino" y "salio").
 8. Texto y tono: ningún bloque de Aprender pasa de unas 40 palabras, cada tema tiene 📌 Lo importante y al menos un 💡 Truco, y busca en todo el HTML que no queden "Incorrecto", "Perdiste", "Fallaste" ni "Game over".
+9. Juegos grandes:
+   - Abre la página sin el motor: las tarjetas de 🌟 Aventuras deben mostrar "Este juego se juega en Learnground" y volver al menú, sin `pageerror`.
+   - Con Node, corre 2000 veces `bien()` y `mal()` de cada ronda: nunca se cruzan y ningún texto pasa de 14 caracteres. `sinImagen(10)` devuelve preguntas válidas (la correcta está entre las opciones, sin opciones repetidas).
+   - Si tienes internet, descarga el motor de `https://raw.githubusercontent.com/MatthewSSGSS/Tareki-Compartido/main/public/juegos/motor-v1.js`. En una copia de prueba, ponlo en el `<head>` con `<script>window.LG_NINO={nombre:"Prueba",avatar:"🦊",color:"#ff9a4d"}</script><script src="motor-v1.js"></script>`, abre cada juego grande, toca «¡A jugar!» y comprueba que arranca (`.lg-juego` en pantalla) sin `pageerror`. Esa copia no se entrega.
 
 ## 7. Entrega
 
 - Publica un **artifact nuevo** por cada tarea (un tema = una página) y envía también el archivo `.html`.
 - Si el usuario pide cambios, republica la misma ruta para conservar el enlace.
-- Responde en español, corto y claro: una línea de qué se hizo; qué trae cada pestaña; la lista de juegos con una frase cada uno y su habilidad entre paréntesis (eso es para el equipo; en la página no aparece); los desafíos; y avisos honestos (qué no se pudo verificar, qué conviene hacer con materiales reales, como un transportador). Termina con una sugerencia útil y las fuentes si hubo búsqueda.
+- Responde en español, corto y claro: una línea de qué se hizo; qué trae cada pestaña; la lista de juegos con una frase cada uno y su habilidad entre paréntesis (eso es para el equipo; en la página no aparece); los juegos grandes 🌟 que escogiste y por qué (se juegan al abrir la lección en Learnground; en la vista previa de claude.ai salen como "Este juego se juega en Learnground"); los desafíos; y avisos honestos (qué no se pudo verificar, qué conviene hacer con materiales reales, como un transportador). Termina con una sugerencia útil y las fuentes si hubo búsqueda.
 - No pongas WhatsApp ni pidas cosas por fuera de la página. El usuario no lo quiere.
